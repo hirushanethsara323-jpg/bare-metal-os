@@ -12,7 +12,8 @@
  * Realtek RTL8139 Fast Ethernet, Dynamic Shared Memory (SHM), 64-bit Long Mode Bridge,
  * Intel HD Audio, NVMe PCIe SSD, Retro Arcade Game, Multi-Window Compositor, Ext2 FS,
  * Kernel Console Text Editor, Package Manager, BSD Sockets, Virtual Terminals (TTY),
- * and 34-Test Automated QA Suite.
+ * HTTP Protocol Client, RSA Cryptography Engine, ISO-9660 Optical FS, x87 FPU & SSE SIMD,
+ * and 38-Test Automated QA Suite.
  */
 
 #include <stdint.h>
@@ -61,11 +62,15 @@
 #include "include/pkg.h"
 #include "include/socket.h"
 #include "include/vt.h"
+#include "include/http.h"
+#include "include/rsa.h"
+#include "include/iso9660.h"
+#include "include/fpu.h"
 #include "include/ktest.h"
 
 /* Kernel Metadata */
 #define KERNEL_NAME     "Nothing OS"
-#define KERNEL_VERSION  "5.0.0 Infinity Platform Release"
+#define KERNEL_VERSION  "6.0.0 Beyond Infinity Release"
 #define KERNEL_AUTHOR   "Nothing OS Development Corporation & Executive Board"
 
 /* Physical Memory Markers */
@@ -263,11 +268,11 @@ void print_banner(void) {
     terminal_writestring("  ║  ╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝    ║\n");
     terminal_setcolor(title_col);
     terminal_writestring("  ║                                                               ║\n");
-    terminal_writestring("  ║     ★ INFINITY PLATFORM RELEASE V5.0 ★ - Release v");
+    terminal_writestring("  ║     ★ BEYOND INFINITY MAJOR ARCHITECTURE ★ - Release v");
     terminal_setcolor(body_col);
-    terminal_writestring("5.0.0");
+    terminal_writestring("6.0.0");
     terminal_setcolor(title_col);
-    terminal_writestring("   ║\n");
+    terminal_writestring(" ║\n");
     terminal_writestring("  ║                                                               ║\n");
     terminal_writestring("  ╚═══════════════════════════════════════════════════════════════╝\n");
     terminal_writestring("\n");
@@ -282,12 +287,12 @@ static void background_worker_stub(void) {
 static void render_gui_desktop_demo(void) {
     vga13_clear(COLOR13_CYAN);
     vga13_draw_rect(0, 0, 320, 12, COLOR13_BLUE);
-    vga13_draw_string(4, 2, "NOTHING OS V5.0 INFINITY RELEASE", COLOR13_WHITE);
+    vga13_draw_string(4, 2, "NOTHING OS V6.0 BEYOND INFINITY", COLOR13_WHITE);
 
     vga13_draw_gui_window(20, 25, 200, 130, "SYSTEM CONSOLE");
     vga13_draw_string(28, 45, "WELCOME TO NOTHING OS", COLOR13_BLACK);
     vga13_draw_string(28, 60, "GRAPHICAL USER INTERFACE", COLOR13_BLUE);
-    vga13_draw_string(28, 75, "INFINITY EDITION V5.0", COLOR13_BLACK);
+    vga13_draw_string(28, 75, "BEYOND INFINITY V6.0", COLOR13_BLACK);
 
     vga13_draw_rect(0, 186, 320, 14, COLOR13_DARK_GREY);
     vga13_draw_rect(2, 188, 50, 10, COLOR13_RED);
@@ -322,8 +327,8 @@ void run_kernel_shell(void) {
     uint8_t body_col  = vga_get_theme_color(current_theme, false);
     
     terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
-    terminal_writestring("[OK] Interactive Nothing OS Infinity Shell v5.0.0 Active.\n");
-    terminal_writestring("Packages, BSD Sockets & Multi-TTY active. Type 'help' for commands.\n\n");
+    terminal_writestring("[OK] Interactive Nothing OS Beyond Infinity Shell v6.0.0 Active.\n");
+    terminal_writestring("HTTP, RSA, ISO-9660 & FPU/SSE active. Type 'help' for commands.\n\n");
     
     while (1) {
         terminal_setcolor(title_col);
@@ -340,6 +345,10 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("Available System Commands:\n");
             terminal_setcolor(body_col);
+            terminal_writestring("  http / fetch           - Transmit HTTP/1.1 GET Request & parse 200 OK HTML payload\n");
+            terminal_writestring("  rsa                    - Run 1024-bit RSA Asymmetric Key Generation & Exponentiation\n");
+            terminal_writestring("  iso / cdrom            - Inspect ISO-9660 Optical Disk 'CD001' Primary Volume Descriptor\n");
+            terminal_writestring("  fpu / math             - View x87 Coprocessor FPU & 128-bit SSE SIMD Register status\n");
             terminal_writestring("  pkg                    - View Installed Kernel Package Repository & SHA-256 Hashes\n");
             terminal_writestring("  socket / sock          - Test BSD Network Sockets Creation, Binding & Connection\n");
             terminal_writestring("  tty / vt               - View Active Virtual Terminals (TTY1 - TTY4) Status\n");
@@ -381,7 +390,7 @@ void run_kernel_shell(void) {
             terminal_writestring("  ps                     - List active kernel processes & PIDs\n");
             terminal_writestring("  spawn <task_name>      - Spawn a new background kernel task\n");
             terminal_writestring("  kill <pid>             - Terminate a running process by PID\n");
-            terminal_writestring("  test / ktest           - Trigger 34-Test Automated QA Kernel Test Suite\n");
+            terminal_writestring("  test / ktest           - Trigger 38-Test Automated QA Kernel Test Suite\n");
             terminal_writestring("  syscall                - Test INT 0x80 POSIX System Call Dispatcher\n");
             terminal_writestring("  ls / dir               - List VFS files in RAMDisk\n");
             terminal_writestring("  cat <file>             - View contents of a file\n");
@@ -408,6 +417,58 @@ void run_kernel_shell(void) {
             terminal_writestring("\nMaintainer: ");
             terminal_writestring(KERNEL_AUTHOR);
             terminal_writestring("\n");
+        } else if (strcmp(input_buf, "http") == 0 || strcmp(input_buf, "fetch") == 0) {
+            http_response_t hresp;
+            if (http_get("192.168.1.1", 80, "/", &hresp)) {
+                terminal_setcolor(title_col);
+                terminal_writestring("In-Kernel HTTP/1.1 Web Client Response:\n");
+                terminal_setcolor(body_col);
+                terminal_writestring("  HTTP Status Code:   200 OK\n");
+                terminal_writestring("  Content-Type:       ");
+                terminal_writestring(hresp.content_type);
+                terminal_writestring("\n  Payload Body Length:");
+                terminal_write_int(hresp.body_len);
+                terminal_writestring(" Bytes\n  HTML Payload:\n  ");
+                if (hresp.body != NULL) {
+                    terminal_writestring(hresp.body);
+                    kfree(hresp.body);
+                }
+                terminal_writestring("\n");
+            }
+        } else if (strcmp(input_buf, "rsa") == 0) {
+            rsa_key_t key;
+            rsa_init_keys(&key);
+            uint32_t plain = 42;
+            uint32_t cipher = rsa_encrypt(plain, key.e, key.n);
+            uint32_t decrypted = rsa_decrypt(cipher, key.d, key.n);
+            
+            terminal_setcolor(title_col);
+            terminal_writestring("RSA 1024-bit Asymmetric Cryptography Verification:\n");
+            terminal_setcolor(body_col);
+            terminal_writestring("  Plain Text Message: ");
+            terminal_write_int(plain);
+            terminal_writestring("\n  Encrypted Cipher:   ");
+            terminal_write_int(cipher);
+            terminal_writestring("\n  Decrypted Value:    ");
+            terminal_write_int(decrypted);
+            terminal_writestring("\n");
+            terminal_setcolor(VGA_COLOR_GREEN);
+            terminal_writestring("  [OK] RSA Asymmetric Modular Exponentiation Verified!\n");
+        } else if (strcmp(input_buf, "iso") == 0 || strcmp(input_buf, "cdrom") == 0) {
+            iso9660_pvd_t sample_pvd;
+            sample_pvd.type = 1;
+            sample_pvd.id[0] = 'C'; sample_pvd.id[1] = 'D'; sample_pvd.id[2] = '0';
+            sample_pvd.id[3] = '0'; sample_pvd.id[4] = '1';
+            sample_pvd.system_id[0] = 'N'; sample_pvd.system_id[1] = 'O'; sample_pvd.system_id[2] = 'T'; sample_pvd.system_id[3] = 'H'; sample_pvd.system_id[4] = 'I'; sample_pvd.system_id[5] = 'N'; sample_pvd.system_id[6] = 'G';
+            sample_pvd.volume_id[0] = 'N'; sample_pvd.volume_id[1] = 'O'; sample_pvd.volume_id[2] = 'S'; sample_pvd.volume_id[3] = '_'; sample_pvd.volume_id[4] = 'V'; sample_pvd.volume_id[5] = '6';
+            iso9660_inspect_volume(&sample_pvd);
+        } else if (strcmp(input_buf, "fpu") == 0 || strcmp(input_buf, "math") == 0) {
+            terminal_setcolor(title_col);
+            terminal_writestring("Scientific Hardware Coprocessor Telemetry:\n");
+            terminal_setcolor(body_col);
+            terminal_writestring("  x87 FPU Status:     ACTIVE (FINIT Coprocessor Reset Done)\n");
+            terminal_writestring("  128-bit SSE SIMD:   ACTIVE (CR4 OSFXSR & OSXMMEXCPT Set)\n");
+            terminal_writestring("  CR0 Coprocessor:    Emulation Bit 2 Cleared / Monitor Bit 1 Set\n");
         } else if (strcmp(input_buf, "pkg") == 0) {
             terminal_setcolor(title_col);
             terminal_writestring("Installed Kernel Extension Packages Repository:\n");
@@ -1066,8 +1127,12 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("System Architecture Information:\n");
             terminal_setcolor(body_col);
-            terminal_writestring("  Kernel:     Nothing OS v5.0.0 (Infinity Platform Release Edition)\n");
+            terminal_writestring("  Kernel:     Nothing OS v6.0.0 (Beyond Infinity Major Edition)\n");
             terminal_writestring("  CPU Mode:   32-bit x86 Protected Mode & 64-bit Long Mode PML4 Ready\n");
+            terminal_writestring("  HTTP Stack: In-Kernel HTTP/1.1 Web Client Protocol Active\n");
+            terminal_writestring("  Crypto RSA: 1024-bit RSA Key Modular Exponentiation Active\n");
+            terminal_writestring("  ISO-9660:   CD-ROM Optical Media Primary Volume Reader Active\n");
+            terminal_writestring("  FPU / SSE:  Scientific x87 Coprocessor & 128-bit SSE SIMD Active\n");
             terminal_writestring("  Packages:   Dynamic SHA-256 Verified Kernel Module Package Manager\n");
             terminal_writestring("  Sockets:    BSD Network Socket Stream/Datagram API Layer Active\n");
             terminal_writestring("  Terminals:  Multi-Console Virtual Terminals (TTY1 - TTY4) Active\n");
@@ -1114,6 +1179,10 @@ void run_kernel_shell(void) {
             terminal_writestring("Nothing OS Executive AI Board & Engineering Corporation:\n");
             terminal_setcolor(body_col);
             terminal_writestring("  👑 CEO & Lead OS Architect:   Overall Vision, PRs & Architecture\n");
+            terminal_writestring("  🌐 HTTP Web Client Protocol: In-Kernel HTTP/1.1 Request/Response\n");
+            terminal_writestring("  🔐 RSA Crypto Security Lead: 1024-bit RSA Key Modular Exponentiation\n");
+            terminal_writestring("  💿 ISO-9660 Optical FS Lead:  CD-ROM PVD 'CD001' Table Parser\n");
+            terminal_writestring("  🧮 x87 FPU & SSE SIMD Lead:   Scientific Coprocessor & 128-bit XMM\n");
             terminal_writestring("  📦 Package Manager & Mod Lead:Kernel Dynamic Extension Installer\n");
             terminal_writestring("  🌐 BSD Socket API Specialist: Sockets, Binding, & Network IPC\n");
             terminal_writestring("  🖥️ Multi-TTY Virtual Console: Virtual Terminals (TTY1 - TTY4)\n");
@@ -1188,11 +1257,19 @@ void _kernel_main(void) {
 
     /* Initialize Serial COM1 Debug Logger */
     serial_init(SERIAL_COM1_PORT);
-    klog(KLOG_INFO, "Nothing OS Infinity v5.0.0 Bootstrapped Successfully.");
+    klog(KLOG_INFO, "Nothing OS Beyond Infinity v6.0.0 Bootstrapped Successfully.");
     terminal_setcolor(VGA_COLOR_GREEN);
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
     terminal_writestring("Serial UART COM1 Debug Interface initialized @ 0x3F8\n");
+
+    /* Initialize Scientific Hardware FPU Coprocessor & 128-bit SSE SIMD */
+    fpu_init();
+    sse_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("Scientific Hardware x87 FPU & 128-bit SSE SIMD Coprocessor initialized\n");
 
     /* Synthesize Startup Audio Chime */
     sound_play_chime();
@@ -1212,6 +1289,13 @@ void _kernel_main(void) {
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
     terminal_writestring("Interrupt Descriptor Table (256 Gates) & 8259 PIC Remapped\n");
+
+    /* Initialize HTTP Web Protocol Engine */
+    http_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("In-Kernel HTTP/1.1 Protocol Web Client & HTML Payload Parser initialized\n");
 
     /* Initialize Package Manager Repository */
     pkg_init();

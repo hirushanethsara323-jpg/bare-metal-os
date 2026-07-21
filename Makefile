@@ -1,5 +1,5 @@
 # =============================================================================
-# Nothing OS - Enterprise Makefile (v5.0 Infinity Platform Edition)
+# Nothing OS - Enterprise Makefile (v6.0 Beyond Infinity Edition)
 # =============================================================================
 # Build system for Nothing OS (x86 Bare Metal Operating System)
 # =============================================================================
@@ -45,22 +45,26 @@ PAGING_SRC   = $(KERNEL_DIR)/mm/paging.c
 VFS_SRC      = $(KERNEL_DIR)/fs/vfs.c
 FAT_SRC      = $(KERNEL_DIR)/fs/fat.c
 EXT2_SRC     = $(KERNEL_DIR)/fs/ext2.c
+ISO_SRC      = $(KERNEL_DIR)/fs/iso9660.c
 WM_SRC       = $(KERNEL_DIR)/gui/wm.c
 EDITOR_SRC   = $(KERNEL_DIR)/user/editor.c
 PKG_SRC      = $(KERNEL_DIR)/sys/pkg.c
 IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
 APIC_SRC     = $(KERNEL_DIR)/arch/x86/apic.c
+FPU_SRC      = $(KERNEL_DIR)/arch/x86/fpu.c
 LONGMODE_SRC = $(KERNEL_DIR)/arch/x86/longmode.c
 SYSCALL_SRC  = $(KERNEL_DIR)/arch/x86/syscall.c
 TSS_SRC      = $(KERNEL_DIR)/arch/x86/tss.c
 NET_SRC      = $(KERNEL_DIR)/net/net.c
 SOCKET_SRC   = $(KERNEL_DIR)/net/socket.c
+HTTP_SRC     = $(KERNEL_DIR)/net/http.c
 SIGNAL_SRC   = $(KERNEL_DIR)/sys/signal.c
 ENV_SRC      = $(KERNEL_DIR)/sys/env.c
 MONITOR_SRC  = $(KERNEL_DIR)/sys/monitor.c
 IPC_SRC      = $(KERNEL_DIR)/sys/ipc.c
 SHM_SRC      = $(KERNEL_DIR)/sys/shm.c
 CRYPTO_SRC   = $(KERNEL_DIR)/crypto/sha256.c
+RSA_SRC      = $(KERNEL_DIR)/crypto/rsa.c
 SCHED_SRC    = $(KERNEL_DIR)/proc/scheduler.c
 ELF_SRC      = $(KERNEL_DIR)/proc/elf.c
 PONG_SRC     = $(KERNEL_DIR)/games/pong.c
@@ -81,19 +85,20 @@ LDFLAGS = -T $(KERNEL_DIR)/linker.ld -m elf_i386 -nostdlib
 OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/heap.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/serial.o \
        $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/fat.o \
-       $(BUILD_DIR)/ext2.o $(BUILD_DIR)/vga_graphics.o $(BUILD_DIR)/vga_mode13.o \
-       $(BUILD_DIR)/wm.o $(BUILD_DIR)/editor.o $(BUILD_DIR)/pkg.o \
-       $(BUILD_DIR)/sound.o $(BUILD_DIR)/ansi.o $(BUILD_DIR)/pci.o \
-       $(BUILD_DIR)/e1000.o $(BUILD_DIR)/vbe.o $(BUILD_DIR)/ahci.o \
-       $(BUILD_DIR)/acpi.o $(BUILD_DIR)/apic.o $(BUILD_DIR)/usb.o \
-       $(BUILD_DIR)/rtl8139.o $(BUILD_DIR)/shm.o $(BUILD_DIR)/hda.o \
-       $(BUILD_DIR)/nvme.o $(BUILD_DIR)/vt.o $(BUILD_DIR)/socket.o \
-       $(BUILD_DIR)/longmode.o $(BUILD_DIR)/pong.o $(BUILD_DIR)/syscall.o \
-       $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o $(BUILD_DIR)/signal.o \
-       $(BUILD_DIR)/env.o $(BUILD_DIR)/monitor.o $(BUILD_DIR)/ipc.o \
-       $(BUILD_DIR)/sha256.o $(BUILD_DIR)/scheduler.o $(BUILD_DIR)/elf.o \
-       $(BUILD_DIR)/paging.o $(BUILD_DIR)/ata.o $(BUILD_DIR)/mouse.o \
-       $(BUILD_DIR)/ktest.o
+       $(BUILD_DIR)/ext2.o $(BUILD_DIR)/iso9660.o $(BUILD_DIR)/vga_graphics.o \
+       $(BUILD_DIR)/vga_mode13.o $(BUILD_DIR)/wm.o $(BUILD_DIR)/editor.o \
+       $(BUILD_DIR)/pkg.o $(BUILD_DIR)/sound.o $(BUILD_DIR)/ansi.o \
+       $(BUILD_DIR)/pci.o $(BUILD_DIR)/e1000.o $(BUILD_DIR)/vbe.o \
+       $(BUILD_DIR)/ahci.o $(BUILD_DIR)/acpi.o $(BUILD_DIR)/apic.o \
+       $(BUILD_DIR)/usb.o $(BUILD_DIR)/rtl8139.o $(BUILD_DIR)/shm.o \
+       $(BUILD_DIR)/hda.o $(BUILD_DIR)/nvme.o $(BUILD_DIR)/vt.o \
+       $(BUILD_DIR)/socket.o $(BUILD_DIR)/http.o $(BUILD_DIR)/rsa.o \
+       $(BUILD_DIR)/fpu.o $(BUILD_DIR)/longmode.o $(BUILD_DIR)/pong.o \
+       $(BUILD_DIR)/syscall.o $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o \
+       $(BUILD_DIR)/signal.o $(BUILD_DIR)/env.o $(BUILD_DIR)/monitor.o \
+       $(BUILD_DIR)/ipc.o $(BUILD_DIR)/sha256.o $(BUILD_DIR)/scheduler.o \
+       $(BUILD_DIR)/elf.o $(BUILD_DIR)/paging.o $(BUILD_DIR)/ata.o \
+       $(BUILD_DIR)/mouse.o $(BUILD_DIR)/ktest.o
 
 # =============================================================================
 # Targets
@@ -109,7 +114,7 @@ dirs:
 
 # Link kernel binary
 $(KERNEL): $(OBJS)
-	@echo "Linking Nothing OS v5.0 Infinity kernel binary..."
+	@echo "Linking Nothing OS Beyond Infinity v6.0 kernel binary..."
 	@$(LD) $(LDFLAGS) -o $@ $(OBJS)
 	@echo "Kernel built successfully: $@"
 	@echo "Kernel size: $$(stat -c%s $@) bytes"
@@ -122,6 +127,31 @@ $(BUILD_DIR)/boot.o: $(KERNEL_DIR)/arch/x86/boot.c
 # Compile IDT and Interrupt Manager
 $(BUILD_DIR)/idt.o: $(IDT_SRC)
 	@echo "Compiling IDT & PIC Interrupt Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile HTTP Protocol Client
+$(BUILD_DIR)/http.o: $(HTTP_SRC)
+	@echo "Compiling In-Kernel HTTP/1.1 Protocol Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile RSA Cryptography
+$(BUILD_DIR)/rsa.o: $(RSA_SRC)
+	@echo "Compiling RSA Asymmetric Public-Key Cryptography Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile ISO-9660 Optical FS
+$(BUILD_DIR)/iso9660.o: $(ISO_SRC)
+	@echo "Compiling ISO-9660 CD-ROM / DVD Optical Filesystem Reader..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Scientific FPU & SSE
+$(BUILD_DIR)/fpu.o: $(FPU_SRC)
+	@echo "Compiling Scientific Hardware x87 FPU & SSE SIMD Coprocessor Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Local APIC Multi-Core Controller
+$(BUILD_DIR)/apic.o: $(APIC_SRC)
+	@echo "Compiling Local APIC Multiprocessor Driver..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile Package Manager
@@ -152,11 +182,6 @@ $(BUILD_DIR)/ext2.o: $(EXT2_SRC)
 # Compile Kernel Text Editor
 $(BUILD_DIR)/editor.o: $(EDITOR_SRC)
 	@echo "Compiling Kernel Embedded Console Text Editor Utility..."
-	@$(CC) $(CFLAGS) -c -o $@ $<
-
-# Compile Local APIC Multi-Core Controller
-$(BUILD_DIR)/apic.o: $(APIC_SRC)
-	@echo "Compiling Local APIC Multiprocessor Driver..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile 64-bit Long Mode Bridge Engine

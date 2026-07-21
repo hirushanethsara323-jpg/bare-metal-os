@@ -1,12 +1,16 @@
 # Nothing OS Development Corporation - Executive AI Board 🏢👑★
 
-Welcome to **Nothing OS Development Corporation**. This repository contains our production-grade custom 32-bit/64-bit Operating System kernel (**Nothing OS v5.0.0 Infinity Platform Edition**) alongside our 46-member executive AI engineering board.
+Welcome to **Nothing OS Development Corporation**. This repository contains our production-grade custom 32-bit/64-bit Operating System kernel (**Nothing OS v6.0.0 Beyond Infinity Release**) alongside our 50-member executive AI engineering board.
 
 ## Executive Corporate Board & Agent Roster
 
 | Avatar | Agent Name | Corporate Role | Engineering Domain & System Responsibilities |
 |---|---|---|---|
 | 👑 | **CEO Agent** | Chief Executive Officer & OS Lead | Overall OS Architecture, Sprint Roadmap, Code Review & GitHub Release Management |
+| 🌐 | **In-Kernel HTTP Protocol Lead** | Web Protocol & Parser Specialist | In-Kernel HTTP/1.1 Client Request/Response Headers & HTML Payload Document Extraction |
+| 🔐 | **RSA Cryptography Lead** | Asymmetric Security Specialist | 1024-bit RSA Public-Key Cryptography, Modular Exponentiation, & Digital Signatures |
+| 💿 | **ISO-9660 Optical Media Lead** | CD-ROM Filesystem Specialist | Primary Volume Descriptor (PVD) Reader, `"CD001"` Magic Signature Verification |
+| 🧮 | **Scientific FPU & SSE Lead** | Math Coprocessor Specialist | Control Registers CR0/CR4, x87 FPU Coprocessor Initialization (`finit`), & 128-bit SSE SIMD |
 | 📦 | **Package Manager Lead** | Extension Repository Specialist | Dynamic Package Repository, SHA-256 Signature Verification, & Module Installation |
 | 🌐 | **BSD Network Socket Lead** | Network Protocols & Sockets Engineer | BSD Sockets API Layer (`ksocket`, `kbind`, `kconnect`, `ksend`, `krecv`), AF_INET / SOCK_STREAM |
 | 🖥️ | **Virtual Terminal (TTY) Lead** | Multi-Console Switcher Specialist | Multi-Console Virtual Terminals (TTY1 - TTY4) & Per-Console Frame Buffer Memory States |
@@ -39,7 +43,7 @@ Welcome to **Nothing OS Development Corporation**. This repository contains our 
 | 🌐 | **Network Stack Lead** | Network Protocols Specialist | Virtual Loopback Stack, Ethernet II Frame Encoding, ARP Protocol, IPv4 & ICMP Ping Engine |
 | 👤 | **User Mode Ring 3 Lead** | Privilege Switching Specialist | Task State Segment (TSS) GDT Register, Ring 3 Stack Allocation, IRET Frame Transition |
 | 🔍 | **OS Research Agent** | Architecture & Standards Lead | Research OSDev specifications, POSIX standards, and x86 hardware primitives |
-| 🧪 | **Automated Testing Lead** | QA & Self-Testing Specialist | 34-Test Suite Runner (`ktest`), Memory Verification, VFS Integrity & Syscall Validation |
+| 🧪 | **Automated Testing Lead** | QA & Self-Testing Specialist | 38-Test Suite Runner (`ktest`), Memory Verification, VFS Integrity & Syscall Validation |
 | 🧠 | **Core Kernel Architect** | x86 Assembly & Core Lead | GDT, 256-Gate IDT, 8259 PIC Vector Remapping, CPU Interrupt Handling |
 | ⚡ | **Virtual Memory Lead** | Paging & Protection Engineer | 32-bit x86 4KB Paging, Page Directory (PDE), Page Tables (PTE), CR3 Register & CR2 Page Faults |
 | 💽 | **Storage Disk Lead** | IDE Hard Disk Specialist | Primary ATA IDE Controller (28-bit LBA Sector Read/Write & Drive Identify) |
@@ -51,7 +55,7 @@ Welcome to **Nothing OS Development Corporation**. This repository contains our 
 | ⏰ | **Clock & Peripherals Lead** | Timers & CMOS RTC Specialist | PIT 8253 System Timer (100 Hz), CMOS Real-Time Clock (RTC Date/Time) |
 | 🎨 | **UI/UX Graphics Engine Lead** | Theme & Display Specialist | VGA Window Box Components, Progress Bars, Status Bars, Color Theme Palettes |
 | 📁 | **VFS & Storage Specialist** | Filesystem & RAMDisk Lead | In-Memory Virtual File System (MemFS RAMDisk), File Creation, Reading & Writing |
-| 🐚 | **Shell & UX Lead** | Console & Shell Specialist | Interactive System Shell (`pkg`, `socket`, `tty`, `wm`, `ext2`, `edit`, `longmode`) |
+| 🐚 | **Shell & UX Lead** | Console & Shell Specialist | Interactive System Shell (`http`, `rsa`, `iso`, `fpu`, `pkg`, `socket`, `tty`, `wm`) |
 | ⚙️ | **DevOps & QA Lead** | Build & Toolchain Specialist | Makefile, Linker Script, Compiler Checks & GitHub Synchronization |
 
 ## Orchestrator Execution Command

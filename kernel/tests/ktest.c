@@ -1,5 +1,5 @@
 /**
- * Nothing OS - Automated QA & Kernel Test Framework (v5.0 Infinity Edition)
+ * Nothing OS - Automated QA & Kernel Test Framework (v6.0 Ultimate Beyond Edition)
  * 
  * Executed by the Testing Agent to validate memory allocators, VFS operations,
  * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging,
@@ -8,7 +8,8 @@
  * IPC Pipes, FAT MBR Boot Parser, SHA-256 Crypto, ANSI Sequences, PCI Bus Scanner,
  * Intel e1000 NIC, VESA VBE 32-bit Framebuffer, Local APIC, AHCI SATA, ACPI Power,
  * USB UHCI, RTL8139, SHM Allocator, 64-bit Long Mode Bridge, Intel HDA, NVMe SSD,
- * Multi-Window Compositor, Ext2 Filesystem, Text Editor, Packages, BSD Sockets, and TTYs.
+ * Multi-Window Compositor, Ext2 Filesystem, Text Editor, Packages, BSD Sockets, TTYs,
+ * HTTP/1.1 Protocol, RSA Cryptography, ISO-9660 Optical FS, and x87 FPU / SSE SIMD.
  */
 
 #include "../include/ktest.h"
@@ -50,6 +51,10 @@
 #include "../include/pkg.h"
 #include "../include/socket.h"
 #include "../include/vt.h"
+#include "../include/http.h"
+#include "../include/rsa.h"
+#include "../include/iso9660.h"
+#include "../include/fpu.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -319,6 +324,47 @@ void run_kernel_test_suite(test_results_t* results) {
         test_log_pass("Multi-Console Virtual Terminals Manager (TTY1 - TTY4)", results);
     } else {
         test_log_fail("Virtual Terminal Activation Check Failed", results);
+    }
+
+    /* Test 35: In-Kernel HTTP Protocol Web Client */
+    http_response_t hresp;
+    if (http_get("192.168.1.1", 80, "/", &hresp)) {
+        if (hresp.status_code == 200) {
+            test_log_pass("In-Kernel HTTP/1.1 Web Client Protocol & Payload Parser", results);
+            if (hresp.body != NULL) kfree(hresp.body);
+        } else {
+            test_log_fail("HTTP Response Status Code Invalid", results);
+        }
+    } else {
+        test_log_fail("HTTP GET Transmit Execution Failed", results);
+    }
+
+    /* Test 36: RSA Public-Key Cryptography Subsystem */
+    rsa_key_t test_rsa;
+    rsa_init_keys(&test_rsa);
+    uint32_t cipher = rsa_encrypt(42, test_rsa.e, test_rsa.n);
+    uint32_t decrypted = rsa_decrypt(cipher, test_rsa.d, test_rsa.n);
+    if (decrypted == 42) {
+        test_log_pass("RSA Public-Key Encryption / Decryption & Exponentiation", results);
+    } else {
+        test_log_fail("RSA Cryptographic Decryption Failed", results);
+    }
+
+    /* Test 37: ISO-9660 Optical Media Primary Volume Descriptor Parser */
+    iso9660_pvd_t test_pvd;
+    test_pvd.id[0] = 'C'; test_pvd.id[1] = 'D'; test_pvd.id[2] = '0';
+    test_pvd.id[3] = '0'; test_pvd.id[4] = '1';
+    if (iso9660_validate_pvd(&test_pvd)) {
+        test_log_pass("ISO-9660 CD-ROM / DVD Optical Media 'CD001' PVD Reader", results);
+    } else {
+        test_log_fail("ISO-9660 PVD Validation Test Failed", results);
+    }
+
+    /* Test 38: Scientific x87 FPU & 128-bit SSE SIMD Coprocessor */
+    if (fpu_is_enabled()) {
+        test_log_pass("Scientific Hardware x87 FPU & 128-bit SSE SIMD Coprocessor", results);
+    } else {
+        test_log_fail("x87 FPU Coprocessor Initialization Failed", results);
     }
 
     terminal_writestring("\n----------------------------------------------\n");

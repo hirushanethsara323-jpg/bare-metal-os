@@ -27,6 +27,34 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "HTTP_WEB_PROTOCOL_LEAD": Agent(
+        name="In-Kernel HTTP Web Client Protocol Lead",
+        role="HTTP/1.1 Web Request/Response & Parser Specialist",
+        avatar="🌐",
+        goal="Maintain in-kernel HTTP/1.1 client headers, 200 OK response extraction, & HTML payload parser.",
+        skills=["HTTP/1.1 GET/POST", "Socket Connection Bridge", "HTTP Header Parsing", "Payload Buffers"]
+    ),
+    "RSA_CRYPTO_LEAD": Agent(
+        name="RSA Asymmetric Cryptography & Security Lead",
+        role="Public-Key RSA Exponentiation & Digital Signature Specialist",
+        avatar="🔐",
+        goal="Drive 1024-bit RSA Key Generation, modular exponentiation, & digital package signing verification.",
+        skills=["RSA 1024-bit Keys", "Modular Exponentiation", "Digital Signatures", "Asymmetric Crypto"]
+    ),
+    "ISO9660_OPTICAL_LEAD": Agent(
+        name="ISO-9660 CD-ROM / DVD Optical Media Lead",
+        role="Optical Storage Descriptor & CD001 Parser Specialist",
+        avatar="💿",
+        goal="Inspect ISO-9660 Primary Volume Descriptors (PVD), CD001 signatures, & optical filesystem tables.",
+        skills=["ISO-9660 PVD Reader", "CD001 Magic Identifier", "Volume Headers", "CD-ROM Media"]
+    ),
+    "FPU_SSE_MATH_LEAD": Agent(
+        name="Scientific x87 FPU & 128-bit SSE SIMD Lead",
+        role="Hardware Floating Point & Math Coprocessor Specialist",
+        avatar="🧮",
+        goal="Maintain CR0 coprocessor control, FINIT initialization, & 128-bit XMM SSE SIMD instructions.",
+        skills=["x87 FPU Coprocessor", "128-bit SSE SIMD", "CR4 OSFXSR Registers", "FINIT Assembly"]
+    ),
     "PACKAGE_MANAGER_LEAD": Agent(
         name="Kernel Extension Package Manager Lead",
         role="Extension Repository & Signature Specialist",
@@ -214,7 +242,7 @@ CREW_CORPORATION = {
         role="Self-Testing Framework & Validation Specialist",
         avatar="🧪",
         goal="Execute automated kernel test suites, verify memory safety, file operations, and system call stability.",
-        skills=["34-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
+        skills=["38-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
     ),
     "GUI_PIXEL_ENGINE_LEAD": Agent(
         name="Mode 13h Pixel GUI & Desktop Lead",
@@ -332,7 +360,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (pkg, socket, tty, wm, ext2, edit, longmode).",
+        goal="Develop interactive kernel shell commands (http, rsa, iso, fpu, pkg, socket, tty, wm).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
@@ -350,15 +378,15 @@ class NothingOSCorporation:
         self.corp = CREW_CORPORATION
 
     def display_board(self):
-        print("=" * 104)
+        print("=" * 108)
         print("    🏢 NOTHING OS DEVELOPMENT CORPORATION - EXECUTIVE CREW BOARD 🏢")
-        print("=" * 104)
+        print("=" * 108)
         for key, agent in self.corp.items():
             print(f"{agent.avatar} [{agent.role}]")
             print(f"   Agent:  {agent.name}")
             print(f"   Goal:   {agent.goal}")
             print(f"   Skills: {', '.join(agent.skills)}")
-            print("-" * 104)
+            print("-" * 108)
 
     def run_build_check(self) -> bool:
         try:
