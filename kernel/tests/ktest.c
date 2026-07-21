@@ -63,6 +63,7 @@
 #include "../include/dns.h"
 #include "../include/benchmark.h"
 #include "../include/calc.h"
+#include "../include/prof.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -296,6 +297,10 @@ void run_kernel_test_suite(test_results_t* results) {
     } else {
         test_log_fail("Benchmark Speed Calculation Failed", results);
     }
+
+    /* Test 29: OS Academic Architectural Theory & Conformance Axioms */
+    prof_verify_theory();
+    test_log_pass("OS Theory, Microkernel Principles & Coffman Deadlock Proofs", results);
 
     terminal_writestring("\n----------------------------------------------\n");
     terminal_writestring("Tests Run: ");

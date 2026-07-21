@@ -7,6 +7,7 @@ Welcome to **Nothing OS Development Corporation**. This repository contains our 
 | Avatar | Agent Name | Corporate Role | Engineering Domain & System Responsibilities |
 |---|---|---|---|
 | 👑 | **CEO Agent** | Chief Executive Officer & OS Lead | Overall OS Architecture, Sprint Roadmap, Code Review & GitHub Release Management |
+| 🎓 | **Prof. OS Systems Research Chair** | Chief Academic Officer & OS Theory Lead | OS Architectural Theory, Microkernel Principles, Deadlock Proofs, POSIX Standards, & CS Pedagogy |
 | ⚡ | **Hardware Hypervisor Lead** | Virtualization & VMX Specialist | Intel VMX & AMD-V Hardware Virtualization Extensions, VMCS, & Guest Traps |
 | 🌐 | **DNS Resolver Lead** | Hostname Translation Specialist | Domain Name System (DNS) UDP Port 53 Query Packets, A-Records, & Hostname Resolution |
 | ⚡ | **Hardware Benchmark Lead** | Performance Diagnostics Specialist | DRAM Memory Bandwidth Throughput (MB/s), MIPS Instruction Speed, & Disk Benchmark |

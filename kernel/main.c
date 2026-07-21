@@ -76,6 +76,7 @@
 #include "include/benchmark.h"
 #include "include/calc.h"
 #include "include/paint.h"
+#include "include/prof.h"
 #include "include/ktest.h"
 
 /* Kernel Metadata */
@@ -356,6 +357,7 @@ void run_kernel_shell(void) {
             terminal_writestring("Available System Commands:\n");
             terminal_setcolor(body_col);
             terminal_writestring("  kvm / vmx              - View Hardware Virtualization Hypervisor VMX/SVM Extension status\n");
+            terminal_writestring("  prof / lecture [1-4]   - Attend OS Theory & Pedagogy Academic Lecture from Prof. OS Chair\n");
             terminal_writestring("  dns <hostname>         - Perform UDP Port 53 Domain Name System (DNS) IP Resolution\n");
             terminal_writestring("  bench                  - Execute Comprehensive Hardware RAM Speed & CPU MIPS Benchmark\n");
             terminal_writestring("  calc                   - Launch Mode 13h Graphical Desktop Calculator Applet\n");
@@ -443,6 +445,12 @@ void run_kernel_shell(void) {
             terminal_writestring("  CPUID Extension:    ");
             terminal_writestring((htype == HYPERVISOR_VMX_INTEL) ? "Intel VMX Active" : "Software Emulation");
             terminal_writestring("\n  VMCS Control Area:  READY @ 0x001F0000\n");
+        } else if (strncmp(input_buf, "prof", 4) == 0 || strncmp(input_buf, "lecture", 7) == 0) {
+            const char* num_str = "";
+            if (strncmp(input_buf, "prof ", 5) == 0) num_str = input_buf + 5;
+            else if (strncmp(input_buf, "lecture ", 8) == 0) num_str = input_buf + 8;
+            prof_print_lecture(num_str);
+            prof_verify_theory();
         } else if (strncmp(input_buf, "dns ", 4) == 0) {
             const char* domain = input_buf + 4;
             uint32_t resolved_ip = dns_lookup(domain);
@@ -1254,6 +1262,7 @@ void run_kernel_shell(void) {
             terminal_writestring("Nothing OS Executive AI Board & Engineering Corporation:\n");
             terminal_setcolor(body_col);
             terminal_writestring("  👑 CEO & Lead OS Architect:   Overall Vision, PRs & Architecture\n");
+            terminal_writestring("  🎓 Prof. OS Systems Research Chair: OS Architectural Theory & Formal POSIX Standards\n");
             terminal_writestring("  ⚡ Hardware Virtualization:  Intel VMX & AMD-V Hypervisor Control\n");
             terminal_writestring("  🌐 DNS Resolver Lead:         UDP Port 53 Hostname IP Translation\n");
             terminal_writestring("  ⚡ System Benchmark Lead:     RAM Bandwidth MB/s & CPU MIPS Engine\n");
@@ -1352,6 +1361,13 @@ void _kernel_main(void) {
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
     terminal_writestring("Virtual Machine Monitor & Hardware VMX Hypervisor Driver initialized\n");
+
+    /* Initialize OS Academic Theory & Pedagogy Engine */
+    prof_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("OS Academic Theory & POSIX Pedagogy Engine initialized by Prof. OS Chair\n");
 
     /* Initialize DNS Resolver */
     dns_init();

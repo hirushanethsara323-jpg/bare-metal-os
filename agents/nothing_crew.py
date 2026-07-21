@@ -27,6 +27,13 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "OS_PROFESSOR": Agent(
+        name="Prof. Operating Systems & Academic Research Chair",
+        role="Chief Academic Officer & OS Systems Theory Lead",
+        avatar="🎓",
+        goal="Drive OS Architectural Theory, Microkernel vs Monolithic Design, Concurrency Proofs, & POSIX Conformance.",
+        skills=["OS Architectural Theory", "Microkernel & Monolithic Design", "Deadlock Proofs", "POSIX Compliance", "CS Pedagogy"]
+    ),
     "KVM_HYPERVISOR_LEAD": Agent(
         name="Hardware Virtualization & Hypervisor Lead",
         role="Intel VMX & AMD-V Virtual Machine Monitor Specialist",
