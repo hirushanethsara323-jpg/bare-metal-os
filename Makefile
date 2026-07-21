@@ -1,5 +1,5 @@
 # =============================================================================
-# Nothing OS - Enterprise Makefile (v6.0 Beyond Infinity Edition)
+# Nothing OS - Enterprise Makefile (v7.0 Beyond Limits Edition)
 # =============================================================================
 # Build system for Nothing OS (x86 Bare Metal Operating System)
 # =============================================================================
@@ -27,6 +27,7 @@ RTC_SRC      = $(KERNEL_DIR)/drivers/rtc.c
 GRAPHICS_SRC = $(KERNEL_DIR)/drivers/vga_graphics.c
 VGA13_SRC    = $(KERNEL_DIR)/drivers/vga_mode13.c
 SOUND_SRC    = $(KERNEL_DIR)/drivers/sound.c
+SB16_SRC     = $(KERNEL_DIR)/drivers/sb16.c
 ANSI_SRC     = $(KERNEL_DIR)/drivers/ansi.c
 PCI_SRC      = $(KERNEL_DIR)/drivers/pci.c
 E1000_SRC    = $(KERNEL_DIR)/drivers/e1000.c
@@ -45,6 +46,7 @@ PAGING_SRC   = $(KERNEL_DIR)/mm/paging.c
 VFS_SRC      = $(KERNEL_DIR)/fs/vfs.c
 FAT_SRC      = $(KERNEL_DIR)/fs/fat.c
 EXT2_SRC     = $(KERNEL_DIR)/fs/ext2.c
+EXT4_SRC     = $(KERNEL_DIR)/fs/ext4.c
 ISO_SRC      = $(KERNEL_DIR)/fs/iso9660.c
 WM_SRC       = $(KERNEL_DIR)/gui/wm.c
 EDITOR_SRC   = $(KERNEL_DIR)/user/editor.c
@@ -65,6 +67,7 @@ IPC_SRC      = $(KERNEL_DIR)/sys/ipc.c
 SHM_SRC      = $(KERNEL_DIR)/sys/shm.c
 CRYPTO_SRC   = $(KERNEL_DIR)/crypto/sha256.c
 RSA_SRC      = $(KERNEL_DIR)/crypto/rsa.c
+AES_SRC      = $(KERNEL_DIR)/crypto/aes.c
 SCHED_SRC    = $(KERNEL_DIR)/proc/scheduler.c
 ELF_SRC      = $(KERNEL_DIR)/proc/elf.c
 PONG_SRC     = $(KERNEL_DIR)/games/pong.c
@@ -85,20 +88,21 @@ LDFLAGS = -T $(KERNEL_DIR)/linker.ld -m elf_i386 -nostdlib
 OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/heap.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/serial.o \
        $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/fat.o \
-       $(BUILD_DIR)/ext2.o $(BUILD_DIR)/iso9660.o $(BUILD_DIR)/vga_graphics.o \
-       $(BUILD_DIR)/vga_mode13.o $(BUILD_DIR)/wm.o $(BUILD_DIR)/editor.o \
-       $(BUILD_DIR)/pkg.o $(BUILD_DIR)/sound.o $(BUILD_DIR)/ansi.o \
+       $(BUILD_DIR)/ext2.o $(BUILD_DIR)/ext4.o $(BUILD_DIR)/iso9660.o \
+       $(BUILD_DIR)/vga_graphics.o $(BUILD_DIR)/vga_mode13.o \
+       $(BUILD_DIR)/wm.o $(BUILD_DIR)/editor.o $(BUILD_DIR)/pkg.o \
+       $(BUILD_DIR)/sound.o $(BUILD_DIR)/sb16.o $(BUILD_DIR)/ansi.o \
        $(BUILD_DIR)/pci.o $(BUILD_DIR)/e1000.o $(BUILD_DIR)/vbe.o \
        $(BUILD_DIR)/ahci.o $(BUILD_DIR)/acpi.o $(BUILD_DIR)/apic.o \
        $(BUILD_DIR)/usb.o $(BUILD_DIR)/rtl8139.o $(BUILD_DIR)/shm.o \
        $(BUILD_DIR)/hda.o $(BUILD_DIR)/nvme.o $(BUILD_DIR)/vt.o \
        $(BUILD_DIR)/socket.o $(BUILD_DIR)/http.o $(BUILD_DIR)/rsa.o \
-       $(BUILD_DIR)/fpu.o $(BUILD_DIR)/longmode.o $(BUILD_DIR)/pong.o \
-       $(BUILD_DIR)/syscall.o $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o \
-       $(BUILD_DIR)/signal.o $(BUILD_DIR)/env.o $(BUILD_DIR)/monitor.o \
-       $(BUILD_DIR)/ipc.o $(BUILD_DIR)/sha256.o $(BUILD_DIR)/scheduler.o \
-       $(BUILD_DIR)/elf.o $(BUILD_DIR)/paging.o $(BUILD_DIR)/ata.o \
-       $(BUILD_DIR)/mouse.o $(BUILD_DIR)/ktest.o
+       $(BUILD_DIR)/aes.o $(BUILD_DIR)/fpu.o $(BUILD_DIR)/longmode.o \
+       $(BUILD_DIR)/pong.o $(BUILD_DIR)/syscall.o $(BUILD_DIR)/tss.o \
+       $(BUILD_DIR)/net.o $(BUILD_DIR)/signal.o $(BUILD_DIR)/env.o \
+       $(BUILD_DIR)/monitor.o $(BUILD_DIR)/ipc.o $(BUILD_DIR)/sha256.o \
+       $(BUILD_DIR)/scheduler.o $(BUILD_DIR)/elf.o $(BUILD_DIR)/paging.o \
+       $(BUILD_DIR)/ata.o $(BUILD_DIR)/mouse.o $(BUILD_DIR)/ktest.o
 
 # =============================================================================
 # Targets
@@ -114,7 +118,7 @@ dirs:
 
 # Link kernel binary
 $(KERNEL): $(OBJS)
-	@echo "Linking Nothing OS Beyond Infinity v6.0 kernel binary..."
+	@echo "Linking Nothing OS Enterprise v7.0 kernel binary..."
 	@$(LD) $(LDFLAGS) -o $@ $(OBJS)
 	@echo "Kernel built successfully: $@"
 	@echo "Kernel size: $$(stat -c%s $@) bytes"
@@ -127,6 +131,21 @@ $(BUILD_DIR)/boot.o: $(KERNEL_DIR)/arch/x86/boot.c
 # Compile IDT and Interrupt Manager
 $(BUILD_DIR)/idt.o: $(IDT_SRC)
 	@echo "Compiling IDT & PIC Interrupt Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Sound Blaster 16 Driver
+$(BUILD_DIR)/sb16.o: $(SB16_SRC)
+	@echo "Compiling Sound Blaster 16 Audio Controller Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Ext4 Journaling Driver
+$(BUILD_DIR)/ext4.o: $(EXT4_SRC)
+	@echo "Compiling Linux Ext4 Journaling Extents Filesystem Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile AES-256 Symmetric Cipher
+$(BUILD_DIR)/aes.o: $(AES_SRC)
+	@echo "Compiling AES-256 Symmetric Block Cipher Engine..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile HTTP Protocol Client

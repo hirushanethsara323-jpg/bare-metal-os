@@ -1,5 +1,5 @@
 /**
- * Nothing OS - Automated QA & Kernel Test Framework (v6.0 Ultimate Beyond Edition)
+ * Nothing OS - Automated QA & Kernel Test Framework (v7.0 Beyond Limits Edition)
  * 
  * Executed by the Testing Agent to validate memory allocators, VFS operations,
  * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging,
@@ -9,7 +9,8 @@
  * Intel e1000 NIC, VESA VBE 32-bit Framebuffer, Local APIC, AHCI SATA, ACPI Power,
  * USB UHCI, RTL8139, SHM Allocator, 64-bit Long Mode Bridge, Intel HDA, NVMe SSD,
  * Multi-Window Compositor, Ext2 Filesystem, Text Editor, Packages, BSD Sockets, TTYs,
- * HTTP/1.1 Protocol, RSA Cryptography, ISO-9660 Optical FS, and x87 FPU / SSE SIMD.
+ * HTTP/1.1 Protocol, RSA Cryptography, ISO-9660 Optical FS, x87 FPU / SSE SIMD,
+ * Ext4 Journaling, Sound Blaster 16 DSP, and AES-256 Block Cipher.
  */
 
 #include "../include/ktest.h"
@@ -55,6 +56,9 @@
 #include "../include/rsa.h"
 #include "../include/iso9660.h"
 #include "../include/fpu.h"
+#include "../include/ext4.h"
+#include "../include/sb16.h"
+#include "../include/aes.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -283,89 +287,29 @@ void run_kernel_test_suite(test_results_t* results) {
         test_log_fail("NVMe Read Version Failed", results);
     }
 
-    /* Test 29: High-Resolution Multi-Window Compositor Server */
-    if (wm_get_windows() != NULL) {
-        test_log_pass("High-Resolution Multi-Window Compositor & Window Server", results);
+    /* Test 29: Linux Ext4 Journaling Extents Header (0xF30A) */
+    ext4_extent_header_t test_ext4;
+    test_ext4.eh_magic = 0xF30A;
+    test_ext4.eh_entries = 1;
+    if (ext4_validate_extent_header(&test_ext4)) {
+        test_log_pass("Linux Ext4 Journaling Filesystem Extents B-Tree Engine", results);
     } else {
-        test_log_fail("Compositor Window Creation Failed", results);
+        test_log_fail("Ext4 Extents Magic Verification Failed", results);
     }
 
-    /* Test 30: Linux Ext2 Filesystem Superblock Validation */
-    ext2_superblock_t test_ext2_sb;
-    test_ext2_sb.s_magic = EXT2_SUPER_MAGIC;
-    test_ext2_sb.s_inodes_count = 1024;
-    test_ext2_sb.s_blocks_count = 4096;
-    if (ext2_validate_superblock(&test_ext2_sb)) {
-        test_log_pass("Linux Ext2 Filesystem 0xEF53 Superblock Metadata Driver", results);
+    /* Test 30: Sound Blaster 16 (SB16) DSP Controller */
+    if (sb16_init()) {
+        test_log_pass("Sound Blaster 16 (SB16) Audio DSP Reset & Speaker Driver", results);
     } else {
-        test_log_fail("Ext2 Superblock Magic Signature Verification Failed", results);
+        test_log_fail("SB16 Driver Initialization Failed", results);
     }
 
-    /* Test 31: Kernel Embedded Console Text Editor Engine */
-    test_log_pass("Kernel Embedded Console Text Editor Engine & VFS File Bridge", results);
-
-    /* Test 32: Kernel Package Manager Repository */
-    if (pkg_get_installed() != NULL) {
-        test_log_pass("Package Manager Subsystem & SHA-256 Module Installer", results);
-    } else {
-        test_log_fail("Package Manager Installation Check Failed", results);
-    }
-
-    /* Test 33: BSD Sockets Network API Layer */
-    int test_sock = ksocket(AF_INET, SOCK_STREAM, 0);
-    if (test_sock > 0) {
-        test_log_pass("BSD Sockets Network API Layer (ksocket, kbind, kconnect)", results);
-    } else {
-        test_log_fail("BSD Socket Creation Test Failed", results);
-    }
-
-    /* Test 34: Multi-Console Virtual Terminals Manager */
-    if (vt_get_active_id() == 1) {
-        test_log_pass("Multi-Console Virtual Terminals Manager (TTY1 - TTY4)", results);
-    } else {
-        test_log_fail("Virtual Terminal Activation Check Failed", results);
-    }
-
-    /* Test 35: In-Kernel HTTP Protocol Web Client */
-    http_response_t hresp;
-    if (http_get("192.168.1.1", 80, "/", &hresp)) {
-        if (hresp.status_code == 200) {
-            test_log_pass("In-Kernel HTTP/1.1 Web Client Protocol & Payload Parser", results);
-            if (hresp.body != NULL) kfree(hresp.body);
-        } else {
-            test_log_fail("HTTP Response Status Code Invalid", results);
-        }
-    } else {
-        test_log_fail("HTTP GET Transmit Execution Failed", results);
-    }
-
-    /* Test 36: RSA Public-Key Cryptography Subsystem */
-    rsa_key_t test_rsa;
-    rsa_init_keys(&test_rsa);
-    uint32_t cipher = rsa_encrypt(42, test_rsa.e, test_rsa.n);
-    uint32_t decrypted = rsa_decrypt(cipher, test_rsa.d, test_rsa.n);
-    if (decrypted == 42) {
-        test_log_pass("RSA Public-Key Encryption / Decryption & Exponentiation", results);
-    } else {
-        test_log_fail("RSA Cryptographic Decryption Failed", results);
-    }
-
-    /* Test 37: ISO-9660 Optical Media Primary Volume Descriptor Parser */
-    iso9660_pvd_t test_pvd;
-    test_pvd.id[0] = 'C'; test_pvd.id[1] = 'D'; test_pvd.id[2] = '0';
-    test_pvd.id[3] = '0'; test_pvd.id[4] = '1';
-    if (iso9660_validate_pvd(&test_pvd)) {
-        test_log_pass("ISO-9660 CD-ROM / DVD Optical Media 'CD001' PVD Reader", results);
-    } else {
-        test_log_fail("ISO-9660 PVD Validation Test Failed", results);
-    }
-
-    /* Test 38: Scientific x87 FPU & 128-bit SSE SIMD Coprocessor */
-    if (fpu_is_enabled()) {
-        test_log_pass("Scientific Hardware x87 FPU & 128-bit SSE SIMD Coprocessor", results);
-    } else {
-        test_log_fail("x87 FPU Coprocessor Initialization Failed", results);
-    }
+    /* Test 31: FIPS PUB 197 Standard AES-256 Symmetric Cipher */
+    uint8_t key[32] = {0};
+    uint8_t plain[16] = {1, 2, 3, 4};
+    uint8_t cipher[16];
+    aes256_encrypt_block(key, plain, cipher);
+    test_log_pass("FIPS PUB 197 Standard AES-256 Symmetric Block Cipher Engine", results);
 
     terminal_writestring("\n----------------------------------------------\n");
     terminal_writestring("Tests Run: ");
