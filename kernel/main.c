@@ -9,11 +9,15 @@
 #include <stdbool.h>
 #include "include/io.h"
 #include "include/keyboard.h"
+#include "include/heap.h"
 
 /* Kernel version info */
 #define KERNEL_NAME     "Nothing OS"
 #define KERNEL_VERSION  "0.1.0"
 #define KERNEL_AUTHOR   "hirushanethsara323-jpg & AI Crew Board"
+
+/* Heap Location in Physical Memory */
+#define KERNEL_HEAP_BASE 0x00300000 /* 3MB mark */
 
 /* VGA text mode */
 #define VGA_MEMORY       (uint16_t*)0xB8000
@@ -229,8 +233,8 @@ void run_kernel_shell(void) {
     char input_buf[128];
     
     terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
-    terminal_writestring("[OK] PS/2 Keyboard Driver Initialized!\n");
-    terminal_writestring("Interactive Nothing OS Shell is Ready. Type 'help' for commands.\n\n");
+    terminal_writestring("[OK] Dynamic Heap Allocator Ready!\n");
+    terminal_writestring("Interactive Nothing OS Shell Active. Type 'help' for commands.\n\n");
     
     while (1) {
         terminal_setcolor(VGA_COLOR_LIGHT_CYAN);
@@ -249,6 +253,8 @@ void run_kernel_shell(void) {
             terminal_setcolor(VGA_COLOR_LIGHT_GREY);
             terminal_writestring("  help      - Display this command manual\n");
             terminal_writestring("  version   - Print Nothing OS kernel version info\n");
+            terminal_writestring("  heap      - Display Kernel Heap Allocator statistics\n");
+            terminal_writestring("  alloc     - Test dynamic allocation with kmalloc/kfree\n");
             terminal_writestring("  sysinfo   - Display memory and CPU architecture status\n");
             terminal_writestring("  agents    - View the AI Board of Agents & roles\n");
             terminal_writestring("  clear     - Clear the VGA terminal screen\n");
@@ -261,12 +267,63 @@ void run_kernel_shell(void) {
             terminal_writestring(" (i386 Protected Mode)\nAuthor: ");
             terminal_writestring(KERNEL_AUTHOR);
             terminal_writestring("\n");
+        } else if (strcmp(input_buf, "heap") == 0 || strcmp(input_buf, "mem") == 0) {
+            heap_stats_t stats;
+            heap_get_stats(&stats);
+            
+            terminal_setcolor(VGA_COLOR_LIGHT_CYAN);
+            terminal_writestring("Kernel Heap Statistics:\n");
+            terminal_setcolor(VGA_COLOR_LIGHT_GREY);
+            terminal_writestring("  Heap Base:       0x");
+            terminal_write_hex(KERNEL_HEAP_BASE);
+            terminal_writestring("\n  Total Size:      ");
+            terminal_write_int(stats.total_size / 1024);
+            terminal_writestring(" KB (");
+            terminal_write_int(stats.total_size);
+            terminal_writestring(" bytes)\n  Allocated Bytes: ");
+            terminal_write_int(stats.allocated_bytes);
+            terminal_writestring(" bytes\n  Free Bytes:      ");
+            terminal_write_int(stats.free_bytes);
+            terminal_writestring(" bytes\n  Total Blocks:    ");
+            terminal_write_int(stats.total_blocks);
+            terminal_writestring("\n  Free Blocks:     ");
+            terminal_write_int(stats.free_blocks);
+            terminal_writestring("\n");
+        } else if (strcmp(input_buf, "alloc") == 0) {
+            terminal_setcolor(VGA_COLOR_LIGHT_CYAN);
+            terminal_writestring("Testing Dynamic Memory Allocator (kmalloc / kfree):\n");
+            
+            terminal_setcolor(VGA_COLOR_LIGHT_GREY);
+            terminal_writestring("  Allocating 512 bytes with kmalloc()...\n");
+            char* test_ptr = (char*)kmalloc(512);
+            
+            if (test_ptr != NULL) {
+                terminal_setcolor(VGA_COLOR_GREEN);
+                terminal_writestring("  [OK] Successfully allocated @ Address: 0x");
+                terminal_write_hex((uintptr_t)test_ptr);
+                terminal_writestring("\n");
+                
+                /* Test write */
+                test_ptr[0] = 'H'; test_ptr[1] = 'E'; test_ptr[2] = 'A'; test_ptr[3] = 'P'; test_ptr[4] = '\0';
+                terminal_setcolor(VGA_COLOR_LIGHT_GREY);
+                terminal_writestring("  Written data in heap buffer: ");
+                terminal_writestring(test_ptr);
+                terminal_writestring("\n  Freeing buffer with kfree()...\n");
+                kfree(test_ptr);
+                
+                terminal_setcolor(VGA_COLOR_GREEN);
+                terminal_writestring("  [OK] Memory freed & coalesced cleanly!\n");
+            } else {
+                terminal_setcolor(VGA_COLOR_LIGHT_RED);
+                terminal_writestring("  [FAIL] kmalloc() failed!\n");
+            }
         } else if (strcmp(input_buf, "sysinfo") == 0) {
             terminal_setcolor(VGA_COLOR_LIGHT_CYAN);
             terminal_writestring("System Architecture Status:\n");
             terminal_setcolor(VGA_COLOR_LIGHT_GREY);
             terminal_writestring("  OS Name:     Nothing OS\n");
             terminal_writestring("  Mode:        32-bit Protected Mode\n");
+            terminal_writestring("  Heap:        1 MB Dynamic Heap Allocator @ 0x00300000\n");
             terminal_writestring("  Driver:      PS/2 Keyboard Controller (Port 0x60 / 0x64)\n");
             terminal_writestring("  Console:     VGA Text Mode Memory mapped @ 0xB8000\n");
         } else if (strcmp(input_buf, "agents") == 0) {
@@ -317,6 +374,13 @@ void _kernel_main(void) {
     terminal_writestring("[OK] ");
     terminal_setcolor(VGA_COLOR_LIGHT_GREY);
     terminal_writestring("Physical Memory Manager initialized\n");
+    
+    /* Initialize Dynamic Heap Allocator at 3MB mark */
+    heap_init(KERNEL_HEAP_BASE, HEAP_INITIAL_SIZE);
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(VGA_COLOR_LIGHT_GREY);
+    terminal_writestring("Kernel Heap Allocator (1 MB) initialized @ 0x00300000\n");
     
     /* Initialize PS/2 Keyboard Driver */
     keyboard_init();

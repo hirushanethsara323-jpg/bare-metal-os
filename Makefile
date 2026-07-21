@@ -22,6 +22,7 @@ BUILD_DIR  = build
 # Kernel files
 KERNEL_SRC   = $(KERNEL_DIR)/main.c
 KEYBOARD_SRC = $(KERNEL_DIR)/drivers/keyboard.c
+HEAP_SRC     = $(KERNEL_DIR)/mm/heap.c
 BOOT_SRC     = $(BOOT_DIR)/multiboot_header.asm
 
 # Output
@@ -35,7 +36,7 @@ ASFLAGS = -f elf32
 LDFLAGS = -T $(KERNEL_DIR)/linker.ld -m elf_i386 -nostdlib
 
 # Objects
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o $(BUILD_DIR)/heap.o
 
 # =============================================================================
 # Targets
@@ -64,6 +65,11 @@ $(BUILD_DIR)/boot.o: $(KERNEL_DIR)/arch/x86/boot.c
 # Compile PS/2 Keyboard driver
 $(BUILD_DIR)/keyboard.o: $(KEYBOARD_SRC)
 	@echo "Compiling PS/2 Keyboard Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Dynamic Heap Manager
+$(BUILD_DIR)/heap.o: $(HEAP_SRC)
+	@echo "Compiling Dynamic Kernel Heap Manager..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile kernel main
