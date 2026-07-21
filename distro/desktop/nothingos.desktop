@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=10.0
+Type=Application
+Name=Nothing OS Apex Desktop Control Center
+Comment=Launch Nothing OS Bare-Metal Kernel & Executive AI Orchestrator
+Exec=python3 /usr/share/nothingos/agents/nothing_crew.py
+Icon=nothingos-logo
+Terminal=true
+Categories=System;Development;OS;
+Keywords=NothingOS;Kernel;Ubuntu;BareMetal;AI;

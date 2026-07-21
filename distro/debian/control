@@ -1,0 +1,14 @@
+# =============================================================================
+# Nothing OS Ubuntu Edition - Core Package Control Specification
+# =============================================================================
+Package: nothing-os-core
+Version: 10.0.0-apex
+Section: os-distribution
+Priority: optional
+Architecture: amd64
+Depends: bash, gcc, nasm, qemu-system-x86, python3, make, xorriso, grub-pc
+Maintainer: Nothing OS Development Corporation <dev@nothingos.org>
+Description: Nothing OS Apex Platform Core System and Custom Ubuntu Distribution Engine
+ Integrated custom 32-bit/64-bit bare-metal operating system kernel binaries,
+ 50+ Executive AI Board Orchestrator, multi-window compositor, custom Plymouth splash
+ screens, GRUB2 cyberpunk themes, and POSIX development utilities.

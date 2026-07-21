@@ -1,0 +1,37 @@
+# =============================================================================
+# Nothing OS Ubuntu Edition - Custom GRUB2 Cyberpunk Boot Theme
+# =============================================================================
+
+title-text: "★ NOTHING OS APEX PLATFORM v10.0 (UBUNTU CUSTOM EDITION) ★"
+title-color: "#00FF66"
+title-font: "Unifont Regular 16"
+desktop-image: "background.png"
+desktop-color: "#050B14"
+
++ boot_menu {
+  left = 15%
+  top = 30%
+  width = 70%
+  height = 55%
+  item_color = "#00E5FF"
+  selected_item_color = "#00FF66"
+  icon_width = 32
+  icon_height = 32
+  item_icon_space = 16
+  item_height = 36
+  item_padding = 8
+  item_spacing = 10
+  selected_item_pixmap_style = "select_*.png"
+}
+
++ progress_bar {
+  id = "__timeout__"
+  left = 15%
+  top = 88%
+  width = 70%
+  height = 18
+  show_text = true
+  text = "Booting Nothing OS Ubuntu Edition in %d seconds..."
+  text_color = "#FFFFFF"
+  bar_style = "progress_bar_*.png"
+}
