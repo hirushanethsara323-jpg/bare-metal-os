@@ -53,6 +53,7 @@ CALC_SRC     = $(KERNEL_DIR)/gui/calc.c
 PAINT_SRC    = $(KERNEL_DIR)/gui/paint.c
 EDITOR_SRC   = $(KERNEL_DIR)/user/editor.c
 PKG_SRC      = $(KERNEL_DIR)/sys/pkg.c
+PROF_SRC     = $(KERNEL_DIR)/sys/prof.c
 BENCH_SRC    = $(KERNEL_DIR)/sys/benchmark.c
 IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
 APIC_SRC     = $(KERNEL_DIR)/arch/x86/apic.c
@@ -96,7 +97,7 @@ OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/ext2.o $(BUILD_DIR)/ext4.o $(BUILD_DIR)/iso9660.o \
        $(BUILD_DIR)/vga_graphics.o $(BUILD_DIR)/vga_mode13.o \
        $(BUILD_DIR)/wm.o $(BUILD_DIR)/calc.o $(BUILD_DIR)/paint.o \
-       $(BUILD_DIR)/editor.o $(BUILD_DIR)/pkg.o $(BUILD_DIR)/benchmark.o \
+       $(BUILD_DIR)/editor.o $(BUILD_DIR)/pkg.o $(BUILD_DIR)/benchmark.o $(BUILD_DIR)/prof.o \
        $(BUILD_DIR)/sound.o $(BUILD_DIR)/sb16.o $(BUILD_DIR)/ansi.o \
        $(BUILD_DIR)/pci.o $(BUILD_DIR)/e1000.o $(BUILD_DIR)/vbe.o \
        $(BUILD_DIR)/ahci.o $(BUILD_DIR)/acpi.o $(BUILD_DIR)/apic.o \
@@ -153,6 +154,11 @@ $(BUILD_DIR)/dns.o: $(DNS_SRC)
 # Compile System Benchmark Engine
 $(BUILD_DIR)/benchmark.o: $(BENCH_SRC)
 	@echo "Compiling System Hardware Benchmark Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile OS Theory & Pedagogy Engine
+$(BUILD_DIR)/prof.o: $(PROF_SRC)
+	@echo "Compiling OS Academic Theory & Pedagogy Engine..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile Desktop Calculator Applet
