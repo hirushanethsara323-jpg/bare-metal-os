@@ -272,3 +272,56 @@ make: *** [Makefile:132: build/kernel.bin] Error 1
 [2026-07-21 13:03:28] ✅ Kernel Compilation Succeeded with 0 Errors!
 [2026-07-21 13:03:28] 📦 Kernel Binary Executable Size: 129156 bytes
 [2026-07-21 13:03:28] 🔄 Code changes detected. Committing and pushing to GitHub...
+[2026-07-21 13:03:29] 🌐 GitHub Direct Sync Complete!
+[2026-07-21 13:03:48] 🚀 Executing Autonomous CI/CD Build Cycle...
+[2026-07-21 13:03:51] ❌ Kernel Compilation Failed!
+[2026-07-21 13:03:51] kernel/arch/x86/boot.c: In function ‘_kernel_entry’:
+kernel/arch/x86/boot.c:140:14: warning: unused variable ‘mem_upper’ [-Wunused-variable]
+  140 |     uint32_t mem_upper = mboot_ptr->mem_upper;
+      |              ^~~~~~~~~
+kernel/arch/x86/boot.c:139:14: warning: unused variable ‘mem_lower’ [-Wunused-variable]
+  139 |     uint32_t mem_lower = mboot_ptr->mem_lower;
+      |              ^~~~~~~~~
+kernel/arch/x86/boot.c: At top level:
+kernel/arch/x86/boot.c:46:17: warning: ‘multiboot_header’ defined but not used [-Wunused-variable]
+   46 | static uint32_t multiboot_header[] = {
+      |                 ^~~~~~~~~~~~~~~~
+kernel/gui/sysmon.c: In function ‘sysmon_app_launch’:
+kernel/gui/sysmon.c:51:14: warning: variable ‘row_buf’ set but not used [-Wunused-but-set-variable]
+   51 |         char row_buf[64];
+      |              ^~~~~~~
+ld: warning: build/kernel.bin has a LOAD segment with RWX permissions
+ld: build/sysmon.o: in function `sysmon_app_launch':
+sysmon.c:(.text+0x146): undefined reference to `vga13_draw_line'
+ld: build/fexplorer.o: in function `fexplorer_app_launch':
+fexplorer.c:(.text+0xf8): undefined reference to `vga13_draw_line'
+make: *** [Makefile:136: build/kernel.bin] Error 1
+
+[2026-07-21 13:03:59] 🚀 Executing Autonomous CI/CD Build Cycle...
+[2026-07-21 13:04:02] ❌ Kernel Compilation Failed!
+[2026-07-21 13:04:02] kernel/arch/x86/boot.c: In function ‘_kernel_entry’:
+kernel/arch/x86/boot.c:140:14: warning: unused variable ‘mem_upper’ [-Wunused-variable]
+  140 |     uint32_t mem_upper = mboot_ptr->mem_upper;
+      |              ^~~~~~~~~
+kernel/arch/x86/boot.c:139:14: warning: unused variable ‘mem_lower’ [-Wunused-variable]
+  139 |     uint32_t mem_lower = mboot_ptr->mem_lower;
+      |              ^~~~~~~~~
+kernel/arch/x86/boot.c: At top level:
+kernel/arch/x86/boot.c:46:17: warning: ‘multiboot_header’ defined but not used [-Wunused-variable]
+   46 | static uint32_t multiboot_header[] = {
+      |                 ^~~~~~~~~~~~~~~~
+kernel/gui/sysmon.c: In function ‘sysmon_app_launch’:
+kernel/gui/sysmon.c:51:14: warning: variable ‘row_buf’ set but not used [-Wunused-but-set-variable]
+   51 |         char row_buf[64];
+      |              ^~~~~~~
+ld: warning: build/kernel.bin has a LOAD segment with RWX permissions
+ld: build/sysmon.o: in function `sysmon_app_launch':
+sysmon.c:(.text+0x146): undefined reference to `vga13_draw_line'
+ld: build/fexplorer.o: in function `fexplorer_app_launch':
+fexplorer.c:(.text+0xf8): undefined reference to `vga13_draw_line'
+make: *** [Makefile:136: build/kernel.bin] Error 1
+
+[2026-07-21 13:04:21] 🚀 Executing Autonomous CI/CD Build Cycle...
+[2026-07-21 13:04:23] ✅ Kernel Compilation Succeeded with 0 Errors!
+[2026-07-21 13:04:23] 📦 Kernel Binary Executable Size: 135176 bytes
+[2026-07-21 13:04:23] 🔄 Code changes detected. Committing and pushing to GitHub...

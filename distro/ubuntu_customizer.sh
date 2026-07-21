@@ -14,7 +14,7 @@ echo "==========================================================================
 DISTRO_DIR="/usr/share/nothingos"
 BUILD_ROOT="$(pwd)/build/ubuntu_distro"
 
-mkdir -p "$BUILD_ROOT/DEBIAN" "$BUILD_ROOT/usr/bin" "$BUILD_ROOT/usr/share/plymouth/themes/nothingos-splash" "$BUILD_ROOT/boot/grub/themes/nothingos" "$BUILD_ROOT/usr/share/applications"
+mkdir -p "$BUILD_ROOT/DEBIAN" "$BUILD_ROOT/usr/bin" "$BUILD_ROOT/usr/share/plymouth/themes/nothingos-splash" "$BUILD_ROOT/boot/grub/themes/nothingos" "$BUILD_ROOT/usr/share/applications" "$BUILD_ROOT/usr/share/backgrounds/nothingos" "$BUILD_ROOT/usr/share/icons/hicolor/scalable/apps"
 
 # 1. Copy Debian control file
 echo "📦 Generating Debian Package structure (.deb)..."
@@ -24,6 +24,8 @@ cp distro/debian/control "$BUILD_ROOT/DEBIAN/control"
 echo "🛠️ Bundling compiled Nothing OS binaries & python agent orchestrators..."
 cp build/kernel.bin "$BUILD_ROOT/usr/bin/nothingos-kernel.bin" || true
 cp -r agents "$BUILD_ROOT/usr/share/nothingos-agents" || true
+cp assets/wallpapers/cyberpunk_dark_matrix.svg "$BUILD_ROOT/usr/share/backgrounds/nothingos/" || true
+cp assets/branding/nothing_logo.svg "$BUILD_ROOT/usr/share/icons/hicolor/scalable/apps/" || true
 
 # 3. Copy Plymouth Splash Screen & GRUB Theme
 echo "🎨 Applying Nothing OS Cyberpunk Plymouth Splash & GRUB Theme..."

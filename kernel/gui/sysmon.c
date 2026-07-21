@@ -48,7 +48,6 @@ void sysmon_app_launch(void) {
     int y_off = 120;
     int count = 0;
     while (plist != NULL && count < 5) {
-        char row_buf[64];
         char pid_str[8];
         int p = plist->pid, idx = 0;
         if (p == 0) pid_str[idx++] = '0';
@@ -59,8 +58,6 @@ void sysmon_app_launch(void) {
         }
         pid_str[idx] = '\0';
 
-        /* Row String formatting */
-        row_buf[0] = '\0';
         vga13_draw_string(25, y_off, pid_str, COLOR13_WHITE);
         vga13_draw_string(60, y_off, plist->name, COLOR13_GREEN);
         vga13_draw_string(180, y_off, (plist->state == PROCESS_RUNNING) ? "RUNNING" : "READY", COLOR13_CYAN);

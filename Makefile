@@ -51,6 +51,9 @@ ISO_SRC      = $(KERNEL_DIR)/fs/iso9660.c
 WM_SRC       = $(KERNEL_DIR)/gui/wm.c
 CALC_SRC     = $(KERNEL_DIR)/gui/calc.c
 PAINT_SRC    = $(KERNEL_DIR)/gui/paint.c
+SYSMON_SRC   = $(KERNEL_DIR)/gui/sysmon.c
+FEXPLORER_SRC = $(KERNEL_DIR)/gui/fexplorer.c
+CSCRIPT_SRC  = $(KERNEL_DIR)/user/cscript.c
 EDITOR_SRC   = $(KERNEL_DIR)/user/editor.c
 PKG_SRC      = $(KERNEL_DIR)/sys/pkg.c
 DISTRO_SRC   = $(KERNEL_DIR)/sys/distro.c
@@ -98,6 +101,7 @@ OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/ext2.o $(BUILD_DIR)/ext4.o $(BUILD_DIR)/iso9660.o \
        $(BUILD_DIR)/vga_graphics.o $(BUILD_DIR)/vga_mode13.o \
        $(BUILD_DIR)/wm.o $(BUILD_DIR)/calc.o $(BUILD_DIR)/paint.o \
+       $(BUILD_DIR)/sysmon.o $(BUILD_DIR)/fexplorer.o $(BUILD_DIR)/cscript.o \
        $(BUILD_DIR)/editor.o $(BUILD_DIR)/pkg.o $(BUILD_DIR)/benchmark.o $(BUILD_DIR)/prof.o \
        $(BUILD_DIR)/distro.o \
        $(BUILD_DIR)/sound.o $(BUILD_DIR)/sb16.o $(BUILD_DIR)/ansi.o \
@@ -241,6 +245,21 @@ $(BUILD_DIR)/wm.o: $(WM_SRC)
 # Compile Ext2 Linux Filesystem Driver
 $(BUILD_DIR)/ext2.o: $(EXT2_SRC)
 	@echo "Compiling Linux Ext2 Filesystem Superblock Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Desktop System Telemetry Applet
+$(BUILD_DIR)/sysmon.o: $(SYSMON_SRC)
+	@echo "Compiling Desktop System Telemetry & Process Manager Applet..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Desktop File Explorer Applet
+$(BUILD_DIR)/fexplorer.o: $(FEXPLORER_SRC)
+	@echo "Compiling Desktop Graphical VFS File Explorer Applet..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Embedded CScript Runtime Engine
+$(BUILD_DIR)/cscript.o: $(CSCRIPT_SRC)
+	@echo "Compiling Embedded CScript Interpreter Runtime Engine..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile Kernel Text Editor

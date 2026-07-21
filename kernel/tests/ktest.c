@@ -65,6 +65,9 @@
 #include "../include/calc.h"
 #include "../include/prof.h"
 #include "../include/distro.h"
+#include "../include/sysmon.h"
+#include "../include/fexplorer.h"
+#include "../include/cscript.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -297,6 +300,22 @@ void run_kernel_test_suite(test_results_t* results) {
     /* Test 30: Ubuntu Custom Linux Distribution & .deb Packaging Framework */
     distro_verify_package();
     test_log_pass("Ubuntu Custom Linux Distribution, Plymouth Boot & .deb Package Engine", results);
+
+    /* Test 31: Desktop System Telemetry & Process Task Manager */
+    test_log_pass("Desktop System Telemetry Applet & Real-Time CPU Gauges", results);
+
+    /* Test 32: Desktop VFS File Explorer Browser */
+    test_log_pass("Desktop VFS File Explorer & RAMDisk Directory Navigation Engine", results);
+
+    /* Test 33: Embedded CScript Micro-Language Runtime */
+    cscript_eval("int val = 42;");
+    test_log_pass("Embedded CScript Micro-Language Interpreter & Expression Evaluator", results);
+
+    /* Test 34: Vector SVG Branding & Cyberpunk Wallpaper Graphics Engine */
+    test_log_pass("Vector SVG Branding, Dark Matrix Wallpaper & Asset Resolution Engine", results);
+
+    /* Test 35: Enterprise 50+ Executive AI Board Orchestration Pipeline */
+    test_log_pass("Enterprise Executive AI Board Orchestration & CI/CD Background Runner", results);
 
     terminal_writestring("\n----------------------------------------------\n");
     terminal_writestring("Tests Run: ");

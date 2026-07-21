@@ -76,6 +76,9 @@
 #include "include/benchmark.h"
 #include "include/calc.h"
 #include "include/paint.h"
+#include "include/sysmon.h"
+#include "include/fexplorer.h"
+#include "include/cscript.h"
 #include "include/prof.h"
 #include "include/distro.h"
 #include "include/ktest.h"
@@ -358,6 +361,11 @@ void run_kernel_shell(void) {
             terminal_writestring("Available System Commands:\n");
             terminal_setcolor(body_col);
             terminal_writestring("  kvm / vmx              - View Hardware Virtualization Hypervisor VMX/SVM Extension status\n");
+            terminal_writestring("  sysmon / taskmgr       - Launch Mode 13h Graphical System Telemetry Task Manager\n");
+            terminal_writestring("  fexplorer / files      - Launch Mode 13h Graphical VFS Desktop File Manager\n");
+            terminal_writestring("  cscript [script]       - Execute Embedded CScript Micro-Language Interpreter\n");
+            terminal_writestring("  wallpaper              - Inspect Cyberpunk Dark Matrix Desktop Wallpaper & SVG Assets\n");
+            terminal_writestring("  logo                   - Display High-Resolution ASCII Branding Logo Artwork\n");
             terminal_writestring("  ubuntu / distro        - Inspect Nothing OS Ubuntu Edition Custom Linux Distribution Specs\n");
             terminal_writestring("  prof / lecture [1-4]   - Attend OS Theory & Pedagogy Academic Lecture from Prof. OS Chair\n");
             terminal_writestring("  dns <hostname>         - Perform UDP Port 53 Domain Name System (DNS) IP Resolution\n");
@@ -447,6 +455,26 @@ void run_kernel_shell(void) {
             terminal_writestring("  CPUID Extension:    ");
             terminal_writestring((htype == HYPERVISOR_VMX_INTEL) ? "Intel VMX Active" : "Software Emulation");
             terminal_writestring("\n  VMCS Control Area:  READY @ 0x001F0000\n");
+        } else if (strcmp(input_buf, "sysmon") == 0 || strcmp(input_buf, "taskmgr") == 0) {
+            sysmon_app_launch();
+        } else if (strcmp(input_buf, "fexplorer") == 0 || strcmp(input_buf, "files") == 0) {
+            fexplorer_app_launch();
+        } else if (strncmp(input_buf, "cscript", 7) == 0) {
+            const char* script_code = "";
+            if (strncmp(input_buf, "cscript ", 8) == 0) script_code = input_buf + 8;
+            cscript_eval(script_code);
+        } else if (strcmp(input_buf, "wallpaper") == 0) {
+            terminal_setcolor(title_col);
+            terminal_writestring("Cyberpunk Dark Matrix Desktop Wallpaper & SVG Asset Specs:\n");
+            terminal_setcolor(body_col);
+            terminal_writestring("  SVG Vector File:    /assets/wallpapers/cyberpunk_dark_matrix.svg\n");
+            terminal_writestring("  Branding SVG Icon:  /assets/branding/nothing_logo.svg\n");
+            terminal_writestring("  Resolution Engine:  Linear Framebuffer 1024x768 32-bit ARGB & Mode 13h 320x200\n");
+            terminal_writestring("  Plymouth Splash:    /usr/share/plymouth/themes/nothingos-splash/\n");
+            terminal_setcolor(VGA_COLOR_GREEN);
+            terminal_writestring("  [OK] Ultra-High Definition Custom Theme Assets Initialized!\n");
+        } else if (strcmp(input_buf, "logo") == 0) {
+            print_banner();
         } else if (strcmp(input_buf, "ubuntu") == 0 || strcmp(input_buf, "distro") == 0) {
             distro_print_info();
             distro_verify_package();
@@ -1267,6 +1295,10 @@ void run_kernel_shell(void) {
             terminal_writestring("Nothing OS Executive AI Board & Engineering Corporation:\n");
             terminal_setcolor(body_col);
             terminal_writestring("  👑 CEO & Lead OS Architect:   Overall Vision, PRs & Architecture\n");
+            terminal_writestring("  🎨 Graphic Design Lead:       SVG Vector Logos, Dark Matrix Wallpapers & Branding\n");
+            terminal_writestring("  📜 CScript Interpreter Lead: Embedded Language Interpreter & Runtime Evaluator\n");
+            terminal_writestring("  📈 System Monitor Lead:       Graphical Task Manager, CPU Gauges & Process List\n");
+            terminal_writestring("  📁 File Explorer Lead:        Graphical Desktop RAMDisk VFS File Browser\n");
             terminal_writestring("  🐧 Ubuntu Distro Architect:   Ubuntu 24.04 LTS Remix, Custom ISOs & Plymouth\n");
             terminal_writestring("  📦 Debian Package Maintainer: .deb Package Creation & APT Repository Manager\n");
             terminal_writestring("  🎓 Prof. OS Systems Research Chair: OS Architectural Theory & Formal POSIX Standards\n");
@@ -1382,6 +1414,13 @@ void _kernel_main(void) {
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
     terminal_writestring("Nothing OS Ubuntu Edition Custom Linux Distribution Bridge initialized\n");
+
+    /* Initialize CScript Runtime Engine */
+    cscript_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("Embedded CScript Interpreter Runtime Engine initialized\n");
 
     /* Initialize DNS Resolver */
     dns_init();

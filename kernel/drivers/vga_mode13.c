@@ -78,6 +78,22 @@ void vga13_draw_rect(int x, int y, int width, int height, uint8_t color) {
     }
 }
 
+void vga13_draw_line(int x0, int y0, int x1, int y1, uint8_t color) {
+    int dx = (x1 > x0) ? (x1 - x0) : (x0 - x1);
+    int sx = (x0 < x1) ? 1 : -1;
+    int dy = (y1 > y0) ? (y0 - y1) : (y1 - y0);
+    int sy = (y0 < y1) ? 1 : -1;
+    int err = dx + dy, e2;
+
+    while (1) {
+        vga13_draw_pixel(x0, y0, color);
+        if (x0 == x1 && y0 == y1) break;
+        e2 = 2 * err;
+        if (e2 >= dy) { err += dy; x0 += sx; }
+        if (e2 <= dx) { err += dx; y0 += sy; }
+    }
+}
+
 void vga13_draw_char(int x, int y, char c, uint8_t color) {
     uint8_t glyph_idx = (uint8_t)c;
     if (glyph_idx >= 128) return;

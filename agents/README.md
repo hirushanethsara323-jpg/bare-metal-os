@@ -7,6 +7,10 @@ Welcome to **Nothing OS Development Corporation**. This repository contains our 
 | Avatar | Agent Name | Corporate Role | Engineering Domain & System Responsibilities |
 |---|---|---|---|
 | 👑 | **CEO Agent** | Chief Executive Officer & OS Lead | Overall OS Architecture, Sprint Roadmap, Code Review & GitHub Release Management |
+| 🎨 | **Graphic Design Lead** | Branding & Visual Arts Specialist | SVG Vector Logos, Cyberpunk Dark Wallpapers, Icons & Plymouth Boot Splash Art |
+| 📜 | **CScript Interpreter Lead** | Language Runtime Lead | Embedded C-like Language Interpreter Engine, Expression Evaluator & Scripting |
+| 📈 | **System Monitor Lead** | Process Telemetry Applet Specialist | Graphical Task Manager Window, Real-Time CPU Load Gauges & Task Table Control |
+| 📁 | **File Explorer Lead** | VFS File Browser Specialist | Graphical Desktop RAMDisk File Explorer Window, Directory Tree & Document Views |
 | 🐧 | **Ubuntu Distro Architect** | Custom Linux & ISO Specialist | Ubuntu 24.04 LTS Custom Remix, Plymouth Boot Splash Screens, GRUB2 Bootloader Styling |
 | 📦 | **Debian Package Lead** | .deb Packaging & APT Manager | Debian `.deb` Package Framework (`nothing-os-core.deb`), Control Metadata, APT Repo Sync |
 | 🎓 | **Prof. OS Systems Research Chair** | Chief Academic Officer & OS Theory Lead | OS Architectural Theory, Microkernel Principles, Deadlock Proofs, POSIX Standards, & CS Pedagogy |

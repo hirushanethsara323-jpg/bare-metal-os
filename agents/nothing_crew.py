@@ -27,6 +27,34 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "GRAPHIC_DESIGN_LEAD": Agent(
+        name="Branding, Logo & Visual Arts Lead",
+        role="SVG Logos, Wallpapers & Plymouth Graphics Specialist",
+        avatar="🎨",
+        goal="Design Nothing OS vector SVG branding, dark cyberpunk wallpapers, Plymouth splash art, & icon sets.",
+        skills=["SVG Vector Artwork", "Cyberpunk Dark Matrix Wallpapers", "Branding Design", "Plymouth Animations"]
+    ),
+    "CSCRIPT_RUNTIME_LEAD": Agent(
+        name="Embedded Language Runtime & Interpreter Lead",
+        role="CScript Interpreter & Runtime Engine Specialist",
+        avatar="📜",
+        goal="Develop lightweight C-like micro-language interpreter, dynamic expression parsing, & script execution.",
+        skills=["CScript Runtime Engine", "Expression Parser", "Variable Storage", "Dynamic Logic Execution"]
+    ),
+    "SYSTEM_MONITOR_LEAD": Agent(
+        name="Desktop System Telemetry Applet Lead",
+        role="Graphical Process & Memory Telemetry Lead",
+        avatar="📈",
+        goal="Drive Mode 13h / VBE graphical task manager applet, real-time CPU gauges, & process table control.",
+        skills=["System Monitor Applet", "CPU Load Gauges", "Process List Control", "GUI Dashboards"]
+    ),
+    "FILE_EXPLORER_LEAD": Agent(
+        name="Desktop VFS File Explorer Lead",
+        role="Graphical File Manager Applet Specialist",
+        avatar="📁",
+        goal="Drive graphical desktop VFS RAMDisk file manager window, file icons, directory tree, & document viewer.",
+        skills=["GUI File Explorer", "RAMDisk VFS Navigation", "Directory Tree Views", "Document Previews"]
+    ),
     "UBUNTU_DISTRO_ARCHITECT": Agent(
         name="Ubuntu Distribution Architect & Remix Lead",
         role="Custom Linux Distro & ISO Image Specialist",
