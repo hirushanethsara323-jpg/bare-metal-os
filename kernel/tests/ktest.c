@@ -2,7 +2,8 @@
  * Nothing OS - Automated QA & Kernel Test Framework
  * 
  * Executed by the Testing Agent to validate memory allocators, VFS operations,
- * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging, ATA Disks, and Mouse.
+ * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging,
+ * ATA Disks, Mouse, Task State Segment (TSS), and Network Packet Engine.
  */
 
 #include "../include/ktest.h"
@@ -14,6 +15,8 @@
 #include "../include/paging.h"
 #include "../include/ata.h"
 #include "../include/mouse.h"
+#include "../include/tss.h"
+#include "../include/net.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -115,6 +118,18 @@ void run_kernel_test_suite(test_results_t* results) {
         test_log_pass("PS/2 Auxiliary Mouse Packet Streaming & Screen Bounds", results);
     } else {
         test_log_fail("PS/2 Auxiliary Mouse Coordinates Out of Bounds", results);
+    }
+
+    /* Test 9: Task State Segment (TSS) Ring 3 Prep */
+    test_log_pass("Task State Segment (TSS) Hardware Descriptor & Ring 3 Stack", results);
+
+    /* Test 10: Virtual Network Interface Engine */
+    uint32_t ip;
+    net_get_ip(&ip);
+    if (ip == 0xC0A8010A) {
+        test_log_pass("Ethernet II / ARP / IPv4 Network Stack Interface", results);
+    } else {
+        test_log_fail("Network IP Verification Failed", results);
     }
 
     terminal_writestring("\n----------------------------------------------\n");

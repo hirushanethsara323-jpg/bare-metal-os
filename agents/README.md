@@ -1,16 +1,18 @@
 # Nothing OS Development Corporation - Executive AI Board 🏢👑
 
-Welcome to **Nothing OS Development Corporation**. This repository contains our production-grade custom 32-bit x86 Operating System kernel (**Nothing OS v0.6.0 Flagship Suite**) alongside our specialized executive AI engineering team.
+Welcome to **Nothing OS Development Corporation**. This repository contains our production-grade custom 32-bit x86 Operating System kernel (**Nothing OS v0.7.0 Enterprise Edition**) alongside our specialized executive AI engineering team.
 
 ## Executive Corporate Board & Agent Roster
 
 | Avatar | Agent Name | Corporate Role | Engineering Domain & System Responsibilities |
 |---|---|---|---|
 | 👑 | **CEO Agent** | Chief Executive Officer & OS Lead | Overall OS Architecture, Sprint Roadmap, Code Review & GitHub Release Management |
+| 🌐 | **Network Stack Lead** | Network Protocols Specialist | Virtual Loopback Stack, Ethernet II Frame Encoding, ARP Protocol, IPv4 & ICMP Ping Engine |
+| 👤 | **User Mode Ring 3 Lead** | Privilege Switching Specialist | Task State Segment (TSS) GDT Register, Ring 3 Stack Allocation, IRET Frame Transition |
 | 🔍 | **OS Research Agent** | Architecture & Standards Lead | Research OSDev specifications, POSIX standards, and x86 hardware primitives |
 | 🧪 | **Automated Testing Lead** | QA & Self-Testing Specialist | Self-Testing Suite (`ktest`), Memory Verification, VFS Integrity & Syscall Validation |
 | 🧠 | **Core Kernel Architect** | x86 Assembly & Core Lead | GDT, 256-Gate IDT, 8259 PIC Vector Remapping, CPU Interrupt Handling |
-| ⚡ | **Virtual Memory Lead** | Paging & Memory Protection Engineer | 32-bit x86 4KB Paging, Page Directory (PDE), Page Tables (PTE), CR3 Register & CR2 Page Faults |
+| ⚡ | **Virtual Memory Lead** | Paging & Protection Engineer | 32-bit x86 4KB Paging, Page Directory (PDE), Page Tables (PTE), CR3 Register & CR2 Page Faults |
 | 💽 | **Storage Disk Lead** | IDE Hard Disk Specialist | Primary ATA IDE Controller (28-bit LBA Sector Read/Write & Drive Identify) |
 | 🖱️ | **Pointing Device Lead** | Auxiliary Controller Engineer | PS/2 Mouse 3-byte Packet Stream Decoder, Delta Movement, & Screen Grid Coordinates |
 | ⚙️ | **POSIX Syscall Lead** | System Call Engine Specialist | Software Interrupt Vector `INT 0x80` Dispatcher (`SYS_YIELD`, `SYS_WRITE`, `SYS_ALLOC`) |
@@ -20,7 +22,7 @@ Welcome to **Nothing OS Development Corporation**. This repository contains our 
 | ⏰ | **Clock & Peripherals Lead** | Timers & CMOS RTC Specialist | PIT 8253 System Timer (100 Hz), CMOS Real-Time Clock (RTC Date/Time) |
 | 🎨 | **UI/UX Graphics Engine Lead** | Theme & Display Specialist | VGA Window Box Components, Progress Bars, Status Bars, Color Theme Palettes |
 | 📁 | **VFS & Storage Specialist** | Filesystem & RAMDisk Lead | In-Memory Virtual File System (MemFS RAMDisk), File Creation, Reading & Writing |
-| 🐚 | **Shell & UX Lead** | Console & Shell Specialist | Interactive System Shell (`paging`, `ata`, `mouse`, `ps`, `spawn`, `test`, `syscall`, `ls`, `cat`) |
+| 🐚 | **Shell & UX Lead** | Console & Shell Specialist | Interactive System Shell (`net`, `ring3`, `paging`, `ata`, `mouse`, `ps`, `spawn`, `test`, `syscall`, `ls`, `cat`) |
 | ⚙️ | **DevOps & QA Lead** | Build & Toolchain Specialist | Makefile, Linker Script, Compiler Checks & GitHub Synchronization |
 
 ## Orchestrator Execution Command

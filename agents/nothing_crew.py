@@ -41,6 +41,20 @@ CREW_CORPORATION = {
         goal="Execute automated kernel test suites, verify memory safety, file operations, and system call stability.",
         skills=["Self-Testing Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
     ),
+    "NETWORK_STACK_LEAD": Agent(
+        name="Network Protocol Stack Lead",
+        role="Ethernet, ARP, IPv4 & ICMP Architect",
+        avatar="🌐",
+        goal="Develop virtual network loopback stack, packet encapsulation, ARP tables, and ICMP Ping routines.",
+        skills=["Ethernet II Frames", "ARP Protocol", "IPv4 Header Engine", "ICMP Echo Ping"]
+    ),
+    "USERMODE_RING3_LEAD": Agent(
+        name="User Mode & Privilege Switch Lead",
+        role="Task State Segment (TSS) Specialist",
+        avatar="👤",
+        goal="Maintain Hardware Task State Segment (TSS), GDT Ring 3 Selectors, and IRET privilege escalation.",
+        skills=["TSS Register (LTR)", "Ring 3 Selectors", "User Stack ESP0", "IRET Frame Transition"]
+    ),
     "KERNEL_ARCHITECT": Agent(
         name="Core Assembly & Kernel Architect",
         role="x86 Assembly & Low-Level Core Lead",
@@ -115,7 +129,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (paging, ata, mouse, ps, spawn, test, syscall, ls).",
+        goal="Develop interactive kernel shell commands (net, ring3, paging, ata, mouse, ps, spawn, test).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
