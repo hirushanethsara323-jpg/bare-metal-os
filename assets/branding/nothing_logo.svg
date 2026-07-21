@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00FF66"/>
+      <stop offset="50%" stop-color="#00E5FF"/>
+      <stop offset="100%" stop-color="#9D00FF"/>
+    </linearGradient>
+    <filter id="glowEffect">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="100" fill="#050B14"/>
+  <circle cx="256" cy="256" r="220" fill="none" stroke="url(#logoGrad)" stroke-width="8" filter="url(#glowEffect)"/>
+  <polygon points="256,80 390,160 390,320 256,400 122,320 122,160" fill="none" stroke="url(#logoGrad)" stroke-width="12" stroke-linejoin="round" filter="url(#glowEffect)"/>
+  <polygon points="256,130 340,180 340,280 256,330 172,280 172,180" fill="#0A1828" stroke="#00FF66" stroke-width="4"/>
+  <text x="256" y="282" font-family="monospace, sans-serif" font-size="110" font-weight="900" fill="url(#logoGrad)" text-anchor="middle" filter="url(#glowEffect)">N</text>
+</svg>
