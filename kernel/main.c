@@ -1,5 +1,5 @@
 /**
- * Nothing OS - Kernel Main
+ * Nothing OS - Kernel Main & Interactive Shell
  * 
  * The main entry point for Nothing OS kernel.
  * Bootstrapped from GRUB Multiboot / custom bootloader.
@@ -7,11 +7,13 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "include/io.h"
+#include "include/keyboard.h"
 
 /* Kernel version info */
 #define KERNEL_NAME     "Nothing OS"
 #define KERNEL_VERSION  "0.1.0"
-#define KERNEL_AUTHOR   "hirushanethsara323-jpg"
+#define KERNEL_AUTHOR   "hirushanethsara323-jpg & AI Crew Board"
 
 /* VGA text mode */
 #define VGA_MEMORY       (uint16_t*)0xB8000
@@ -51,6 +53,24 @@ void terminal_putchar(char c);
 void terminal_writestring(const char* data);
 void terminal_write_hex(uint32_t num);
 void terminal_write_int(int num);
+int strcmp(const char* s1, const char* s2);
+size_t strlen(const char* str);
+void run_kernel_shell(void);
+
+/* String functions */
+size_t strlen(const char* str) {
+    size_t len = 0;
+    while (str[len]) len++;
+    return len;
+}
+
+int strcmp(const char* s1, const char* s2) {
+    while (*s1 && (*s1 == *s2)) {
+        s1++;
+        s2++;
+    }
+    return *(const unsigned char*)s1 - *(const unsigned char*)s2;
+}
 
 /* Initialize terminal */
 void terminal_init(void) {
@@ -79,13 +99,23 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
     vga[index] = (uint16_t)color << 8 | (uint8_t)c;
 }
 
-/* Put a character */
+/* Put a character with newline and backspace handling */
 void terminal_putchar(char c) {
     if (c == '\n') {
         terminal_column = 0;
         terminal_row++;
     } else if (c == '\r') {
         terminal_column = 0;
+    } else if (c == '\b') {
+        if (terminal_column > 0) {
+            terminal_column--;
+            terminal_putentryat(' ', terminal_color, terminal_column, terminal_row);
+        } else if (terminal_row > 0) {
+            terminal_row--;
+            terminal_column = VGA_WIDTH - 1;
+            terminal_putentryat(' ', terminal_color, terminal_column, terminal_row);
+        }
+        return;
     } else if (c == '\t') {
         terminal_column = (terminal_column + 8) & ~7;
     } else {
@@ -101,7 +131,6 @@ void terminal_putchar(char c) {
     
     /* Scroll if needed */
     if (terminal_row >= VGA_HEIGHT) {
-        /* Copy each line up */
         for (size_t y = 1; y < VGA_HEIGHT; y++) {
             for (size_t x = 0; x < VGA_WIDTH; x++) {
                 volatile uint16_t* vga = VGA_MEMORY;
@@ -110,7 +139,6 @@ void terminal_putchar(char c) {
                 vga[dst_idx] = vga[src_idx];
             }
         }
-        /* Clear last line */
         for (size_t x = 0; x < VGA_WIDTH; x++) {
             terminal_putentryat(' ', terminal_color, x, VGA_HEIGHT - 1);
         }
@@ -196,6 +224,76 @@ void print_banner(void) {
     terminal_writestring("\n");
 }
 
+/* Interactive Kernel Shell */
+void run_kernel_shell(void) {
+    char input_buf[128];
+    
+    terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
+    terminal_writestring("[OK] PS/2 Keyboard Driver Initialized!\n");
+    terminal_writestring("Interactive Nothing OS Shell is Ready. Type 'help' for commands.\n\n");
+    
+    while (1) {
+        terminal_setcolor(VGA_COLOR_LIGHT_CYAN);
+        terminal_writestring("NothingOS> ");
+        terminal_setcolor(VGA_COLOR_WHITE);
+        
+        keyboard_gets(input_buf, sizeof(input_buf));
+        
+        if (strlen(input_buf) == 0) {
+            continue;
+        }
+        
+        if (strcmp(input_buf, "help") == 0 || strcmp(input_buf, "?") == 0) {
+            terminal_setcolor(VGA_COLOR_LIGHT_CYAN);
+            terminal_writestring("Available Shell Commands:\n");
+            terminal_setcolor(VGA_COLOR_LIGHT_GREY);
+            terminal_writestring("  help      - Display this command manual\n");
+            terminal_writestring("  version   - Print Nothing OS kernel version info\n");
+            terminal_writestring("  sysinfo   - Display memory and CPU architecture status\n");
+            terminal_writestring("  agents    - View the AI Board of Agents & roles\n");
+            terminal_writestring("  clear     - Clear the VGA terminal screen\n");
+            terminal_writestring("  reboot    - Reboot the system\n");
+        } else if (strcmp(input_buf, "version") == 0) {
+            terminal_setcolor(VGA_COLOR_WHITE);
+            terminal_writestring(KERNEL_NAME);
+            terminal_writestring(" v");
+            terminal_writestring(KERNEL_VERSION);
+            terminal_writestring(" (i386 Protected Mode)\nAuthor: ");
+            terminal_writestring(KERNEL_AUTHOR);
+            terminal_writestring("\n");
+        } else if (strcmp(input_buf, "sysinfo") == 0) {
+            terminal_setcolor(VGA_COLOR_LIGHT_CYAN);
+            terminal_writestring("System Architecture Status:\n");
+            terminal_setcolor(VGA_COLOR_LIGHT_GREY);
+            terminal_writestring("  OS Name:     Nothing OS\n");
+            terminal_writestring("  Mode:        32-bit Protected Mode\n");
+            terminal_writestring("  Driver:      PS/2 Keyboard Controller (Port 0x60 / 0x64)\n");
+            terminal_writestring("  Console:     VGA Text Mode Memory mapped @ 0xB8000\n");
+        } else if (strcmp(input_buf, "agents") == 0) {
+            terminal_setcolor(VGA_COLOR_LIGHT_CYAN);
+            terminal_writestring("Nothing OS Executive AI Board:\n");
+            terminal_setcolor(VGA_COLOR_LIGHT_GREY);
+            terminal_writestring("  👑 CEO Agent:          Lead OS Architect\n");
+            terminal_writestring("  🧠 Kernel Architect:   x86 Assembly & Low-Level Core\n");
+            terminal_writestring("  💾 Memory Specialist:  PMM & Kernel Heap Manager\n");
+            terminal_writestring("  ⌨️ Driver Specialist:  PS/2 Input & Peripherals\n");
+            terminal_writestring("  ⚙️ DevOps & QA:        Makefile & GitHub Synchronization\n");
+        } else if (strcmp(input_buf, "clear") == 0 || strcmp(input_buf, "cls") == 0) {
+            terminal_init();
+            print_banner();
+        } else if (strcmp(input_buf, "reboot") == 0) {
+            terminal_setcolor(VGA_COLOR_LIGHT_RED);
+            terminal_writestring("Rebooting Nothing OS...\n");
+            outb(0x64, 0xFE);
+        } else {
+            terminal_setcolor(VGA_COLOR_LIGHT_RED);
+            terminal_writestring("Unknown command: ");
+            terminal_writestring(input_buf);
+            terminal_writestring("\nType 'help' for available commands.\n");
+        }
+    }
+}
+
 /* Main kernel function */
 void _kernel_main(void) {
     /* Initialize terminal */
@@ -208,7 +306,7 @@ void _kernel_main(void) {
     terminal_setcolor(VGA_COLOR_GREEN);
     terminal_writestring("[OK] ");
     terminal_setcolor(VGA_COLOR_LIGHT_GREY);
-    terminal_writestring("Nothing OS Kernel loaded successfully\n");
+    terminal_writestring("Nothing OS Kernel loaded in 32-bit Protected Mode\n");
     
     terminal_setcolor(VGA_COLOR_GREEN);
     terminal_writestring("[OK] ");
@@ -218,58 +316,13 @@ void _kernel_main(void) {
     terminal_setcolor(VGA_COLOR_GREEN);
     terminal_writestring("[OK] ");
     terminal_setcolor(VGA_COLOR_LIGHT_GREY);
-    terminal_writestring("GDT & Segment Descriptors set up\n");
-    
-    terminal_setcolor(VGA_COLOR_GREEN);
-    terminal_writestring("[OK] ");
-    terminal_setcolor(VGA_COLOR_LIGHT_GREY);
-    terminal_writestring("IDT & PIC Remapped\n");
-    
-    terminal_setcolor(VGA_COLOR_GREEN);
-    terminal_writestring("[OK] ");
-    terminal_setcolor(VGA_COLOR_LIGHT_GREY);
     terminal_writestring("Physical Memory Manager initialized\n");
     
-    terminal_setcolor(VGA_COLOR_GREEN);
-    terminal_writestring("[OK] ");
-    terminal_setcolor(VGA_COLOR_LIGHT_GREY);
-    terminal_writestring("Scheduler ready\n");
+    /* Initialize PS/2 Keyboard Driver */
+    keyboard_init();
     
-    terminal_writestring("\n");
-    
-    /* System info */
-    terminal_setcolor(VGA_COLOR_LIGHT_BROWN);
-    terminal_writestring("System Information:\n");
-    terminal_setcolor(VGA_COLOR_LIGHT_GREY);
-    terminal_writestring("  Kernel:    ");
-    terminal_writestring(KERNEL_NAME);
-    terminal_writestring(" v");
-    terminal_writestring(KERNEL_VERSION);
-    terminal_writestring("\n");
-    terminal_writestring("  Author:    ");
-    terminal_writestring(KERNEL_AUTHOR);
-    terminal_writestring("\n");
-    terminal_writestring("  Memory:    0x");
-    terminal_write_hex(0x100000);  /* Kernel load address */
-    terminal_writestring(" - 0x");
-    terminal_write_hex(0x100000 + 0x100000);
-    terminal_writestring("\n");
-    
-    terminal_writestring("\n");
-    
-    terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
-    terminal_writestring("=== Nothing OS Initialization Complete ===\n\n");
-    
-    terminal_setcolor(VGA_COLOR_CYAN);
-    terminal_writestring("Nothing OS is now running in 32-bit Protected Mode!\n");
-    
-    terminal_setcolor(VGA_COLOR_WHITE);
-    terminal_writestring("\nNothingOS> ");
-    
-    /* Idle loop */
-    while (1) {
-        __asm__ volatile ("hlt");
-    }
+    /* Run interactive shell */
+    run_kernel_shell();
 }
 
 /* Stub for missing functions */

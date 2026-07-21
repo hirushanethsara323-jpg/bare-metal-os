@@ -1,7 +1,7 @@
 # =============================================================================
-# BareMetal OS - Makefile
+# Nothing OS - Makefile
 # =============================================================================
-# Build system for the BareMetal OS
+# Build system for Nothing OS (x86 Bare Metal Operating System)
 # =============================================================================
 
 # Compiler and tools
@@ -20,8 +20,9 @@ ISO_DIR    = iso
 BUILD_DIR  = build
 
 # Kernel files
-KERNEL_SRC = $(KERNEL_DIR)/main.c
-BOOT_SRC   = $(BOOT_DIR)/multiboot_header.asm
+KERNEL_SRC   = $(KERNEL_DIR)/main.c
+KEYBOARD_SRC = $(KERNEL_DIR)/drivers/keyboard.c
+BOOT_SRC     = $(BOOT_DIR)/multiboot_header.asm
 
 # Output
 KERNEL     = $(BUILD_DIR)/kernel.bin
@@ -34,7 +35,7 @@ ASFLAGS = -f elf32
 LDFLAGS = -T $(KERNEL_DIR)/linker.ld -m elf_i386 -nostdlib
 
 # Objects
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o
 
 # =============================================================================
 # Targets
@@ -50,24 +51,24 @@ dirs:
 
 # Build kernel
 $(KERNEL): $(OBJS)
-	@echo "Linking kernel..."
+	@echo "Linking Nothing OS kernel binary..."
 	@$(LD) $(LDFLAGS) -o $@ $(OBJS)
-	@echo "Kernel built: $@"
+	@echo "Kernel built successfully: $@"
 	@echo "Kernel size: $$(stat -c%s $@) bytes"
-
-# Assemble bootloader (only if NASM available)
-$(BUILD_DIR)/multiboot_header.o: $(BOOT_SRC)
-	@echo "Assembling $(BOOT_SRC)..."
-	@$(AS) $(ASFLAGS) -o $@ $<
 
 # Build boot.o (C-based boot with inline assembly)
 $(BUILD_DIR)/boot.o: $(KERNEL_DIR)/arch/x86/boot.c
 	@echo "Building C boot code..."
 	@$(CC) $(CFLAGS) -fno-pie -c -o $@ $<
 
-# Compile kernel
+# Compile PS/2 Keyboard driver
+$(BUILD_DIR)/keyboard.o: $(KEYBOARD_SRC)
+	@echo "Compiling PS/2 Keyboard Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile kernel main
 $(BUILD_DIR)/main.o: $(KERNEL_SRC)
-	@echo "Compiling $(KERNEL_SRC)..."
+	@echo "Compiling Nothing OS Kernel Main..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Build ISO image
@@ -86,53 +87,12 @@ run: all
 	@echo "Starting QEMU..."
 	@$(QEMU) -kernel $(KERNEL) -m 128M -display vga -serial mon:stdio 2>&1
 
-# Run from ISO
-run-iso: iso
-	@echo "Starting QEMU from ISO..."
-	@$(QEMU) -cdrom $(ISO_FILE) -m 128M -display vga
-
 # Clean build
 clean:
-	@echo "Cleaning..."
+	@echo "Cleaning build artifacts..."
 	@rm -rf $(BUILD_DIR) $(ISO_DIR)
-	@echo "Clean complete"
-
-# Debug mode
-debug: all
-	@echo "Starting QEMU with GDB..."
-	@$(QEMU) -kernel $(KERNEL) -m 128M -s -S &
-	@echo "Connect with: target remote localhost:1234"
-
-# Build documentation
-docs:
-	@echo "Building documentation..."
-	@cat README.md
-
-# Show kernel info
-info:
-	@echo "Kernel: $(KERNEL)"
-	@file $(KERNEL) 2>/dev/null || echo "Kernel not built"
-	@if [ -f $(KERNEL) ]; then \
-		echo "Size: $$(stat -c%s $(KERNEL)) bytes"; \
-		xxd -l 64 $(KERNEL) | head -5; \
-	fi
-
-# =============================================================================
-# Help
-# =============================================================================
+	@echo "Clean complete."
 
 help:
-	@echo "BareMetal OS Build System"
-	@echo ""
-	@echo "Targets:"
-	@echo "  make all    - Build kernel (default)"
-	@echo "  make run    - Build and run in QEMU"
-	@echo "  make iso    - Build ISO image"
-	@echo "  make run-iso - Run from ISO"
-	@echo "  make debug  - Run with GDB debugging"
-	@echo "  make clean  - Clean build files"
-	@echo "  make help   - Show this help"
-	@echo ""
-	@echo "Files:"
-	@echo "  Kernel:     $(KERNEL)"
-	@echo "  ISO:        $(ISO_FILE)"
+	@echo "Nothing OS Build System"
+	@echo "Targets: make all, make clean, make iso, make run"
