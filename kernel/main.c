@@ -5,7 +5,8 @@
  * PIT system timer, Serial UART COM1, Real-Time Clock, Kernel Heap, VFS,
  * VGA Graphics, System Calls, Process Scheduler, Virtual Paging, ATA Disk,
  * PS/2 Mouse, Task State Segment (TSS), Network Stack, Signals, Env Store,
- * Performance Monitor, Mode 13h Desktop GUI, and Automated QA Tests.
+ * Performance Monitor, Mode 13h Desktop GUI, PC Speaker Audio, ELF32 Loader,
+ * and Automated QA Tests.
  */
 
 #include <stdint.h>
@@ -29,12 +30,14 @@
 #include "include/signal.h"
 #include "include/env.h"
 #include "include/monitor.h"
+#include "include/sound.h"
+#include "include/elf.h"
 #include "include/ktest.h"
 
 /* Kernel Metadata */
 #define KERNEL_NAME     "Nothing OS"
-#define KERNEL_VERSION  "0.9.0"
-#define KERNEL_AUTHOR   "Nothing OS Development Corporation & AI Crew"
+#define KERNEL_VERSION  "1.0.0 Gold Master"
+#define KERNEL_AUTHOR   "Nothing OS Development Corporation & Executive Board"
 
 /* Physical Memory Markers */
 #define KERNEL_HEAP_BASE 0x00300000 /* 3 MB mark */
@@ -230,11 +233,11 @@ void print_banner(void) {
     terminal_writestring("  ║  ╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝    ║\n");
     terminal_setcolor(title_col);
     terminal_writestring("  ║                                                               ║\n");
-    terminal_writestring("  ║     GUI Desktop & Metrics Monitor Suite - System v");
+    terminal_writestring("  ║      ★ GOLD MASTER ENTERPRISE EDITION ★ - Release v");
     terminal_setcolor(body_col);
-    terminal_writestring(KERNEL_VERSION);
+    terminal_writestring("1.0.0");
     terminal_setcolor(title_col);
-    terminal_writestring("     ║\n");
+    terminal_writestring("  ║\n");
     terminal_writestring("  ║                                                               ║\n");
     terminal_writestring("  ╚═══════════════════════════════════════════════════════════════╝\n");
     terminal_writestring("\n");
@@ -247,25 +250,19 @@ static void background_worker_stub(void) {
 }
 
 static void render_gui_desktop_demo(void) {
-    /* Clear 320x200 mode 13h framebuffer with Teal Desktop Wallpaper (0x03) */
     vga13_clear(COLOR13_CYAN);
-
-    /* Render Top Status Header Bar */
     vga13_draw_rect(0, 0, 320, 12, COLOR13_BLUE);
-    vga13_draw_string(4, 2, "NOTHING OS DESKTOP V0.9.0", COLOR13_WHITE);
+    vga13_draw_string(4, 2, "NOTHING OS GOLD MASTER V1.0.0", COLOR13_WHITE);
 
-    /* Render Main Desktop Application Window */
     vga13_draw_gui_window(20, 25, 200, 130, "SYSTEM CONSOLE");
     vga13_draw_string(28, 45, "WELCOME TO NOTHING OS", COLOR13_BLACK);
     vga13_draw_string(28, 60, "GRAPHICAL USER INTERFACE", COLOR13_BLUE);
-    vga13_draw_string(28, 75, "MODE 13H 256 COLORS", COLOR13_BLACK);
+    vga13_draw_string(28, 75, "ENTERPRISE GOLD MASTER 1.0", COLOR13_BLACK);
 
-    /* Render Desktop Task Bar */
     vga13_draw_rect(0, 186, 320, 14, COLOR13_DARK_GREY);
     vga13_draw_rect(2, 188, 50, 10, COLOR13_RED);
     vga13_draw_string(6, 189, "START", COLOR13_WHITE);
 
-    /* Render Mouse Cursor Overlay */
     mouse_state_t mstate;
     mouse_get_state(&mstate);
     vga13_draw_cursor(mstate.x, mstate.y);
@@ -278,8 +275,8 @@ void run_kernel_shell(void) {
     uint8_t body_col  = vga_get_theme_color(current_theme, false);
     
     terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
-    terminal_writestring("[OK] Interactive Nothing OS Flagship Suite Shell v0.9.0 Active.\n");
-    terminal_writestring("GUI Mode 13h Desktop & Performance Monitor active. Type 'help' for commands.\n\n");
+    terminal_writestring("[OK] Interactive Nothing OS Gold Master Shell v1.0.0 Active.\n");
+    terminal_writestring("All 16 Enterprise Subsystems & PC Speaker ready. Type 'help' for commands.\n\n");
     
     while (1) {
         terminal_setcolor(title_col);
@@ -296,6 +293,8 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("Available System Commands:\n");
             terminal_setcolor(body_col);
+            terminal_writestring("  beep / sound           - Synthesize audio frequency via PC Speaker (PIT Ch 2)\n");
+            terminal_writestring("  elf / exec             - Validate and inspect ELF32 executable program header\n");
             terminal_writestring("  gui / desktop          - Render Mode 13h 256-Color Graphical Desktop Interface\n");
             terminal_writestring("  mon / top              - View Real-Time Kernel CPU & Memory Telemetry Dashboard\n");
             terminal_writestring("  env                    - Display Global System Environment Variables\n");
@@ -310,7 +309,7 @@ void run_kernel_shell(void) {
             terminal_writestring("  ps                     - List active kernel processes & PIDs\n");
             terminal_writestring("  spawn <task_name>      - Spawn a new background kernel task\n");
             terminal_writestring("  kill <pid>             - Terminate a running process by PID\n");
-            terminal_writestring("  test / ktest           - Trigger Automated QA & Kernel Test Suite\n");
+            terminal_writestring("  test / ktest           - Trigger 16-Test Automated QA Kernel Test Suite\n");
             terminal_writestring("  syscall                - Test INT 0x80 POSIX System Call Dispatcher\n");
             terminal_writestring("  ls / dir               - List VFS files in RAMDisk\n");
             terminal_writestring("  cat <file>             - View contents of a file\n");
@@ -334,9 +333,25 @@ void run_kernel_shell(void) {
             terminal_writestring(KERNEL_NAME);
             terminal_writestring(" v");
             terminal_writestring(KERNEL_VERSION);
-            terminal_writestring(" (GUI Desktop & Metrics Suite)\nMaintainer: ");
+            terminal_writestring("\nMaintainer: ");
             terminal_writestring(KERNEL_AUTHOR);
             terminal_writestring("\n");
+        } else if (strcmp(input_buf, "beep") == 0 || strcmp(input_buf, "sound") == 0) {
+            sound_beep();
+            terminal_setcolor(VGA_COLOR_GREEN);
+            terminal_writestring("[OK] PC Speaker hardware audio notification tone synthesized successfully!\n");
+        } else if (strcmp(input_buf, "elf") == 0 || strcmp(input_buf, "exec") == 0) {
+            elf32_header_t test_elf;
+            test_elf.e_ident[0] = 0x7F; test_elf.e_ident[1] = 'E';
+            test_elf.e_ident[2] = 'L';  test_elf.e_ident[3] = 'F';
+            test_elf.e_ident[4] = 1;    /* 32-bit */
+            test_elf.e_machine  = 3;    /* Intel i386 */
+            test_elf.e_entry    = 0x00100000;
+            test_elf.e_phnum    = 2;
+            test_elf.e_phoff    = 52;
+            test_elf.e_shnum    = 4;
+            test_elf.e_shoff    = 128;
+            elf_inspect_header(&test_elf);
         } else if (strcmp(input_buf, "gui") == 0 || strcmp(input_buf, "desktop") == 0) {
             render_gui_desktop_demo();
             terminal_setcolor(VGA_COLOR_GREEN);
@@ -727,8 +742,10 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("System Architecture Information:\n");
             terminal_setcolor(body_col);
-            terminal_writestring("  Kernel:     Nothing OS v0.9.0 (GUI Desktop & Metrics Suite)\n");
+            terminal_writestring("  Kernel:     Nothing OS v1.0.0 (Gold Master Enterprise Suite)\n");
             terminal_writestring("  CPU Mode:   32-bit x86 Protected Mode (i386)\n");
+            terminal_writestring("  Audio:      8254 PIT Timer Channel 2 PC Speaker Driver @ Port 0x61\n");
+            terminal_writestring("  Loader:     ELF32 Binary Program Format Inspection Engine\n");
             terminal_writestring("  GUI Engine: Mode 13h VGA 320x200 256-Color Desktop @ 0xA0000\n");
             terminal_writestring("  Telemetry:  Real-Time Kernel Performance Monitor Active\n");
             terminal_writestring("  Signals:    POSIX Signals (SIGKILL, SIGINT, SIGSEGV) Engine\n");
@@ -752,6 +769,8 @@ void run_kernel_shell(void) {
             terminal_writestring("Nothing OS Executive AI Board & Engineering Corporation:\n");
             terminal_setcolor(body_col);
             terminal_writestring("  👑 CEO & Lead OS Architect:   Overall Vision, PRs & Architecture\n");
+            terminal_writestring("  🔊 PC Speaker & Audio Lead:   PIT Ch 2 Synthesizer & Boot Chime\n");
+            terminal_writestring("  📜 ELF32 Program Loader Lead: User Program Validation & Headers\n");
             terminal_writestring("  🖼️ Mode 13h Pixel GUI Lead:  VGA 320x200 Pixel Graphics & Desktop\n");
             terminal_writestring("  📈 Kernel Metrics Lead:       Real-Time CPU % & Memory Telemetry\n");
             terminal_writestring("  🔍 OS Research & Intel Lead:  OSDev Standards & Spec Gathering\n");
@@ -798,19 +817,26 @@ void _kernel_main(void) {
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
     terminal_writestring("Nothing OS Kernel loaded in 32-bit Protected Mode\n");
-    
-    terminal_setcolor(VGA_COLOR_GREEN);
-    terminal_writestring("[OK] ");
-    terminal_setcolor(vga_get_theme_color(current_theme, false));
-    terminal_writestring("VGA Console Engine & Color Palette Theme Manager active\n");
-    
+
     /* Initialize Serial COM1 Debug Logger */
     serial_init(SERIAL_COM1_PORT);
-    klog(KLOG_INFO, "Nothing OS Kernel Bootstrapped Successfully.");
+    klog(KLOG_INFO, "Nothing OS Gold Master v1.0.0 Kernel Bootstrapped Successfully.");
     terminal_setcolor(VGA_COLOR_GREEN);
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
     terminal_writestring("Serial UART COM1 Debug Interface initialized @ 0x3F8\n");
+
+    /* Synthesize Startup Audio Chime */
+    sound_play_chime();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("PC Speaker Hardware Audio Synthesizer initialized\n");
+
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("VGA Console Engine & Color Palette Theme Manager active\n");
     
     /* Initialize IDT and Remap 8259 PIC */
     idt_init();

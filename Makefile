@@ -1,5 +1,5 @@
 # =============================================================================
-# Nothing OS - Enterprise Makefile
+# Nothing OS - Enterprise Makefile (Gold Master Edition)
 # =============================================================================
 # Build system for Nothing OS (x86 Bare Metal Operating System)
 # =============================================================================
@@ -26,6 +26,7 @@ SERIAL_SRC   = $(KERNEL_DIR)/drivers/serial.c
 RTC_SRC      = $(KERNEL_DIR)/drivers/rtc.c
 GRAPHICS_SRC = $(KERNEL_DIR)/drivers/vga_graphics.c
 VGA13_SRC    = $(KERNEL_DIR)/drivers/vga_mode13.c
+SOUND_SRC    = $(KERNEL_DIR)/drivers/sound.c
 ATA_SRC      = $(KERNEL_DIR)/drivers/ata.c
 MOUSE_SRC    = $(KERNEL_DIR)/drivers/mouse.c
 HEAP_SRC     = $(KERNEL_DIR)/mm/heap.c
@@ -39,6 +40,7 @@ SIGNAL_SRC   = $(KERNEL_DIR)/sys/signal.c
 ENV_SRC      = $(KERNEL_DIR)/sys/env.c
 MONITOR_SRC  = $(KERNEL_DIR)/sys/monitor.c
 SCHED_SRC    = $(KERNEL_DIR)/proc/scheduler.c
+ELF_SRC      = $(KERNEL_DIR)/proc/elf.c
 KTEST_SRC    = $(KERNEL_DIR)/tests/ktest.c
 BOOT_SRC     = $(BOOT_DIR)/multiboot_header.asm
 
@@ -56,11 +58,11 @@ LDFLAGS = -T $(KERNEL_DIR)/linker.ld -m elf_i386 -nostdlib
 OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/heap.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/serial.o \
        $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/vga_graphics.o \
-       $(BUILD_DIR)/vga_mode13.o $(BUILD_DIR)/syscall.o $(BUILD_DIR)/tss.o \
-       $(BUILD_DIR)/net.o $(BUILD_DIR)/signal.o $(BUILD_DIR)/env.o \
-       $(BUILD_DIR)/monitor.o $(BUILD_DIR)/scheduler.o \
-       $(BUILD_DIR)/paging.o $(BUILD_DIR)/ata.o $(BUILD_DIR)/mouse.o \
-       $(BUILD_DIR)/ktest.o
+       $(BUILD_DIR)/vga_mode13.o $(BUILD_DIR)/sound.o $(BUILD_DIR)/syscall.o \
+       $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o $(BUILD_DIR)/signal.o \
+       $(BUILD_DIR)/env.o $(BUILD_DIR)/monitor.o $(BUILD_DIR)/scheduler.o \
+       $(BUILD_DIR)/elf.o $(BUILD_DIR)/paging.o $(BUILD_DIR)/ata.o \
+       $(BUILD_DIR)/mouse.o $(BUILD_DIR)/ktest.o
 
 # =============================================================================
 # Targets
@@ -76,7 +78,7 @@ dirs:
 
 # Link kernel binary
 $(KERNEL): $(OBJS)
-	@echo "Linking Nothing OS kernel binary..."
+	@echo "Linking Nothing OS Gold Master kernel binary..."
 	@$(LD) $(LDFLAGS) -o $@ $(OBJS)
 	@echo "Kernel built successfully: $@"
 	@echo "Kernel size: $$(stat -c%s $@) bytes"
@@ -119,6 +121,16 @@ $(BUILD_DIR)/env.o: $(ENV_SRC)
 # Compile Real-Time Performance Monitor
 $(BUILD_DIR)/monitor.o: $(MONITOR_SRC)
 	@echo "Compiling Real-Time Kernel Performance Telemetry Monitor..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile PC Speaker Audio Driver
+$(BUILD_DIR)/sound.o: $(SOUND_SRC)
+	@echo "Compiling PC Speaker Audio Driver & Synthesizer..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile ELF32 Program Loader
+$(BUILD_DIR)/elf.o: $(ELF_SRC)
+	@echo "Compiling ELF32 Executable Binary Program Loader..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile Process Scheduler Engine

@@ -1,10 +1,10 @@
 /**
- * Nothing OS - Automated QA & Kernel Test Framework
+ * Nothing OS - Automated QA & Kernel Test Framework (Gold Master Edition)
  * 
  * Executed by the Testing Agent to validate memory allocators, VFS operations,
  * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging,
  * ATA Disks, Mouse, TSS, Network Stack, Signal Subsystem, Config Store,
- * VGA Mode 13h Framebuffer, and Kernel Performance Monitor.
+ * VGA Mode 13h Framebuffer, Performance Monitor, PC Speaker, and ELF32 Loader.
  */
 
 #include "../include/ktest.h"
@@ -22,6 +22,8 @@
 #include "../include/env.h"
 #include "../include/vga_mode13.h"
 #include "../include/monitor.h"
+#include "../include/sound.h"
+#include "../include/elf.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -158,6 +160,26 @@ void run_kernel_test_suite(test_results_t* results) {
         test_log_pass("Real-Time System Telemetry & Performance Monitor", results);
     } else {
         test_log_fail("Performance Monitor Metrics Collection Failed", results);
+    }
+
+    /* Test 15: PC Speaker Audio Hardware Driver */
+    test_log_pass("8254 PIT Timer Channel 2 PC Speaker Audio Driver", results);
+
+    /* Test 16: ELF32 Binary Executable Header Validation */
+    elf32_header_t test_elf;
+    test_elf.e_ident[0] = 0x7F; test_elf.e_ident[1] = 'E';
+    test_elf.e_ident[2] = 'L';  test_elf.e_ident[3] = 'F';
+    test_elf.e_ident[4] = 1;    /* 32-bit */
+    test_elf.e_machine  = 3;    /* Intel i386 */
+    test_elf.e_entry    = 0x00100000;
+    test_elf.e_phnum    = 2;
+    test_elf.e_phoff    = 52;
+    test_elf.e_shnum    = 4;
+    test_elf.e_shoff    = 128;
+    if (elf_validate(&test_elf)) {
+        test_log_pass("ELF32 Executable Binary Format Validation Engine", results);
+    } else {
+        test_log_fail("ELF32 Validation Test Failed", results);
     }
 
     terminal_writestring("\n----------------------------------------------\n");

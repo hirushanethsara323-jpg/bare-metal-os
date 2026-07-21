@@ -27,6 +27,20 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "AUDIO_SPEAKER_LEAD": Agent(
+        name="PC Speaker & Audio Synthesizer Lead",
+        role="8254 PIT Timer Channel 2 Hardware Sound Specialist",
+        avatar="🔊",
+        goal="Maintain PC Speaker hardware frequency synthesis, telemetry beeps, and startup musical chimes.",
+        skills=["PIT Channel 2 Port 0x42", "Port 0x61 Gate Bits", "Tone Generation", "Startup Chimes"]
+    ),
+    "ELF_LOADER_LEAD": Agent(
+        name="ELF32 Binary Program Loader Lead",
+        role="Executable Program Validation & Format Specialist",
+        avatar="📜",
+        goal="Validate 32-bit x86 ELF executable headers, magic signatures, section headers, and entry points.",
+        skills=["ELF32 Header Parsing", "Magic Identification 0x7F454C46", "i386 Architecture Check"]
+    ),
     "RESEARCH_INTELLIGENCE": Agent(
         name="OS Research & Intelligence Specialist",
         role="Architecture Standards & Specification Lead",
@@ -39,7 +53,7 @@ CREW_CORPORATION = {
         role="Self-Testing Framework & Validation Specialist",
         avatar="🧪",
         goal="Execute automated kernel test suites, verify memory safety, file operations, and system call stability.",
-        skills=["Self-Testing Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
+        skills=["16-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
     ),
     "GUI_PIXEL_ENGINE_LEAD": Agent(
         name="Mode 13h Pixel GUI & Desktop Lead",
@@ -157,7 +171,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (gui, mon, env, export, signal, panic, net, ring3).",
+        goal="Develop interactive kernel shell commands (beep, elf, gui, mon, env, export, signal, panic).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
@@ -175,15 +189,15 @@ class NothingOSCorporation:
         self.corp = CREW_CORPORATION
 
     def display_board(self):
-        print("=" * 80)
+        print("=" * 82)
         print("    🏢 NOTHING OS DEVELOPMENT CORPORATION - EXECUTIVE CREW BOARD 🏢")
-        print("=" * 80)
+        print("=" * 82)
         for key, agent in self.corp.items():
             print(f"{agent.avatar} [{agent.role}]")
             print(f"   Agent:  {agent.name}")
             print(f"   Goal:   {agent.goal}")
             print(f"   Skills: {', '.join(agent.skills)}")
-            print("-" * 80)
+            print("-" * 82)
 
     def run_build_check(self) -> bool:
         try:
