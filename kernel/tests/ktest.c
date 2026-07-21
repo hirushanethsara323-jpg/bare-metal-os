@@ -1,10 +1,11 @@
 /**
- * Nothing OS - Automated QA & Kernel Test Framework (Gold Master Edition)
+ * Nothing OS - Automated QA & Kernel Test Framework (Next-Gen Suite)
  * 
  * Executed by the Testing Agent to validate memory allocators, VFS operations,
  * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging,
  * ATA Disks, Mouse, TSS, Network Stack, Signal Subsystem, Config Store,
- * VGA Mode 13h Framebuffer, Performance Monitor, PC Speaker, and ELF32 Loader.
+ * VGA Mode 13h Framebuffer, Performance Monitor, PC Speaker, ELF32 Loader,
+ * IPC Pipes & Semaphores, and FAT MBR Filesystem Parser.
  */
 
 #include "../include/ktest.h"
@@ -24,6 +25,8 @@
 #include "../include/monitor.h"
 #include "../include/sound.h"
 #include "../include/elf.h"
+#include "../include/ipc.h"
+#include "../include/fat.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -180,6 +183,28 @@ void run_kernel_test_suite(test_results_t* results) {
         test_log_pass("ELF32 Executable Binary Format Validation Engine", results);
     } else {
         test_log_fail("ELF32 Validation Test Failed", results);
+    }
+
+    /* Test 17: IPC Ring Buffer Pipe Data Passing */
+    pipe_t test_p;
+    pipe_init(&test_p);
+    pipe_write(&test_p, "IPC Data", 8);
+    char out_buf[16];
+    if (pipe_read(&test_p, out_buf, 16) == 8 && out_buf[0] == 'I') {
+        test_log_pass("Inter-Process Communication Ring Buffer Pipe Engine", results);
+    } else {
+        test_log_fail("IPC Pipe Read/Write Test Failed", results);
+    }
+
+    /* Test 18: FAT Boot Sector Signature Validation */
+    fat_bpb_t test_bpb;
+    test_bpb.bytes_per_sector = 512;
+    test_bpb.sectors_per_cluster = 2;
+    test_bpb.oem_name[0] = 'N'; test_bpb.oem_name[1] = 'O'; test_bpb.oem_name[2] = 'S';
+    if (fat_validate_bpb(&test_bpb, FAT_BOOT_SIGNATURE)) {
+        test_log_pass("FAT Filesystem Boot Sector 0xAA55 Metadata Parser", results);
+    } else {
+        test_log_fail("FAT BPB Boot Sector Signature Test Failed", results);
     }
 
     terminal_writestring("\n----------------------------------------------\n");

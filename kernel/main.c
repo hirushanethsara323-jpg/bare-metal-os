@@ -6,7 +6,7 @@
  * VGA Graphics, System Calls, Process Scheduler, Virtual Paging, ATA Disk,
  * PS/2 Mouse, Task State Segment (TSS), Network Stack, Signals, Env Store,
  * Performance Monitor, Mode 13h Desktop GUI, PC Speaker Audio, ELF32 Loader,
- * and Automated QA Tests.
+ * IPC Pipes & Semaphores, FAT MBR Boot Parser, and Automated QA Tests.
  */
 
 #include <stdint.h>
@@ -32,11 +32,13 @@
 #include "include/monitor.h"
 #include "include/sound.h"
 #include "include/elf.h"
+#include "include/ipc.h"
+#include "include/fat.h"
 #include "include/ktest.h"
 
 /* Kernel Metadata */
 #define KERNEL_NAME     "Nothing OS"
-#define KERNEL_VERSION  "1.0.0 Gold Master"
+#define KERNEL_VERSION  "1.1.0 Next-Gen Suite"
 #define KERNEL_AUTHOR   "Nothing OS Development Corporation & Executive Board"
 
 /* Physical Memory Markers */
@@ -233,11 +235,11 @@ void print_banner(void) {
     terminal_writestring("  ║  ╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝    ║\n");
     terminal_setcolor(title_col);
     terminal_writestring("  ║                                                               ║\n");
-    terminal_writestring("  ║      ★ GOLD MASTER ENTERPRISE EDITION ★ - Release v");
+    terminal_writestring("  ║     NEXT-GEN ADVANCED KERNEL SUITE - Release v");
     terminal_setcolor(body_col);
-    terminal_writestring("1.0.0");
+    terminal_writestring("1.1.0");
     terminal_setcolor(title_col);
-    terminal_writestring("  ║\n");
+    terminal_writestring("     ║\n");
     terminal_writestring("  ║                                                               ║\n");
     terminal_writestring("  ╚═══════════════════════════════════════════════════════════════╝\n");
     terminal_writestring("\n");
@@ -252,12 +254,12 @@ static void background_worker_stub(void) {
 static void render_gui_desktop_demo(void) {
     vga13_clear(COLOR13_CYAN);
     vga13_draw_rect(0, 0, 320, 12, COLOR13_BLUE);
-    vga13_draw_string(4, 2, "NOTHING OS GOLD MASTER V1.0.0", COLOR13_WHITE);
+    vga13_draw_string(4, 2, "NOTHING OS NEXT-GEN V1.1.0", COLOR13_WHITE);
 
     vga13_draw_gui_window(20, 25, 200, 130, "SYSTEM CONSOLE");
     vga13_draw_string(28, 45, "WELCOME TO NOTHING OS", COLOR13_BLACK);
     vga13_draw_string(28, 60, "GRAPHICAL USER INTERFACE", COLOR13_BLUE);
-    vga13_draw_string(28, 75, "ENTERPRISE GOLD MASTER 1.0", COLOR13_BLACK);
+    vga13_draw_string(28, 75, "NEXT-GEN SUITE V1.1.0", COLOR13_BLACK);
 
     vga13_draw_rect(0, 186, 320, 14, COLOR13_DARK_GREY);
     vga13_draw_rect(2, 188, 50, 10, COLOR13_RED);
@@ -275,8 +277,8 @@ void run_kernel_shell(void) {
     uint8_t body_col  = vga_get_theme_color(current_theme, false);
     
     terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
-    terminal_writestring("[OK] Interactive Nothing OS Gold Master Shell v1.0.0 Active.\n");
-    terminal_writestring("All 16 Enterprise Subsystems & PC Speaker ready. Type 'help' for commands.\n\n");
+    terminal_writestring("[OK] Interactive Nothing OS Next-Gen Shell v1.1.0 Active.\n");
+    terminal_writestring("IPC Pipes, Semaphores & FAT MBR active. Type 'help' for commands.\n\n");
     
     while (1) {
         terminal_setcolor(title_col);
@@ -293,6 +295,9 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("Available System Commands:\n");
             terminal_setcolor(body_col);
+            terminal_writestring("  pipe / ipc             - Test IPC Ring Buffer Pipe message passing\n");
+            terminal_writestring("  sem / lock             - Test Counting Semaphore thread synchronization lock\n");
+            terminal_writestring("  fat / mbr              - Inspect FAT Filesystem Boot Sector 0xAA55 metadata\n");
             terminal_writestring("  beep / sound           - Synthesize audio frequency via PC Speaker (PIT Ch 2)\n");
             terminal_writestring("  elf / exec             - Validate and inspect ELF32 executable program header\n");
             terminal_writestring("  gui / desktop          - Render Mode 13h 256-Color Graphical Desktop Interface\n");
@@ -309,7 +314,7 @@ void run_kernel_shell(void) {
             terminal_writestring("  ps                     - List active kernel processes & PIDs\n");
             terminal_writestring("  spawn <task_name>      - Spawn a new background kernel task\n");
             terminal_writestring("  kill <pid>             - Terminate a running process by PID\n");
-            terminal_writestring("  test / ktest           - Trigger 16-Test Automated QA Kernel Test Suite\n");
+            terminal_writestring("  test / ktest           - Trigger 18-Test Automated QA Kernel Test Suite\n");
             terminal_writestring("  syscall                - Test INT 0x80 POSIX System Call Dispatcher\n");
             terminal_writestring("  ls / dir               - List VFS files in RAMDisk\n");
             terminal_writestring("  cat <file>             - View contents of a file\n");
@@ -336,6 +341,56 @@ void run_kernel_shell(void) {
             terminal_writestring("\nMaintainer: ");
             terminal_writestring(KERNEL_AUTHOR);
             terminal_writestring("\n");
+        } else if (strcmp(input_buf, "pipe") == 0 || strcmp(input_buf, "ipc") == 0) {
+            pipe_t my_pipe;
+            pipe_init(&my_pipe);
+            terminal_setcolor(title_col);
+            terminal_writestring("Testing Ring-Buffer IPC Pipe Message Transmission:\n");
+            terminal_setcolor(body_col);
+            
+            pipe_write(&my_pipe, "IPC Message Payload", 19);
+            char read_buf[32];
+            size_t bytes = pipe_read(&my_pipe, read_buf, 32);
+            
+            terminal_writestring("  Written Bytes: 19 | Read Bytes: ");
+            terminal_write_int(bytes);
+            terminal_writestring("\n  Payload Contents: '");
+            terminal_writestring(read_buf);
+            terminal_writestring("'\n");
+            terminal_setcolor(VGA_COLOR_GREEN);
+            terminal_writestring("  [OK] Inter-Process Pipe Ring-Buffer Communication Verified!\n");
+        } else if (strcmp(input_buf, "sem") == 0 || strcmp(input_buf, "lock") == 0) {
+            semaphore_t my_sem;
+            sem_init(&my_sem, 1);
+            terminal_setcolor(title_col);
+            terminal_writestring("Testing Counting Semaphore Mutual Exclusion Locks:\n");
+            terminal_setcolor(body_col);
+            
+            terminal_writestring("  Initial Semaphore Value: ");
+            terminal_write_int(my_sem.value);
+            terminal_writestring("\n  Executing sem_wait()...\n");
+            sem_wait(&my_sem);
+            terminal_writestring("  Locked Semaphore Value: ");
+            terminal_write_int(my_sem.value);
+            terminal_writestring(" (LOCKED=");
+            terminal_writestring(my_sem.locked ? "TRUE" : "FALSE");
+            terminal_writestring(")\n  Executing sem_signal()...\n");
+            sem_signal(&my_sem);
+            terminal_writestring("  Unlocked Semaphore Value: ");
+            terminal_write_int(my_sem.value);
+            terminal_writestring("\n");
+            terminal_setcolor(VGA_COLOR_GREEN);
+            terminal_writestring("  [OK] Thread Synchronization Semaphore Lock Verified!\n");
+        } else if (strcmp(input_buf, "fat") == 0 || strcmp(input_buf, "mbr") == 0) {
+            fat_bpb_t sample_bpb;
+            sample_bpb.bytes_per_sector = 512;
+            sample_bpb.sectors_per_cluster = 4;
+            sample_bpb.reserved_sectors = 1;
+            sample_bpb.fat_count = 2;
+            sample_bpb.root_dir_entries = 512;
+            sample_bpb.oem_name[0] = 'N'; sample_bpb.oem_name[1] = 'O'; sample_bpb.oem_name[2] = 'T'; sample_bpb.oem_name[3] = 'H';
+            sample_bpb.oem_name[4] = 'I'; sample_bpb.oem_name[5] = 'N'; sample_bpb.oem_name[6] = 'G'; sample_bpb.oem_name[7] = ' ';
+            fat_inspect_bpb(&sample_bpb, FAT_BOOT_SIGNATURE);
         } else if (strcmp(input_buf, "beep") == 0 || strcmp(input_buf, "sound") == 0) {
             sound_beep();
             terminal_setcolor(VGA_COLOR_GREEN);
@@ -742,8 +797,10 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("System Architecture Information:\n");
             terminal_setcolor(body_col);
-            terminal_writestring("  Kernel:     Nothing OS v1.0.0 (Gold Master Enterprise Suite)\n");
+            terminal_writestring("  Kernel:     Nothing OS v1.1.0 (Next-Gen Suite Edition)\n");
             terminal_writestring("  CPU Mode:   32-bit x86 Protected Mode (i386)\n");
+            terminal_writestring("  IPC Engine: Ring-Buffer Pipes & Counting Semaphores Active\n");
+            terminal_writestring("  Storage FS: FAT12/16/32 Boot Sector & MBR 0xAA55 Metadata Engine\n");
             terminal_writestring("  Audio:      8254 PIT Timer Channel 2 PC Speaker Driver @ Port 0x61\n");
             terminal_writestring("  Loader:     ELF32 Binary Program Format Inspection Engine\n");
             terminal_writestring("  GUI Engine: Mode 13h VGA 320x200 256-Color Desktop @ 0xA0000\n");
@@ -769,6 +826,8 @@ void run_kernel_shell(void) {
             terminal_writestring("Nothing OS Executive AI Board & Engineering Corporation:\n");
             terminal_setcolor(body_col);
             terminal_writestring("  👑 CEO & Lead OS Architect:   Overall Vision, PRs & Architecture\n");
+            terminal_writestring("  🔄 IPC & Semaphore Lead:      Inter-Process Pipes & Locks\n");
+            terminal_writestring("  💾 FAT & Disk FS Specialist:  FAT MBR Boot Sector & BPB Parser\n");
             terminal_writestring("  🔊 PC Speaker & Audio Lead:   PIT Ch 2 Synthesizer & Boot Chime\n");
             terminal_writestring("  📜 ELF32 Program Loader Lead: User Program Validation & Headers\n");
             terminal_writestring("  🖼️ Mode 13h Pixel GUI Lead:  VGA 320x200 Pixel Graphics & Desktop\n");
@@ -820,7 +879,7 @@ void _kernel_main(void) {
 
     /* Initialize Serial COM1 Debug Logger */
     serial_init(SERIAL_COM1_PORT);
-    klog(KLOG_INFO, "Nothing OS Gold Master v1.0.0 Kernel Bootstrapped Successfully.");
+    klog(KLOG_INFO, "Nothing OS Next-Gen v1.1.0 Kernel Bootstrapped Successfully.");
     terminal_setcolor(VGA_COLOR_GREEN);
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
@@ -844,6 +903,13 @@ void _kernel_main(void) {
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
     terminal_writestring("Interrupt Descriptor Table (256 Gates) & 8259 PIC Remapped\n");
+
+    /* Initialize IPC Engine */
+    ipc_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("IPC Pipe Message Buffer & Counting Semaphore Lock Engine initialized\n");
 
     /* Initialize System Signals Subsystem */
     signal_init();

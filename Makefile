@@ -1,5 +1,5 @@
 # =============================================================================
-# Nothing OS - Enterprise Makefile (Gold Master Edition)
+# Nothing OS - Enterprise Makefile (Next-Gen Suite Edition)
 # =============================================================================
 # Build system for Nothing OS (x86 Bare Metal Operating System)
 # =============================================================================
@@ -32,6 +32,7 @@ MOUSE_SRC    = $(KERNEL_DIR)/drivers/mouse.c
 HEAP_SRC     = $(KERNEL_DIR)/mm/heap.c
 PAGING_SRC   = $(KERNEL_DIR)/mm/paging.c
 VFS_SRC      = $(KERNEL_DIR)/fs/vfs.c
+FAT_SRC      = $(KERNEL_DIR)/fs/fat.c
 IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
 SYSCALL_SRC  = $(KERNEL_DIR)/arch/x86/syscall.c
 TSS_SRC      = $(KERNEL_DIR)/arch/x86/tss.c
@@ -39,6 +40,7 @@ NET_SRC      = $(KERNEL_DIR)/net/net.c
 SIGNAL_SRC   = $(KERNEL_DIR)/sys/signal.c
 ENV_SRC      = $(KERNEL_DIR)/sys/env.c
 MONITOR_SRC  = $(KERNEL_DIR)/sys/monitor.c
+IPC_SRC      = $(KERNEL_DIR)/sys/ipc.c
 SCHED_SRC    = $(KERNEL_DIR)/proc/scheduler.c
 ELF_SRC      = $(KERNEL_DIR)/proc/elf.c
 KTEST_SRC    = $(KERNEL_DIR)/tests/ktest.c
@@ -57,10 +59,11 @@ LDFLAGS = -T $(KERNEL_DIR)/linker.ld -m elf_i386 -nostdlib
 # Objects
 OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/heap.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/serial.o \
-       $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/vga_graphics.o \
-       $(BUILD_DIR)/vga_mode13.o $(BUILD_DIR)/sound.o $(BUILD_DIR)/syscall.o \
-       $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o $(BUILD_DIR)/signal.o \
-       $(BUILD_DIR)/env.o $(BUILD_DIR)/monitor.o $(BUILD_DIR)/scheduler.o \
+       $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/fat.o \
+       $(BUILD_DIR)/vga_graphics.o $(BUILD_DIR)/vga_mode13.o \
+       $(BUILD_DIR)/sound.o $(BUILD_DIR)/syscall.o $(BUILD_DIR)/tss.o \
+       $(BUILD_DIR)/net.o $(BUILD_DIR)/signal.o $(BUILD_DIR)/env.o \
+       $(BUILD_DIR)/monitor.o $(BUILD_DIR)/ipc.o $(BUILD_DIR)/scheduler.o \
        $(BUILD_DIR)/elf.o $(BUILD_DIR)/paging.o $(BUILD_DIR)/ata.o \
        $(BUILD_DIR)/mouse.o $(BUILD_DIR)/ktest.o
 
@@ -78,7 +81,7 @@ dirs:
 
 # Link kernel binary
 $(KERNEL): $(OBJS)
-	@echo "Linking Nothing OS Gold Master kernel binary..."
+	@echo "Linking Nothing OS Next-Gen kernel binary..."
 	@$(LD) $(LDFLAGS) -o $@ $(OBJS)
 	@echo "Kernel built successfully: $@"
 	@echo "Kernel size: $$(stat -c%s $@) bytes"
@@ -121,6 +124,11 @@ $(BUILD_DIR)/env.o: $(ENV_SRC)
 # Compile Real-Time Performance Monitor
 $(BUILD_DIR)/monitor.o: $(MONITOR_SRC)
 	@echo "Compiling Real-Time Kernel Performance Telemetry Monitor..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile IPC & Semaphore Manager
+$(BUILD_DIR)/ipc.o: $(IPC_SRC)
+	@echo "Compiling IPC Ring Buffer Pipe & Semaphore Engine..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile PC Speaker Audio Driver
@@ -191,6 +199,11 @@ $(BUILD_DIR)/heap.o: $(HEAP_SRC)
 # Compile Virtual File System
 $(BUILD_DIR)/vfs.o: $(VFS_SRC)
 	@echo "Compiling Virtual File System (MemFS)..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile FAT Boot Sector Engine
+$(BUILD_DIR)/fat.o: $(FAT_SRC)
+	@echo "Compiling FAT Filesystem & MBR Boot Parser..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile kernel main
