@@ -41,6 +41,20 @@ CREW_CORPORATION = {
         goal="Execute automated kernel test suites, verify memory safety, file operations, and system call stability.",
         skills=["Self-Testing Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
     ),
+    "GUI_PIXEL_ENGINE_LEAD": Agent(
+        name="Mode 13h Pixel GUI & Desktop Lead",
+        role="256-Color Graphics & Desktop Window Specialist",
+        avatar="🖼️",
+        goal="Develop 320x200 Mode 13h pixel framebuffer desktop, window frames, close buttons, & cursor overlay.",
+        skills=["Mode 13h Framebuffer", "Bitmap Font Renderer", "GUI Desktop Windows", "Cursor Overlay"]
+    ),
+    "KERNEL_TELEMETRY_LEAD": Agent(
+        name="Kernel Performance Telemetry Lead",
+        role="Real-Time Metrics & Performance Specialist",
+        avatar="📈",
+        goal="Maintain CPU load gauges, memory heap usage metrics, active PCB counters, and system dashboards.",
+        skills=["CPU Load Gauges", "Heap Usage Metrics", "PCB Task Tracking", "Performance Dashboard"]
+    ),
     "CRASH_SIGNAL_LEAD": Agent(
         name="Signal & Emergency Crash Telemetry Lead",
         role="POSIX Signals & Kernel Panic Specialist",
@@ -143,7 +157,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (env, export, signal, panic, net, ring3, paging).",
+        goal="Develop interactive kernel shell commands (gui, mon, env, export, signal, panic, net, ring3).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(

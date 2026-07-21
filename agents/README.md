@@ -1,12 +1,14 @@
 # Nothing OS Development Corporation - Executive AI Board 🏢👑
 
-Welcome to **Nothing OS Development Corporation**. This repository contains our production-grade custom 32-bit x86 Operating System kernel (**Nothing OS v0.8.0 Complete OS Suite**) alongside our specialized executive AI engineering team.
+Welcome to **Nothing OS Development Corporation**. This repository contains our production-grade custom 32-bit x86 Operating System kernel (**Nothing OS v0.9.0 Graphical Desktop & Telemetry Suite**) alongside our specialized 21-member executive AI engineering team.
 
 ## Executive Corporate Board & Agent Roster
 
 | Avatar | Agent Name | Corporate Role | Engineering Domain & System Responsibilities |
 |---|---|---|---|
 | 👑 | **CEO Agent** | Chief Executive Officer & OS Lead | Overall OS Architecture, Sprint Roadmap, Code Review & GitHub Release Management |
+| 🖼️ | **Mode 13h Pixel GUI Lead** | Graphical Windowing Specialist | 320x200 Mode 13h Framebuffer (`0xA0000`), Bitmap Font Rendering, Window Boxes & Cursor Overlay |
+| 📈 | **Kernel Metrics Lead** | System Performance Telemetry Specialist | Real-Time CPU Load Gauges, Dynamic Heap Utilization Engine, PCB Process Trackers |
 | 🚨 | **Signal & Crash Telemetry Lead** | Process Signals & Crash Handler Specialist | POSIX Process Signals (`SIGINT`, `SIGKILL`, `SIGSEGV`), Kernel Panic Red Screen, & CPU Register Dumps |
 | ⚙️ | **Environment & Global Config Lead** | Key-Value Config Engine Specialist | Global System Environment Store (`PATH`, `HOME`, `USER`, `SHELL`, `TERM`, `THEME`), `ksetenv`/`kgetenv` |
 | 🌐 | **Network Stack Lead** | Network Protocols Specialist | Virtual Loopback Stack, Ethernet II Frame Encoding, ARP Protocol, IPv4 & ICMP Ping Engine |
@@ -24,7 +26,7 @@ Welcome to **Nothing OS Development Corporation**. This repository contains our 
 | ⏰ | **Clock & Peripherals Lead** | Timers & CMOS RTC Specialist | PIT 8253 System Timer (100 Hz), CMOS Real-Time Clock (RTC Date/Time) |
 | 🎨 | **UI/UX Graphics Engine Lead** | Theme & Display Specialist | VGA Window Box Components, Progress Bars, Status Bars, Color Theme Palettes |
 | 📁 | **VFS & Storage Specialist** | Filesystem & RAMDisk Lead | In-Memory Virtual File System (MemFS RAMDisk), File Creation, Reading & Writing |
-| 🐚 | **Shell & UX Lead** | Console & Shell Specialist | Interactive System Shell (`env`, `export`, `signal`, `panic`, `net`, `ring3`, `paging`, `ata`, `mouse`, `ps`) |
+| 🐚 | **Shell & UX Lead** | Console & Shell Specialist | Interactive System Shell (`gui`, `mon`, `env`, `export`, `signal`, `panic`, `net`, `ring3`, `paging`) |
 | ⚙️ | **DevOps & QA Lead** | Build & Toolchain Specialist | Makefile, Linker Script, Compiler Checks & GitHub Synchronization |
 
 ## Orchestrator Execution Command

@@ -5,7 +5,7 @@
  * PIT system timer, Serial UART COM1, Real-Time Clock, Kernel Heap, VFS,
  * VGA Graphics, System Calls, Process Scheduler, Virtual Paging, ATA Disk,
  * PS/2 Mouse, Task State Segment (TSS), Network Stack, Signals, Env Store,
- * and Automated QA Tests.
+ * Performance Monitor, Mode 13h Desktop GUI, and Automated QA Tests.
  */
 
 #include <stdint.h>
@@ -18,6 +18,7 @@
 #include "include/rtc.h"
 #include "include/vfs.h"
 #include "include/vga_graphics.h"
+#include "include/vga_mode13.h"
 #include "include/syscall.h"
 #include "include/sched.h"
 #include "include/paging.h"
@@ -27,11 +28,12 @@
 #include "include/net.h"
 #include "include/signal.h"
 #include "include/env.h"
+#include "include/monitor.h"
 #include "include/ktest.h"
 
 /* Kernel Metadata */
 #define KERNEL_NAME     "Nothing OS"
-#define KERNEL_VERSION  "0.8.0"
+#define KERNEL_VERSION  "0.9.0"
 #define KERNEL_AUTHOR   "Nothing OS Development Corporation & AI Crew"
 
 /* Physical Memory Markers */
@@ -228,11 +230,11 @@ void print_banner(void) {
     terminal_writestring("  ║  ╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝    ║\n");
     terminal_setcolor(title_col);
     terminal_writestring("  ║                                                               ║\n");
-    terminal_writestring("  ║      Complete Operating System Suite - System v");
+    terminal_writestring("  ║     GUI Desktop & Metrics Monitor Suite - System v");
     terminal_setcolor(body_col);
     terminal_writestring(KERNEL_VERSION);
     terminal_setcolor(title_col);
-    terminal_writestring("      ║\n");
+    terminal_writestring("     ║\n");
     terminal_writestring("  ║                                                               ║\n");
     terminal_writestring("  ╚═══════════════════════════════════════════════════════════════╝\n");
     terminal_writestring("\n");
@@ -244,6 +246,31 @@ static void background_worker_stub(void) {
     }
 }
 
+static void render_gui_desktop_demo(void) {
+    /* Clear 320x200 mode 13h framebuffer with Teal Desktop Wallpaper (0x03) */
+    vga13_clear(COLOR13_CYAN);
+
+    /* Render Top Status Header Bar */
+    vga13_draw_rect(0, 0, 320, 12, COLOR13_BLUE);
+    vga13_draw_string(4, 2, "NOTHING OS DESKTOP V0.9.0", COLOR13_WHITE);
+
+    /* Render Main Desktop Application Window */
+    vga13_draw_gui_window(20, 25, 200, 130, "SYSTEM CONSOLE");
+    vga13_draw_string(28, 45, "WELCOME TO NOTHING OS", COLOR13_BLACK);
+    vga13_draw_string(28, 60, "GRAPHICAL USER INTERFACE", COLOR13_BLUE);
+    vga13_draw_string(28, 75, "MODE 13H 256 COLORS", COLOR13_BLACK);
+
+    /* Render Desktop Task Bar */
+    vga13_draw_rect(0, 186, 320, 14, COLOR13_DARK_GREY);
+    vga13_draw_rect(2, 188, 50, 10, COLOR13_RED);
+    vga13_draw_string(6, 189, "START", COLOR13_WHITE);
+
+    /* Render Mouse Cursor Overlay */
+    mouse_state_t mstate;
+    mouse_get_state(&mstate);
+    vga13_draw_cursor(mstate.x, mstate.y);
+}
+
 /* Interactive System Shell Routine */
 void run_kernel_shell(void) {
     char input_buf[128];
@@ -251,8 +278,8 @@ void run_kernel_shell(void) {
     uint8_t body_col  = vga_get_theme_color(current_theme, false);
     
     terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
-    terminal_writestring("[OK] Interactive Nothing OS Complete Suite Shell v0.8.0 Active.\n");
-    terminal_writestring("Signals & Environment Store active. Type 'help' for commands.\n\n");
+    terminal_writestring("[OK] Interactive Nothing OS Flagship Suite Shell v0.9.0 Active.\n");
+    terminal_writestring("GUI Mode 13h Desktop & Performance Monitor active. Type 'help' for commands.\n\n");
     
     while (1) {
         terminal_setcolor(title_col);
@@ -269,6 +296,8 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("Available System Commands:\n");
             terminal_setcolor(body_col);
+            terminal_writestring("  gui / desktop          - Render Mode 13h 256-Color Graphical Desktop Interface\n");
+            terminal_writestring("  mon / top              - View Real-Time Kernel CPU & Memory Telemetry Dashboard\n");
             terminal_writestring("  env                    - Display Global System Environment Variables\n");
             terminal_writestring("  export <KEY>=<VAL>     - Dynamically set/update global environment variable\n");
             terminal_writestring("  signal <pid> <sig>     - Send POSIX signal (e.g. 9=SIGKILL) to process\n");
@@ -278,7 +307,7 @@ void run_kernel_shell(void) {
             terminal_writestring("  paging / vmm           - View x86 Virtual Memory Paging & CR3 status\n");
             terminal_writestring("  ata / disk             - Query Primary ATA IDE Hard Disk Controller\n");
             terminal_writestring("  mouse                  - Display PS/2 Mouse coordinates & click telemetry\n");
-            terminal_writestring("  ps / top               - List active kernel processes & PIDs\n");
+            terminal_writestring("  ps                     - List active kernel processes & PIDs\n");
             terminal_writestring("  spawn <task_name>      - Spawn a new background kernel task\n");
             terminal_writestring("  kill <pid>             - Terminate a running process by PID\n");
             terminal_writestring("  test / ktest           - Trigger Automated QA & Kernel Test Suite\n");
@@ -305,9 +334,15 @@ void run_kernel_shell(void) {
             terminal_writestring(KERNEL_NAME);
             terminal_writestring(" v");
             terminal_writestring(KERNEL_VERSION);
-            terminal_writestring(" (Complete Operating System Suite)\nMaintainer: ");
+            terminal_writestring(" (GUI Desktop & Metrics Suite)\nMaintainer: ");
             terminal_writestring(KERNEL_AUTHOR);
             terminal_writestring("\n");
+        } else if (strcmp(input_buf, "gui") == 0 || strcmp(input_buf, "desktop") == 0) {
+            render_gui_desktop_demo();
+            terminal_setcolor(VGA_COLOR_GREEN);
+            terminal_writestring("[OK] Mode 13h 320x200 256-Color Graphical Desktop Environment Rendered @ 0xA0000!\n");
+        } else if (strcmp(input_buf, "mon") == 0 || strcmp(input_buf, "top") == 0) {
+            monitor_display_dashboard();
         } else if (strcmp(input_buf, "env") == 0) {
             terminal_setcolor(title_col);
             terminal_writestring("Global OS System Environment Variables:\n");
@@ -426,7 +461,7 @@ void run_kernel_shell(void) {
             terminal_writestring("\n  Right Button:       ");
             terminal_writestring(mstate.right_button ? "PRESSED" : "RELEASED");
             terminal_writestring("\n");
-        } else if (strcmp(input_buf, "ps") == 0 || strcmp(input_buf, "top") == 0) {
+        } else if (strcmp(input_buf, "ps") == 0) {
             terminal_setcolor(title_col);
             terminal_writestring("Active Kernel Tasks & Processes:\n");
             terminal_setcolor(body_col);
@@ -692,8 +727,10 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("System Architecture Information:\n");
             terminal_setcolor(body_col);
-            terminal_writestring("  Kernel:     Nothing OS v0.8.0 (Complete Operating System Suite)\n");
+            terminal_writestring("  Kernel:     Nothing OS v0.9.0 (GUI Desktop & Metrics Suite)\n");
             terminal_writestring("  CPU Mode:   32-bit x86 Protected Mode (i386)\n");
+            terminal_writestring("  GUI Engine: Mode 13h VGA 320x200 256-Color Desktop @ 0xA0000\n");
+            terminal_writestring("  Telemetry:  Real-Time Kernel Performance Monitor Active\n");
             terminal_writestring("  Signals:    POSIX Signals (SIGKILL, SIGINT, SIGSEGV) Engine\n");
             terminal_writestring("  Environment:Global Environment Variables Store Active\n");
             terminal_writestring("  User Mode:  Task State Segment (TSS) Ring 3 Stack Loaded\n");
@@ -715,6 +752,8 @@ void run_kernel_shell(void) {
             terminal_writestring("Nothing OS Executive AI Board & Engineering Corporation:\n");
             terminal_setcolor(body_col);
             terminal_writestring("  👑 CEO & Lead OS Architect:   Overall Vision, PRs & Architecture\n");
+            terminal_writestring("  🖼️ Mode 13h Pixel GUI Lead:  VGA 320x200 Pixel Graphics & Desktop\n");
+            terminal_writestring("  📈 Kernel Metrics Lead:       Real-Time CPU % & Memory Telemetry\n");
             terminal_writestring("  🔍 OS Research & Intel Lead:  OSDev Standards & Spec Gathering\n");
             terminal_writestring("  🧪 Automated Testing & QA:    Self-Testing Suite & Validation\n");
             terminal_writestring("  🚨 Signal & Crash Telemetry: POSIX Process Signals & Crash Handler\n");
@@ -793,6 +832,13 @@ void _kernel_main(void) {
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
     terminal_writestring("Global OS System Environment Configuration Store initialized\n");
+
+    /* Initialize Performance Metrics Monitor */
+    monitor_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("Real-Time Kernel Performance Telemetry Monitor initialized\n");
 
     /* Initialize System Call Engine Vector (INT 0x80) */
     syscall_init();

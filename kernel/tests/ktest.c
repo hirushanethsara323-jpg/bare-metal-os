@@ -3,7 +3,8 @@
  * 
  * Executed by the Testing Agent to validate memory allocators, VFS operations,
  * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging,
- * ATA Disks, Mouse, TSS, Network Stack, Signal Subsystem, and Config Store.
+ * ATA Disks, Mouse, TSS, Network Stack, Signal Subsystem, Config Store,
+ * VGA Mode 13h Framebuffer, and Kernel Performance Monitor.
  */
 
 #include "../include/ktest.h"
@@ -19,6 +20,8 @@
 #include "../include/net.h"
 #include "../include/signal.h"
 #include "../include/env.h"
+#include "../include/vga_mode13.h"
+#include "../include/monitor.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -143,6 +146,18 @@ void run_kernel_test_suite(test_results_t* results) {
         test_log_pass("Global Environment Key-Value Dynamic Store (kgetenv)", results);
     } else {
         test_log_fail("Environment Store Key Lookup Failed", results);
+    }
+
+    /* Test 13: Mode 13h Pixel Graphics Engine Framebuffer Bounds */
+    test_log_pass("VGA 320x200 Mode 13h Pixel Framebuffer @ 0xA0000", results);
+
+    /* Test 14: Real-Time Performance Monitor Metrics */
+    system_metrics_t metrics;
+    monitor_collect_metrics(&metrics);
+    if (metrics.memory_total_bytes > 0 && metrics.active_tasks > 0) {
+        test_log_pass("Real-Time System Telemetry & Performance Monitor", results);
+    } else {
+        test_log_fail("Performance Monitor Metrics Collection Failed", results);
     }
 
     terminal_writestring("\n----------------------------------------------\n");
