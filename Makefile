@@ -1,5 +1,5 @@
 # =============================================================================
-# Nothing OS - Makefile
+# Nothing OS - Enterprise Makefile
 # =============================================================================
 # Build system for Nothing OS (x86 Bare Metal Operating System)
 # =============================================================================
@@ -19,10 +19,13 @@ BOOT_DIR   = boot
 ISO_DIR    = iso
 BUILD_DIR  = build
 
-# Kernel files
+# Kernel source files
 KERNEL_SRC   = $(KERNEL_DIR)/main.c
 KEYBOARD_SRC = $(KERNEL_DIR)/drivers/keyboard.c
+SERIAL_SRC   = $(KERNEL_DIR)/drivers/serial.c
+RTC_SRC      = $(KERNEL_DIR)/drivers/rtc.c
 HEAP_SRC     = $(KERNEL_DIR)/mm/heap.c
+IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
 BOOT_SRC     = $(BOOT_DIR)/multiboot_header.asm
 
 # Output
@@ -36,7 +39,8 @@ ASFLAGS = -f elf32
 LDFLAGS = -T $(KERNEL_DIR)/linker.ld -m elf_i386 -nostdlib
 
 # Objects
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o $(BUILD_DIR)/heap.o
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
+       $(BUILD_DIR)/heap.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/serial.o $(BUILD_DIR)/rtc.o
 
 # =============================================================================
 # Targets
@@ -50,21 +54,36 @@ all: dirs $(KERNEL)
 dirs:
 	@mkdir -p $(BUILD_DIR) $(ISO_DIR)/boot/grub
 
-# Build kernel
+# Link kernel binary
 $(KERNEL): $(OBJS)
 	@echo "Linking Nothing OS kernel binary..."
 	@$(LD) $(LDFLAGS) -o $@ $(OBJS)
 	@echo "Kernel built successfully: $@"
 	@echo "Kernel size: $$(stat -c%s $@) bytes"
 
-# Build boot.o (C-based boot with inline assembly)
+# Build boot.o
 $(BUILD_DIR)/boot.o: $(KERNEL_DIR)/arch/x86/boot.c
 	@echo "Building C boot code..."
 	@$(CC) $(CFLAGS) -fno-pie -c -o $@ $<
 
+# Compile IDT and Interrupt Manager
+$(BUILD_DIR)/idt.o: $(IDT_SRC)
+	@echo "Compiling IDT & PIC Interrupt Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
 # Compile PS/2 Keyboard driver
 $(BUILD_DIR)/keyboard.o: $(KEYBOARD_SRC)
 	@echo "Compiling PS/2 Keyboard Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Serial UART driver
+$(BUILD_DIR)/serial.o: $(SERIAL_SRC)
+	@echo "Compiling Serial UART 16550 Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile CMOS RTC Driver
+$(BUILD_DIR)/rtc.o: $(RTC_SRC)
+	@echo "Compiling CMOS RTC Real-Time Clock Driver..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile Dynamic Heap Manager

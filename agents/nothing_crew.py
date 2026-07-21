@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 """
-Nothing OS - CrewAI & Multi-Agent Development System
-=====================================================
-This framework organizes specialized AI agents working together
-under the CEO / Lead Architect to develop Nothing OS.
+Nothing OS - Multi-Agent OS Development Corporation Framework
+===============================================================
+Enterprise multi-agent orchestrator for Nothing OS development team.
 """
 
 import os
 import sys
 import subprocess
 import json
-from dataclasses import dataclass, field
-from typing import List, Dict, Any
+from dataclasses import dataclass
+from typing import List, Dict
 
 @dataclass
 class Agent:
@@ -19,75 +18,81 @@ class Agent:
     role: str
     avatar: str
     goal: str
-    backstory: str
     skills: List[str]
 
-# Define the Board of Agents for Nothing OS
-CREW_BOARD = {
+CREW_CORPORATION = {
     "CEO": Agent(
         name="CEO / Lead OS Architect",
         role="Chief Executive Officer & Chief Systems Architect",
         avatar="👑",
-        goal="Lead the overall vision, roadmaps, PR reviews, and architectural integrity of Nothing OS.",
-        backstory="Veteran OS architect with deep expertise in kernel design, systems engineering, and engineering team leadership.",
-        skills=["Architecture Planning", "PR Review", "Task Delegation", "GitHub Release Management"]
+        goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
+        skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
     "KERNEL_ARCHITECT": Agent(
-        name="Kernel Architect Agent",
-        role="Core Kernel & x86 Assembly Specialist",
+        name="Core Assembly & Kernel Architect",
+        role="x86 Assembly & Low-Level Core Lead",
         avatar="🧠",
-        goal="Design and implement low-level x86 hardware initializations, GDT, IDT, ISRs, and context switching.",
-        backstory="Assembly & C wizard specializing in protected mode, segmented memory, hardware interrupts, and CPU state management.",
-        skills=["x86 Assembly", "GDT/IDT Setup", "PIC Remapping", "Context Switching"]
+        goal="Implement 32-bit Protected Mode initializations, GDT, IDT, 8259 PIC remapping, and ISRs.",
+        skills=["x86 Assembly", "IDT (256 Gates)", "PIC Remapping", "Interrupt Handling"]
     ),
     "MEMORY_ENGINEER": Agent(
-        name="Memory Management Agent",
-        role="Systems & Memory Specialist",
+        name="Memory Systems Specialist",
+        role="Physical Memory & Kernel Heap Lead",
         avatar="💾",
-        goal="Implement physical frame allocation, virtual memory paging, page tables, and kernel heap (kmalloc/kfree).",
-        backstory="Low-level memory optimization expert focused on zero-fragmentation allocators and memory safety.",
-        skills=["Bitmap Frame Allocation", "Paging & Page Tables", "kmalloc/kfree", "Virtual Memory"]
+        goal="Develop boundary-tag dynamic memory manager (kmalloc, kfree, kzalloc, krealloc).",
+        skills=["Bitmap Allocator", "Boundary Tag Heap", "Coalescing", "Memory Safety"]
     ),
-    "DRIVER_SPECIALIST": Agent(
-        name="Device Driver Agent",
-        role="Hardware & Peripherals Engineer",
+    "HARDWARE_DRIVER_LEAD": Agent(
+        name="Hardware Driver Lead",
+        role="Peripheral & Interface Engineer",
         avatar="⌨️",
-        goal="Develop reliable device drivers for PS/2 keyboard input, VGA text/graphics mode, and serial UART ports.",
-        backstory="Hardware communications engineer passionate about bare-metal port I/O and interrupt-driven device drivers.",
-        skills=["PS/2 Controller", "VGA Drivers", "Serial UART 16550", "I/O Ports"]
+        goal="Implement PS/2 Keyboard Input Driver and Serial UART 16550 COM1 telemetry.",
+        skills=["PS/2 Port 0x60/0x64", "Serial COM1 0x3F8", "Debug Telemetry", "I/O Ports"]
+    ),
+    "CLOCK_PERIPHERALS_LEAD": Agent(
+        name="Clock & Peripherals Specialist",
+        role="Hardware Timers & System Clock Lead",
+        avatar="⏰",
+        goal="Maintain Programmable Interval Timer (PIT 8253 @ 100Hz) and CMOS RTC Real-Time Clock.",
+        skills=["PIT 100Hz Channel 0", "CMOS RTC Date/Time", "Uptime Calculation"]
+    ),
+    "SHELL_USERSPACE_LEAD": Agent(
+        name="Shell & Console UX Lead",
+        role="Interactive Shell & Command Lead",
+        avatar="🐚",
+        goal="Develop interactive kernel shell commands (uptime, time, heap, alloc, echo, klog).",
+        skills=["Console UX", "Command Parsing", "ANSI/VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
-        name="DevOps & QA Agent",
-        role="Build Engineer & Quality Assurance",
+        name="DevOps & QA Lead",
+        role="Build Engineering & GitHub CI Lead",
         avatar="⚙️",
-        goal="Maintain Makefile, eliminate warnings, verify ELF linking, automate testing, and sync code with GitHub.",
-        backstory="Obsessive automation and toolchain engineer ensuring clean builds and robust Git workflows.",
-        skills=["Makefile Optimization", "GCC/LD Toolchains", "QEMU/ISO Generation", "Git & GitHub Sync"]
+        goal="Maintain Makefile, eliminate warnings, verify ELF binaries, and sync with GitHub.",
+        skills=["Makefile Architecture", "GCC/LD Toolchain", "Automated QA", "GitHub Sync"]
     )
 }
 
-class NothingCrewOrchestrator:
+class NothingOSCorporation:
     def __init__(self, repo_dir="/home/user/bare-metal-os"):
         self.repo_dir = repo_dir
-        self.board = CREW_BOARD
+        self.corp = CREW_CORPORATION
 
-    def display_team(self):
-        print("=" * 65)
-        print("       🚀 NOTHING OS - MULTI-AGENT CREW BOARD 🚀")
-        print("=" * 65)
-        for key, agent in self.board.items():
+    def display_board(self):
+        print("=" * 72)
+        print("    🏢 NOTHING OS DEVELOPMENT CORPORATION - EXECUTIVE CREW BOARD 🏢")
+        print("=" * 72)
+        for key, agent in self.corp.items():
             print(f"{agent.avatar} [{agent.role}]")
-            print(f"   Name: {agent.name}")
-            print(f"   Goal: {agent.goal}")
+            print(f"   Agent:  {agent.name}")
+            print(f"   Goal:   {agent.goal}")
             print(f"   Skills: {', '.join(agent.skills)}")
-            print("-" * 65)
+            print("-" * 72)
 
     def run_build_check(self) -> bool:
-        """Runs make to verify build status."""
         try:
             res = subprocess.run(["make"], cwd=self.repo_dir, capture_output=True, text=True)
             if res.returncode == 0:
-                print("✅ [DevOps Agent]: Build succeeded with no errors!")
+                print("✅ [DevOps Agent]: Build succeeded with 0 errors!")
                 return True
             else:
                 print("❌ [DevOps Agent]: Build failed!")
@@ -97,18 +102,8 @@ class NothingCrewOrchestrator:
             print(f"❌ [DevOps Agent]: Error running build: {e}")
             return False
 
-    def git_status_and_push(self, commit_message: str):
-        """DevOps Agent commits and pushes changes to GitHub."""
-        try:
-            subprocess.run(["git", "add", "."], cwd=self.repo_dir, check=True)
-            subprocess.run(["git", "commit", "-m", commit_message], cwd=self.repo_dir, check=True)
-            subprocess.run(["git", "push", "origin", "main"], cwd=self.repo_dir, check=True)
-            print("🌐 [DevOps Agent]: Changes committed and pushed to GitHub successfully!")
-        except subprocess.CalledProcessError as e:
-            print(f"⚠️ [DevOps Agent]: Git push warning: {e}")
-
 if __name__ == "__main__":
-    crew = NothingCrewOrchestrator()
-    crew.display_team()
-    print("\n[CEO]: Checking system status...")
-    crew.run_build_check()
+    corp = NothingOSCorporation()
+    corp.display_board()
+    print("\n[CEO Agent]: Executing Automated Company Build Verification...")
+    corp.run_build_check()
