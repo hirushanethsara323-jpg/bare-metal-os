@@ -103,7 +103,8 @@ OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/ext2.o $(BUILD_DIR)/ext4.o $(BUILD_DIR)/iso9660.o \
        $(BUILD_DIR)/vga_graphics.o $(BUILD_DIR)/vga_mode13.o \
        $(BUILD_DIR)/wm.o $(BUILD_DIR)/calc.o $(BUILD_DIR)/paint.o \
-       $(BUILD_DIR)/sysmon.o $(BUILD_DIR)/fexplorer.o $(BUILD_DIR)/cscript.o \
+       $(BUILD_DIR)/sysmon.o $(BUILD_DIR)/fexplorer.o $(BUILD_DIR)/term_app.o $(BUILD_DIR)/clock_app.o \
+       $(BUILD_DIR)/cscript.o \
        $(BUILD_DIR)/editor.o $(BUILD_DIR)/pkg.o $(BUILD_DIR)/benchmark.o $(BUILD_DIR)/prof.o \
        $(BUILD_DIR)/distro.o \
        $(BUILD_DIR)/sound.o $(BUILD_DIR)/sb16.o $(BUILD_DIR)/ansi.o \
@@ -257,6 +258,16 @@ $(BUILD_DIR)/sysmon.o: $(SYSMON_SRC)
 # Compile Desktop File Explorer Applet
 $(BUILD_DIR)/fexplorer.o: $(FEXPLORER_SRC)
 	@echo "Compiling Desktop Graphical VFS File Explorer Applet..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Desktop Terminal Window Applet
+$(BUILD_DIR)/term_app.o: $(TERM_APP_SRC)
+	@echo "Compiling Desktop Graphical Terminal Window Applet..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Desktop Real-Time System Clock Applet
+$(BUILD_DIR)/clock_app.o: $(CLOCK_APP_SRC)
+	@echo "Compiling Desktop RTC Analog/Digital Clock Applet..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile Embedded CScript Runtime Engine

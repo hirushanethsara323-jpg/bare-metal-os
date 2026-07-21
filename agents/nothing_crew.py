@@ -55,6 +55,20 @@ CREW_CORPORATION = {
         goal="Drive graphical desktop VFS RAMDisk file manager window, file icons, directory tree, & document viewer.",
         skills=["GUI File Explorer", "RAMDisk VFS Navigation", "Directory Tree Views", "Document Previews"]
     ),
+    "GUI_TERMINAL_APP_LEAD": Agent(
+        name="Desktop Graphical Terminal Window Lead",
+        role="In-Window Terminal Applet Specialist",
+        avatar="🖥️",
+        goal="Drive embedded graphical desktop terminal window, prompt rendering, line buffer editing, & command logs.",
+        skills=["GUI Terminal Window", "Prompt Rendering", "In-Window Line Buffer", "Command Output Log"]
+    ),
+    "ANALOG_CLOCK_APP_LEAD": Agent(
+        name="Desktop RTC Analog/Digital Clock Lead",
+        role="Real-Time System Clock Applet Specialist",
+        avatar="⏰",
+        goal="Drive desktop graphical RTC clock window, digital UTC time display, analog dial, & clock hand vectors.",
+        skills=["RTC Digital Display", "Analog Dial Rendering", "Clock Hand Vectors", "Time Telemetry"]
+    ),
     "UBUNTU_DISTRO_ARCHITECT": Agent(
         name="Ubuntu Distribution Architect & Remix Lead",
         role="Custom Linux Distro & ISO Image Specialist",

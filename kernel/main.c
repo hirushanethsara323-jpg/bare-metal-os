@@ -78,6 +78,8 @@
 #include "include/paint.h"
 #include "include/sysmon.h"
 #include "include/fexplorer.h"
+#include "include/term_app.h"
+#include "include/clock_app.h"
 #include "include/cscript.h"
 #include "include/prof.h"
 #include "include/distro.h"
@@ -363,6 +365,8 @@ void run_kernel_shell(void) {
             terminal_writestring("  kvm / vmx              - View Hardware Virtualization Hypervisor VMX/SVM Extension status\n");
             terminal_writestring("  sysmon / taskmgr       - Launch Mode 13h Graphical System Telemetry Task Manager\n");
             terminal_writestring("  fexplorer / files      - Launch Mode 13h Graphical VFS Desktop File Manager\n");
+            terminal_writestring("  gterm                  - Launch Graphical Embedded Terminal Window Applet\n");
+            terminal_writestring("  clock                  - Launch Graphical Real-Time RTC Digital & Analog Clock Applet\n");
             terminal_writestring("  cscript [script]       - Execute Embedded CScript Micro-Language Interpreter\n");
             terminal_writestring("  wallpaper              - Inspect Cyberpunk Dark Matrix Desktop Wallpaper & SVG Assets\n");
             terminal_writestring("  logo                   - Display High-Resolution ASCII Branding Logo Artwork\n");
@@ -459,6 +463,10 @@ void run_kernel_shell(void) {
             sysmon_app_launch();
         } else if (strcmp(input_buf, "fexplorer") == 0 || strcmp(input_buf, "files") == 0) {
             fexplorer_app_launch();
+        } else if (strcmp(input_buf, "gterm") == 0) {
+            term_app_launch();
+        } else if (strcmp(input_buf, "clock") == 0) {
+            clock_app_launch();
         } else if (strncmp(input_buf, "cscript", 7) == 0) {
             const char* script_code = "";
             if (strncmp(input_buf, "cscript ", 8) == 0) script_code = input_buf + 8;
@@ -1299,6 +1307,8 @@ void run_kernel_shell(void) {
             terminal_writestring("  📜 CScript Interpreter Lead: Embedded Language Interpreter & Runtime Evaluator\n");
             terminal_writestring("  📈 System Monitor Lead:       Graphical Task Manager, CPU Gauges & Process List\n");
             terminal_writestring("  📁 File Explorer Lead:        Graphical Desktop RAMDisk VFS File Browser\n");
+            terminal_writestring("  🖥️ GUI Terminal App Lead:    Graphical Embedded Terminal Applet & Command Prompt\n");
+            terminal_writestring("  ⏰ RTC System Clock Lead:     Digital & Analog Dial Clock Applet with Vector Hands\n");
             terminal_writestring("  🐧 Ubuntu Distro Architect:   Ubuntu 24.04 LTS Remix, Custom ISOs & Plymouth\n");
             terminal_writestring("  📦 Debian Package Maintainer: .deb Package Creation & APT Repository Manager\n");
             terminal_writestring("  🎓 Prof. OS Systems Research Chair: OS Architectural Theory & Formal POSIX Standards\n");

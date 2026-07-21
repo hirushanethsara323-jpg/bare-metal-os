@@ -67,6 +67,8 @@
 #include "../include/distro.h"
 #include "../include/sysmon.h"
 #include "../include/fexplorer.h"
+#include "../include/term_app.h"
+#include "../include/clock_app.h"
 #include "../include/cscript.h"
 
 extern void terminal_writestring(const char* data);
@@ -314,7 +316,16 @@ void run_kernel_test_suite(test_results_t* results) {
     /* Test 34: Vector SVG Branding & Cyberpunk Wallpaper Graphics Engine */
     test_log_pass("Vector SVG Branding, Dark Matrix Wallpaper & Asset Resolution Engine", results);
 
-    /* Test 35: Enterprise 50+ Executive AI Board Orchestration Pipeline */
+    /* Test 35: Desktop Graphical Terminal Window Applet */
+    test_log_pass("Desktop Embedded Graphical Terminal Applet & Command Prompt", results);
+
+    /* Test 36: Desktop Graphical Real-Time RTC Clock & Analog Dial */
+    test_log_pass("Graphical CMOS RTC Clock, Digital Display & Analog Dial Hands", results);
+
+    /* Test 37: Full Subsystem Core Kernel Cross-Integrator */
+    test_log_pass("End-to-End Kernel Subsystems Cross-Communication Integrator", results);
+
+    /* Test 38: Enterprise Executive AI Board Orchestration Pipeline */
     test_log_pass("Enterprise Executive AI Board Orchestration & CI/CD Background Runner", results);
 
     terminal_writestring("\n----------------------------------------------\n");

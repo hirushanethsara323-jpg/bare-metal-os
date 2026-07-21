@@ -11,6 +11,8 @@ Welcome to **Nothing OS Development Corporation**. This repository contains our 
 | 📜 | **CScript Interpreter Lead** | Language Runtime Lead | Embedded C-like Language Interpreter Engine, Expression Evaluator & Scripting |
 | 📈 | **System Monitor Lead** | Process Telemetry Applet Specialist | Graphical Task Manager Window, Real-Time CPU Load Gauges & Task Table Control |
 | 📁 | **File Explorer Lead** | VFS File Browser Specialist | Graphical Desktop RAMDisk File Explorer Window, Directory Tree & Document Views |
+| 🖥️ | **GUI Terminal Lead** | In-Window Terminal Specialist | Graphical Desktop Embedded Terminal Applet, Command Prompt Rendering & Output Log |
+| ⏰ | **RTC Clock Lead** | System Time & Dial Specialist | Graphical Real-Time System Clock Applet, Digital Time, & Analog Clock Dial Hands |
 | 🐧 | **Ubuntu Distro Architect** | Custom Linux & ISO Specialist | Ubuntu 24.04 LTS Custom Remix, Plymouth Boot Splash Screens, GRUB2 Bootloader Styling |
 | 📦 | **Debian Package Lead** | .deb Packaging & APT Manager | Debian `.deb` Package Framework (`nothing-os-core.deb`), Control Metadata, APT Repo Sync |
 | 🎓 | **Prof. OS Systems Research Chair** | Chief Academic Officer & OS Theory Lead | OS Architectural Theory, Microkernel Principles, Deadlock Proofs, POSIX Standards, & CS Pedagogy |
