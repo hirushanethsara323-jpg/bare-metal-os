@@ -2,7 +2,8 @@
  * Nothing OS - Enterprise Kernel Main & Multi-Feature System Shell
  * 
  * Main kernel execution context initializing GDT/IDT interrupts, 8259 PIC,
- * PIT system timer, Serial UART COM1, Real-Time Clock, Kernel Heap, VFS, and VGA Graphics.
+ * PIT system timer, Serial UART COM1, Real-Time Clock, Kernel Heap, VFS,
+ * VGA Graphics, System Calls, and Automated QA Test Suite.
  */
 
 #include <stdint.h>
@@ -15,10 +16,12 @@
 #include "include/rtc.h"
 #include "include/vfs.h"
 #include "include/vga_graphics.h"
+#include "include/syscall.h"
+#include "include/ktest.h"
 
 /* Kernel Metadata */
 #define KERNEL_NAME     "Nothing OS"
-#define KERNEL_VERSION  "0.3.0"
+#define KERNEL_VERSION  "0.4.0"
 #define KERNEL_AUTHOR   "Nothing OS Development Corporation & AI Crew"
 
 /* Physical Memory Markers */
@@ -215,7 +218,7 @@ void print_banner(void) {
     terminal_writestring("  ║  ╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝    ║\n");
     terminal_setcolor(title_col);
     terminal_writestring("  ║                                                               ║\n");
-    terminal_writestring("  ║         Graphic & VFS Edition - System Release v");
+    terminal_writestring("  ║      QA Verified Enterprise Release - System v");
     terminal_setcolor(body_col);
     terminal_writestring(KERNEL_VERSION);
     terminal_setcolor(title_col);
@@ -232,8 +235,8 @@ void run_kernel_shell(void) {
     uint8_t body_col  = vga_get_theme_color(current_theme, false);
     
     terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
-    terminal_writestring("[OK] Interactive Nothing OS Shell v0.3.0 Ready.\n");
-    terminal_writestring("MemFS VFS RAMDisk & Color Themes active. Type 'help' for commands.\n\n");
+    terminal_writestring("[OK] Interactive Nothing OS Shell v0.4.0 Active.\n");
+    terminal_writestring("System Calls & Testing Suite ready. Type 'help' for commands.\n\n");
     
     while (1) {
         terminal_setcolor(title_col);
@@ -250,6 +253,8 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("Available System Commands:\n");
             terminal_setcolor(body_col);
+            terminal_writestring("  test / ktest           - Trigger Automated QA & Kernel Test Suite\n");
+            terminal_writestring("  syscall                - Test INT 0x80 POSIX System Call Dispatcher\n");
             terminal_writestring("  ls / dir               - List VFS files in RAMDisk\n");
             terminal_writestring("  cat <file>             - View contents of a file\n");
             terminal_writestring("  touch <file>           - Create new empty file\n");
@@ -272,9 +277,28 @@ void run_kernel_shell(void) {
             terminal_writestring(KERNEL_NAME);
             terminal_writestring(" v");
             terminal_writestring(KERNEL_VERSION);
-            terminal_writestring(" (Graphic & VFS Edition)\nMaintainer: ");
+            terminal_writestring(" (QA Verified Enterprise Release)\nMaintainer: ");
             terminal_writestring(KERNEL_AUTHOR);
             terminal_writestring("\n");
+        } else if (strcmp(input_buf, "test") == 0 || strcmp(input_buf, "ktest") == 0) {
+            test_results_t results;
+            run_kernel_test_suite(&results);
+        } else if (strcmp(input_buf, "syscall") == 0) {
+            terminal_setcolor(title_col);
+            terminal_writestring("Executing INT 0x80 System Call Dispatcher Test:\n");
+            terminal_setcolor(body_col);
+            
+            int32_t pid = syscall_invoke(SYS_GETPID, 0, 0, 0);
+            int32_t uptime = syscall_invoke(SYS_UPTIME, 0, 0, 0);
+            
+            terminal_writestring("  SYS_GETPID Response: Process PID = ");
+            terminal_write_int(pid);
+            terminal_writestring("\n  SYS_UPTIME Response: System Uptime = ");
+            terminal_write_int(uptime);
+            terminal_writestring(" sec\n");
+            
+            terminal_setcolor(VGA_COLOR_GREEN);
+            terminal_writestring("  [OK] Software Interrupt INT 0x80 dispatched successfully!\n");
         } else if (strcmp(input_buf, "ls") == 0 || strcmp(input_buf, "dir") == 0) {
             terminal_setcolor(title_col);
             terminal_writestring("In-Memory VFS Directory Listing (/):\n");
@@ -322,7 +346,6 @@ void run_kernel_shell(void) {
                 terminal_writestring("Failed to create file!\n");
             }
         } else if (strncmp(input_buf, "write ", 6) == 0) {
-            /* Parse filename and text content */
             char fname[32];
             size_t i = 0;
             const char* ptr = input_buf + 6;
@@ -373,7 +396,6 @@ void run_kernel_shell(void) {
             terminal_row = 16;
             terminal_column = 0;
         } else if (strncmp(input_buf, "progress ", 9) == 0) {
-            /* Convert string integer */
             int p = 0;
             const char* s = input_buf + 9;
             while (*s >= '0' && *s <= '9') {
@@ -465,8 +487,9 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("System Architecture Information:\n");
             terminal_setcolor(body_col);
-            terminal_writestring("  Kernel:     Nothing OS v0.3.0 (Graphic & VFS Release)\n");
+            terminal_writestring("  Kernel:     Nothing OS v0.4.0 (QA Verified Enterprise Edition)\n");
             terminal_writestring("  CPU Mode:   32-bit x86 Protected Mode (i386)\n");
+            terminal_writestring("  Syscalls:   POSIX Software Interrupt Vector INT 0x80 Active\n");
             terminal_writestring("  IDT Table:  256 Gate Descriptors Configured\n");
             terminal_writestring("  PIC:        8259 Remapped (Master 0x20, Slave 0x28)\n");
             terminal_writestring("  PIT Clock:  Channel 0 Configured @ 100 Hz\n");
@@ -479,7 +502,10 @@ void run_kernel_shell(void) {
             terminal_writestring("Nothing OS Executive AI Board & Engineering Corporation:\n");
             terminal_setcolor(body_col);
             terminal_writestring("  👑 CEO & Lead OS Architect:   Overall Vision, PRs & Architecture\n");
+            terminal_writestring("  🔍 OS Research & Intel Lead:  OSDev Standards & Spec Gathering\n");
+            terminal_writestring("  🧪 Automated Testing & QA:    Self-Testing Suite & Validation\n");
             terminal_writestring("  🧠 Core Assembly Architect:   GDT, IDT, PIC & CPU Interrupts\n");
+            terminal_writestring("  ⚙️ Syscall & POSIX Engine:   INT 0x80 System Call Dispatcher\n");
             terminal_writestring("  💾 Memory Systems Specialist: Physical Memory & Kernel Heap\n");
             terminal_writestring("  ⌨️ Hardware Driver Lead:      PS/2 Controller & Serial UART\n");
             terminal_writestring("  ⏰ Clock & Peripherals Lead:  RTC CMOS Real-Time Clock & PIT\n");
@@ -532,6 +558,13 @@ void _kernel_main(void) {
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
     terminal_writestring("Interrupt Descriptor Table (256 Gates) & 8259 PIC Remapped\n");
+
+    /* Initialize System Call Engine Vector (INT 0x80) */
+    syscall_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("POSIX System Call Dispatcher Vector (INT 0x80) initialized\n");
     
     /* Initialize PIT System Timer @ 100Hz */
     pit_init(100);

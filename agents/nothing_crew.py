@@ -27,12 +27,33 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "RESEARCH_INTELLIGENCE": Agent(
+        name="OS Research & Intelligence Specialist",
+        role="Architecture Standards & Specification Lead",
+        avatar="🔍",
+        goal="Research POSIX standards, OSDev specifications, and CPU architecture primitives for CEO assignment.",
+        skills=["OSDev Research", "POSIX Standards", "x86 Specs", "Architecture Blueprinting"]
+    ),
+    "TESTING_QA_LEAD": Agent(
+        name="Automated Testing & QA Lead",
+        role="Self-Testing Framework & Validation Specialist",
+        avatar="🧪",
+        goal="Execute automated kernel test suites, verify memory safety, file operations, and system call stability.",
+        skills=["Self-Testing Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
+    ),
     "KERNEL_ARCHITECT": Agent(
         name="Core Assembly & Kernel Architect",
         role="x86 Assembly & Low-Level Core Lead",
         avatar="🧠",
         goal="Implement 32-bit Protected Mode initializations, GDT, IDT, 8259 PIC remapping, and ISRs.",
         skills=["x86 Assembly", "IDT (256 Gates)", "PIC Remapping", "Interrupt Handling"]
+    ),
+    "SYSCALL_POSIX_LEAD": Agent(
+        name="POSIX Syscall & Process Engine Lead",
+        role="Software Interrupts & Syscall Specialist",
+        avatar="⚙️",
+        goal="Maintain POSIX INT 0x80 System Call Dispatcher (SYS_YIELD, SYS_WRITE, SYS_GETPID, SYS_ALLOC).",
+        skills=["INT 0x80 Vector", "Syscall Dispatcher", "Register State Passing"]
     ),
     "MEMORY_ENGINEER": Agent(
         name="Memory Systems Specialist",
@@ -73,7 +94,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (ls, cat, touch, write, theme, window, progress, uptime).",
+        goal="Develop interactive kernel shell commands (ls, cat, touch, write, theme, window, test, syscall).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
@@ -91,15 +112,15 @@ class NothingOSCorporation:
         self.corp = CREW_CORPORATION
 
     def display_board(self):
-        print("=" * 75)
+        print("=" * 80)
         print("    🏢 NOTHING OS DEVELOPMENT CORPORATION - EXECUTIVE CREW BOARD 🏢")
-        print("=" * 75)
+        print("=" * 80)
         for key, agent in self.corp.items():
             print(f"{agent.avatar} [{agent.role}]")
             print(f"   Agent:  {agent.name}")
             print(f"   Goal:   {agent.goal}")
             print(f"   Skills: {', '.join(agent.skills)}")
-            print("-" * 75)
+            print("-" * 80)
 
     def run_build_check(self) -> bool:
         try:

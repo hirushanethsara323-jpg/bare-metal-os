@@ -28,6 +28,8 @@ GRAPHICS_SRC = $(KERNEL_DIR)/drivers/vga_graphics.c
 HEAP_SRC     = $(KERNEL_DIR)/mm/heap.c
 VFS_SRC      = $(KERNEL_DIR)/fs/vfs.c
 IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
+SYSCALL_SRC  = $(KERNEL_DIR)/arch/x86/syscall.c
+KTEST_SRC    = $(KERNEL_DIR)/tests/ktest.c
 BOOT_SRC     = $(BOOT_DIR)/multiboot_header.asm
 
 # Output
@@ -43,7 +45,8 @@ LDFLAGS = -T $(KERNEL_DIR)/linker.ld -m elf_i386 -nostdlib
 # Objects
 OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/heap.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/serial.o \
-       $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/vga_graphics.o
+       $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/vga_graphics.o \
+       $(BUILD_DIR)/syscall.o $(BUILD_DIR)/ktest.o
 
 # =============================================================================
 # Targets
@@ -72,6 +75,16 @@ $(BUILD_DIR)/boot.o: $(KERNEL_DIR)/arch/x86/boot.c
 # Compile IDT and Interrupt Manager
 $(BUILD_DIR)/idt.o: $(IDT_SRC)
 	@echo "Compiling IDT & PIC Interrupt Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile System Call Dispatcher Engine
+$(BUILD_DIR)/syscall.o: $(SYSCALL_SRC)
+	@echo "Compiling System Call Engine (INT 0x80)..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Automated QA & Test Suite
+$(BUILD_DIR)/ktest.o: $(KTEST_SRC)
+	@echo "Compiling Automated QA & Kernel Test Suite..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile PS/2 Keyboard driver
