@@ -1,5 +1,5 @@
 # =============================================================================
-# Nothing OS - Enterprise Makefile (v3.0 Ultra-Kernel Edition)
+# Nothing OS - Enterprise Makefile (v4.0 Ultimate Edition)
 # =============================================================================
 # Build system for Nothing OS (x86 Bare Metal Operating System)
 # =============================================================================
@@ -43,6 +43,9 @@ HEAP_SRC     = $(KERNEL_DIR)/mm/heap.c
 PAGING_SRC   = $(KERNEL_DIR)/mm/paging.c
 VFS_SRC      = $(KERNEL_DIR)/fs/vfs.c
 FAT_SRC      = $(KERNEL_DIR)/fs/fat.c
+EXT2_SRC     = $(KERNEL_DIR)/fs/ext2.c
+WM_SRC       = $(KERNEL_DIR)/gui/wm.c
+EDITOR_SRC   = $(KERNEL_DIR)/user/editor.c
 IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
 APIC_SRC     = $(KERNEL_DIR)/arch/x86/apic.c
 LONGMODE_SRC = $(KERNEL_DIR)/arch/x86/longmode.c
@@ -75,17 +78,18 @@ LDFLAGS = -T $(KERNEL_DIR)/linker.ld -m elf_i386 -nostdlib
 OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/heap.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/serial.o \
        $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/fat.o \
-       $(BUILD_DIR)/vga_graphics.o $(BUILD_DIR)/vga_mode13.o \
-       $(BUILD_DIR)/sound.o $(BUILD_DIR)/ansi.o $(BUILD_DIR)/pci.o \
-       $(BUILD_DIR)/e1000.o $(BUILD_DIR)/vbe.o $(BUILD_DIR)/ahci.o \
-       $(BUILD_DIR)/acpi.o $(BUILD_DIR)/apic.o $(BUILD_DIR)/usb.o \
-       $(BUILD_DIR)/rtl8139.o $(BUILD_DIR)/shm.o $(BUILD_DIR)/hda.o \
-       $(BUILD_DIR)/nvme.o $(BUILD_DIR)/longmode.o $(BUILD_DIR)/pong.o \
-       $(BUILD_DIR)/syscall.o $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o \
-       $(BUILD_DIR)/signal.o $(BUILD_DIR)/env.o $(BUILD_DIR)/monitor.o \
-       $(BUILD_DIR)/ipc.o $(BUILD_DIR)/sha256.o $(BUILD_DIR)/scheduler.o \
-       $(BUILD_DIR)/elf.o $(BUILD_DIR)/paging.o $(BUILD_DIR)/ata.o \
-       $(BUILD_DIR)/mouse.o $(BUILD_DIR)/ktest.o
+       $(BUILD_DIR)/ext2.o $(BUILD_DIR)/vga_graphics.o $(BUILD_DIR)/vga_mode13.o \
+       $(BUILD_DIR)/wm.o $(BUILD_DIR)/editor.o $(BUILD_DIR)/sound.o \
+       $(BUILD_DIR)/ansi.o $(BUILD_DIR)/pci.o $(BUILD_DIR)/e1000.o \
+       $(BUILD_DIR)/vbe.o $(BUILD_DIR)/ahci.o $(BUILD_DIR)/acpi.o \
+       $(BUILD_DIR)/apic.o $(BUILD_DIR)/usb.o $(BUILD_DIR)/rtl8139.o \
+       $(BUILD_DIR)/shm.o $(BUILD_DIR)/hda.o $(BUILD_DIR)/nvme.o \
+       $(BUILD_DIR)/longmode.o $(BUILD_DIR)/pong.o $(BUILD_DIR)/syscall.o \
+       $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o $(BUILD_DIR)/signal.o \
+       $(BUILD_DIR)/env.o $(BUILD_DIR)/monitor.o $(BUILD_DIR)/ipc.o \
+       $(BUILD_DIR)/sha256.o $(BUILD_DIR)/scheduler.o $(BUILD_DIR)/elf.o \
+       $(BUILD_DIR)/paging.o $(BUILD_DIR)/ata.o $(BUILD_DIR)/mouse.o \
+       $(BUILD_DIR)/ktest.o
 
 # =============================================================================
 # Targets
@@ -101,7 +105,7 @@ dirs:
 
 # Link kernel binary
 $(KERNEL): $(OBJS)
-	@echo "Linking Nothing OS v3.0 Ultra-Kernel binary..."
+	@echo "Linking Nothing OS v4.0 Ultimate Masterpiece kernel binary..."
 	@$(LD) $(LDFLAGS) -o $@ $(OBJS)
 	@echo "Kernel built successfully: $@"
 	@echo "Kernel size: $$(stat -c%s $@) bytes"
@@ -114,6 +118,21 @@ $(BUILD_DIR)/boot.o: $(KERNEL_DIR)/arch/x86/boot.c
 # Compile IDT and Interrupt Manager
 $(BUILD_DIR)/idt.o: $(IDT_SRC)
 	@echo "Compiling IDT & PIC Interrupt Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Multi-Window Compositor Server
+$(BUILD_DIR)/wm.o: $(WM_SRC)
+	@echo "Compiling High-Resolution Multi-Window Compositor Server..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Ext2 Linux Filesystem Driver
+$(BUILD_DIR)/ext2.o: $(EXT2_SRC)
+	@echo "Compiling Linux Ext2 Filesystem Superblock Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Kernel Text Editor
+$(BUILD_DIR)/editor.o: $(EDITOR_SRC)
+	@echo "Compiling Kernel Embedded Console Text Editor Utility..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile Local APIC Multi-Core Controller

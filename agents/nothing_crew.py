@@ -27,6 +27,27 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "MULTI_WINDOW_COMPOSITOR_LEAD": Agent(
+        name="High-Res Multi-Window Compositor Lead",
+        role="Window Server & Desktop Manager Lead Specialist",
+        avatar="🖼️",
+        goal="Drive multi-window layering, window focus, z-order, title bar controls, and desktop taskbars.",
+        skills=["Multi-Window Compositor", "Z-Order Rendering", "Window Shadows & Titles", "Taskbar Manager"]
+    ),
+    "EXT2_LINUX_FS_LEAD": Agent(
+        name="Linux Ext2 Filesystem Specialist",
+        role="Linux Disk Volumes & Ext2 Inode Specialist",
+        avatar="📂",
+        goal="Validate Ext2 Superblocks, 0xEF53 magic signatures, block group allocation, & inode records.",
+        skills=["Ext2 Superblock 0xEF53", "Inode Node Tables", "Directory Entries", "Linux Volumes"]
+    ),
+    "TEXT_EDITOR_LEAD": Agent(
+        name="Kernel Embedded Console Text Editor Lead",
+        role="Interactive VFS Document Editor Specialist",
+        avatar="📝",
+        goal="Provide full-screen / line console text editing, document buffer manipulation, & MemFS VFS saving.",
+        skills=["Kernel Console Editor", "VFS Memory File Bridge", "Text Buffer Operations", "File Editing"]
+    ),
     "LONGMODE_X64_LEAD": Agent(
         name="64-bit x86_64 Long Mode Architecture Lead",
         role="x64 CPU Transition & PML4 Paging Engineer",
@@ -172,7 +193,7 @@ CREW_CORPORATION = {
         role="Self-Testing Framework & Validation Specialist",
         avatar="🧪",
         goal="Execute automated kernel test suites, verify memory safety, file operations, and system call stability.",
-        skills=["28-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
+        skills=["31-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
     ),
     "GUI_PIXEL_ENGINE_LEAD": Agent(
         name="Mode 13h Pixel GUI & Desktop Lead",
@@ -290,7 +311,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (longmode, hda, nvme, pong, usb, rtl8139, shm).",
+        goal="Develop interactive kernel shell commands (wm, ext2, edit, longmode, hda, nvme, pong).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
@@ -308,15 +329,15 @@ class NothingOSCorporation:
         self.corp = CREW_CORPORATION
 
     def display_board(self):
-        print("=" * 96)
+        print("=" * 100)
         print("    🏢 NOTHING OS DEVELOPMENT CORPORATION - EXECUTIVE CREW BOARD 🏢")
-        print("=" * 96)
+        print("=" * 100)
         for key, agent in self.corp.items():
             print(f"{agent.avatar} [{agent.role}]")
             print(f"   Agent:  {agent.name}")
             print(f"   Goal:   {agent.goal}")
             print(f"   Skills: {', '.join(agent.skills)}")
-            print("-" * 96)
+            print("-" * 100)
 
     def run_build_check(self) -> bool:
         try:
