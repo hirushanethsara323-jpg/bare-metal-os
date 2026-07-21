@@ -27,6 +27,41 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "KVM_HYPERVISOR_LEAD": Agent(
+        name="Hardware Virtualization & Hypervisor Lead",
+        role="Intel VMX & AMD-V Virtual Machine Monitor Specialist",
+        avatar="⚡",
+        goal="Drive hardware virtualization extensions, VMCS control structures, & hypervisor guest traps.",
+        skills=["Intel VMX", "AMD-V (SVM)", "VMCS Controls", "In-Kernel Hypervisor"]
+    ),
+    "DNS_RESOLVER_LEAD": Agent(
+        name="Domain Name System (DNS) Protocol Lead",
+        role="UDP Port 53 Domain Name Resolution Specialist",
+        avatar="🌐",
+        goal="Construct UDP Port 53 DNS query packets, A-record parsing, & primary/secondary DNS servers.",
+        skills=["DNS Queries", "UDP Port 53", "A-Record Parser", "Hostname Resolution"]
+    ),
+    "HARDWARE_BENCHMARK_LEAD": Agent(
+        name="System Benchmark & Hardware Diagnostics Lead",
+        role="DRAM Bandwidth & CPU MIPS Stress Test Specialist",
+        avatar="⚡",
+        goal="Execute memory throughput benchmarks (MB/s), MIPS calculations, & disk I/O speed tests.",
+        skills=["DRAM Bandwidth MB/s", "CPU MIPS Estimator", "Disk I/O Benchmark", "Hardware Stress Test"]
+    ),
+    "DESKTOP_CALCULATOR_LEAD": Agent(
+        name="Desktop Graphical Calculator Application Lead",
+        role="GUI Keypad & Calculator Window Applet Specialist",
+        avatar="🧮",
+        goal="Render Mode 13h / VBE graphical calculator window applet, LCD display, & keypad buttons.",
+        skills=["GUI Calculator Window", "Keypad Rendering", "LCD Display Screen", "Desktop Apps"]
+    ),
+    "CANVAS_PAINT_STUDIO_LEAD": Agent(
+        name="Desktop Graphical Paint Studio Lead",
+        role="256-Color Pixel Canvas Drawing Specialist",
+        avatar="🎨",
+        goal="Maintain Mode 13h pixel canvas studio, brush controls, color palette toolbox, & mouse drawing.",
+        skills=["Pixel Canvas Studio", "Mouse Drawing Tools", "Palette Toolbox", "Graphics Applets"]
+    ),
     "EXT4_JOURNALING_LEAD": Agent(
         name="Linux Ext4 Journaling & Extents B-Tree Lead",
         role="64-bit Disk Block Allocation & Extent Mapping Specialist",
@@ -263,7 +298,7 @@ CREW_CORPORATION = {
         role="Self-Testing Framework & Validation Specialist",
         avatar="🧪",
         goal="Execute automated kernel test suites, verify memory safety, file operations, and system call stability.",
-        skills=["31-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
+        skills=["35-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
     ),
     "GUI_PIXEL_ENGINE_LEAD": Agent(
         name="Mode 13h Pixel GUI & Desktop Lead",
@@ -381,7 +416,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (ext4, sb16, aes, http, rsa, iso, fpu).",
+        goal="Develop interactive kernel shell commands (kvm, dns, bench, calc, paint, ext4, sb16, aes).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
@@ -399,15 +434,15 @@ class NothingOSCorporation:
         self.corp = CREW_CORPORATION
 
     def display_board(self):
-        print("=" * 112)
+        print("=" * 114)
         print("    🏢 NOTHING OS DEVELOPMENT CORPORATION - EXECUTIVE CREW BOARD 🏢")
-        print("=" * 112)
+        print("=" * 114)
         for key, agent in self.corp.items():
             print(f"{agent.avatar} [{agent.role}]")
             print(f"   Agent:  {agent.name}")
             print(f"   Goal:   {agent.goal}")
             print(f"   Skills: {', '.join(agent.skills)}")
-            print("-" * 112)
+            print("-" * 114)
 
     def run_build_check(self) -> bool:
         try:
