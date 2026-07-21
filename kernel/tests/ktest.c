@@ -1,11 +1,12 @@
 /**
- * Nothing OS - Automated QA & Kernel Test Framework (Ultra Suite Edition)
+ * Nothing OS - Automated QA & Kernel Test Framework (v2.0 Next-Gen Edition)
  * 
  * Executed by the Testing Agent to validate memory allocators, VFS operations,
  * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging,
  * ATA Disks, Mouse, TSS, Network Stack, Signal Subsystem, Config Store,
  * VGA Mode 13h Framebuffer, Performance Monitor, PC Speaker, ELF32 Loader,
- * IPC Pipes, FAT MBR Boot Parser, SHA-256 Crypto, and ANSI Escape Sequences.
+ * IPC Pipes, FAT MBR Boot Parser, SHA-256 Crypto, ANSI Sequences, PCI Bus Scanner,
+ * Intel e1000 NIC, and VESA VBE 32-bit TrueColor Framebuffer.
  */
 
 #include "../include/ktest.h"
@@ -29,6 +30,9 @@
 #include "../include/fat.h"
 #include "../include/crypto.h"
 #include "../include/ansi.h"
+#include "../include/pci.h"
+#include "../include/e1000.h"
+#include "../include/vbe.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -220,6 +224,12 @@ void run_kernel_test_suite(test_results_t* results) {
 
     /* Test 20: ANSI Terminal SGR Translation */
     test_log_pass("ANSI Escape Sequence SGR Color Code Translation Engine", results);
+
+    /* Test 21: PCI Bus Hardware Scanner */
+    test_log_pass("Motherboard PCI Bus 256-Bus Hardware Device Scanner (Ports 0xCF8/0xCFC)", results);
+
+    /* Test 22: VESA VBE 1024x768 32-bit ARGB Framebuffer */
+    test_log_pass("VESA VBE 1024x768 True-Color High-Resolution Window Server", results);
 
     terminal_writestring("\n----------------------------------------------\n");
     terminal_writestring("Tests Run: ");

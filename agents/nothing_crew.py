@@ -27,6 +27,27 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "PCI_BUS_LEAD": Agent(
+        name="PCI Bus Enumerator & Hardware Scanner Lead",
+        role="Motherboard PCI Bus Topology & Device Discovery Lead",
+        avatar="💳",
+        goal="Scan PCI buses 0..255, slots 0..31, and functions 0..7 via IO ports 0xCF8/0xCFC.",
+        skills=["PCI Configuration Space", "PCI Class Codes", "Vendor/Device Lookup", "BAR Address Mapping"]
+    ),
+    "INTEL_E1000_LEAD": Agent(
+        name="Intel e1000 Gigabit Network Card Driver Lead",
+        role="PCI MMIO Hardware Network Controller Specialist",
+        avatar="⚡",
+        goal="Drive Intel 82540EM Gigabit NIC via MMIO BAR0, packet RX/TX ring descriptors, & hardware MAC.",
+        skills=["PCI MMIO BAR0", "82540EM Controller", "Descriptor Rings", "Hardware MAC Read"]
+    ),
+    "VESA_VBE_LEAD": Agent(
+        name="VESA VBE High-Resolution Graphics Server Lead",
+        role="1024x768 32-bit ARGB TrueColor Framebuffer Specialist",
+        avatar="🖥️",
+        goal="Render 1024x768 32-bit ARGB Linear Framebuffer desktop, drop shadows, and gradient window frames.",
+        skills=["VESA VBE Mode Info", "32-bit ARGB Framebuffer", "Window Drop Shadows", "High-Res Rendering"]
+    ),
     "CRYPTO_SECURITY_LEAD": Agent(
         name="Kernel Cryptography & Security Lead",
         role="FIPS SHA-256 Digest & Hash Engine Specialist",
@@ -81,7 +102,7 @@ CREW_CORPORATION = {
         role="Self-Testing Framework & Validation Specialist",
         avatar="🧪",
         goal="Execute automated kernel test suites, verify memory safety, file operations, and system call stability.",
-        skills=["20-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
+        skills=["22-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
     ),
     "GUI_PIXEL_ENGINE_LEAD": Agent(
         name="Mode 13h Pixel GUI & Desktop Lead",
@@ -199,7 +220,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (hash, ansi, pipe, sem, fat, beep, elf, gui, mon).",
+        goal="Develop interactive kernel shell commands (pci, e1000, vesa, hash, ansi, pipe, sem, fat).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
@@ -217,15 +238,15 @@ class NothingOSCorporation:
         self.corp = CREW_CORPORATION
 
     def display_board(self):
-        print("=" * 86)
+        print("=" * 88)
         print("    🏢 NOTHING OS DEVELOPMENT CORPORATION - EXECUTIVE CREW BOARD 🏢")
-        print("=" * 86)
+        print("=" * 88)
         for key, agent in self.corp.items():
             print(f"{agent.avatar} [{agent.role}]")
             print(f"   Agent:  {agent.name}")
             print(f"   Goal:   {agent.goal}")
             print(f"   Skills: {', '.join(agent.skills)}")
-            print("-" * 86)
+            print("-" * 88)
 
     def run_build_check(self) -> bool:
         try:
