@@ -42,7 +42,7 @@ struct multiboot_info {
 };
 
 /* Multiboot header - must be in first 8KB and aligned on 4-byte boundary */
-__attribute__((section(".multiboot"), aligned(4)))
+__attribute__((section(".multiboot"), aligned(4), used))
 static uint32_t multiboot_header[] = {
     MULTIBOOT_HEADER_MAGIC,
     MULTIBOOT_FLAG_PAGE_ALIGN | MULTIBOOT_FLAG_MEMORY_INFO | MULTIBOOT_FLAG_VIDEO_MODE,
@@ -138,6 +138,8 @@ void _kernel_entry(struct multiboot_info* mboot_ptr) {
     /* Memory info */
     uint32_t mem_lower = mboot_ptr->mem_lower;
     uint32_t mem_upper = mboot_ptr->mem_upper;
+    (void)mem_lower;
+    (void)mem_upper;
     
     /* Call main kernel */
     extern void _kernel_main(void);
