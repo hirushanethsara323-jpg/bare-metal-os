@@ -53,6 +53,7 @@ CALC_SRC     = $(KERNEL_DIR)/gui/calc.c
 PAINT_SRC    = $(KERNEL_DIR)/gui/paint.c
 EDITOR_SRC   = $(KERNEL_DIR)/user/editor.c
 PKG_SRC      = $(KERNEL_DIR)/sys/pkg.c
+DISTRO_SRC   = $(KERNEL_DIR)/sys/distro.c
 PROF_SRC     = $(KERNEL_DIR)/sys/prof.c
 BENCH_SRC    = $(KERNEL_DIR)/sys/benchmark.c
 IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
