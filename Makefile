@@ -29,6 +29,7 @@ HEAP_SRC     = $(KERNEL_DIR)/mm/heap.c
 VFS_SRC      = $(KERNEL_DIR)/fs/vfs.c
 IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
 SYSCALL_SRC  = $(KERNEL_DIR)/arch/x86/syscall.c
+SCHED_SRC    = $(KERNEL_DIR)/proc/scheduler.c
 KTEST_SRC    = $(KERNEL_DIR)/tests/ktest.c
 BOOT_SRC     = $(BOOT_DIR)/multiboot_header.asm
 
@@ -46,7 +47,7 @@ LDFLAGS = -T $(KERNEL_DIR)/linker.ld -m elf_i386 -nostdlib
 OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/heap.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/serial.o \
        $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/vga_graphics.o \
-       $(BUILD_DIR)/syscall.o $(BUILD_DIR)/ktest.o
+       $(BUILD_DIR)/syscall.o $(BUILD_DIR)/scheduler.o $(BUILD_DIR)/ktest.o
 
 # =============================================================================
 # Targets
@@ -80,6 +81,11 @@ $(BUILD_DIR)/idt.o: $(IDT_SRC)
 # Compile System Call Dispatcher Engine
 $(BUILD_DIR)/syscall.o: $(SYSCALL_SRC)
 	@echo "Compiling System Call Engine (INT 0x80)..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Process Scheduler Engine
+$(BUILD_DIR)/scheduler.o: $(SCHED_SRC)
+	@echo "Compiling Process Scheduler Engine..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile Automated QA & Test Suite

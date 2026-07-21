@@ -3,7 +3,7 @@
  * 
  * Main kernel execution context initializing GDT/IDT interrupts, 8259 PIC,
  * PIT system timer, Serial UART COM1, Real-Time Clock, Kernel Heap, VFS,
- * VGA Graphics, System Calls, and Automated QA Test Suite.
+ * VGA Graphics, System Calls, Process Scheduler, and Automated QA Tests.
  */
 
 #include <stdint.h>
@@ -17,11 +17,12 @@
 #include "include/vfs.h"
 #include "include/vga_graphics.h"
 #include "include/syscall.h"
+#include "include/sched.h"
 #include "include/ktest.h"
 
 /* Kernel Metadata */
 #define KERNEL_NAME     "Nothing OS"
-#define KERNEL_VERSION  "0.4.0"
+#define KERNEL_VERSION  "0.5.0"
 #define KERNEL_AUTHOR   "Nothing OS Development Corporation & AI Crew"
 
 /* Physical Memory Markers */
@@ -218,14 +219,20 @@ void print_banner(void) {
     terminal_writestring("  ║  ╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝    ║\n");
     terminal_setcolor(title_col);
     terminal_writestring("  ║                                                               ║\n");
-    terminal_writestring("  ║      QA Verified Enterprise Release - System v");
+    terminal_writestring("  ║      Multitasking & Scheduler Release - System v");
     terminal_setcolor(body_col);
     terminal_writestring(KERNEL_VERSION);
     terminal_setcolor(title_col);
-    terminal_writestring("       ║\n");
+    terminal_writestring("     ║\n");
     terminal_writestring("  ║                                                               ║\n");
     terminal_writestring("  ╚═══════════════════════════════════════════════════════════════╝\n");
     terminal_writestring("\n");
+}
+
+static void background_worker_stub(void) {
+    while (1) {
+        process_yield();
+    }
 }
 
 /* Interactive System Shell Routine */
@@ -235,8 +242,8 @@ void run_kernel_shell(void) {
     uint8_t body_col  = vga_get_theme_color(current_theme, false);
     
     terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
-    terminal_writestring("[OK] Interactive Nothing OS Shell v0.4.0 Active.\n");
-    terminal_writestring("System Calls & Testing Suite ready. Type 'help' for commands.\n\n");
+    terminal_writestring("[OK] Interactive Nothing OS Shell v0.5.0 Active.\n");
+    terminal_writestring("Multitasking Process Scheduler active. Type 'help' for commands.\n\n");
     
     while (1) {
         terminal_setcolor(title_col);
@@ -253,6 +260,9 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("Available System Commands:\n");
             terminal_setcolor(body_col);
+            terminal_writestring("  ps / top               - List active kernel processes & PIDs\n");
+            terminal_writestring("  spawn <task_name>      - Spawn a new background kernel task\n");
+            terminal_writestring("  kill <pid>             - Terminate a running process by PID\n");
             terminal_writestring("  test / ktest           - Trigger Automated QA & Kernel Test Suite\n");
             terminal_writestring("  syscall                - Test INT 0x80 POSIX System Call Dispatcher\n");
             terminal_writestring("  ls / dir               - List VFS files in RAMDisk\n");
@@ -277,9 +287,68 @@ void run_kernel_shell(void) {
             terminal_writestring(KERNEL_NAME);
             terminal_writestring(" v");
             terminal_writestring(KERNEL_VERSION);
-            terminal_writestring(" (QA Verified Enterprise Release)\nMaintainer: ");
+            terminal_writestring(" (Multitasking Scheduler Release)\nMaintainer: ");
             terminal_writestring(KERNEL_AUTHOR);
             terminal_writestring("\n");
+        } else if (strcmp(input_buf, "ps") == 0 || strcmp(input_buf, "top") == 0) {
+            terminal_setcolor(title_col);
+            terminal_writestring("Active Kernel Tasks & Processes:\n");
+            terminal_setcolor(body_col);
+            
+            process_t* proc = process_get_list();
+            uint32_t count = 0;
+            while (proc != NULL) {
+                count++;
+                terminal_writestring("  PID ");
+                terminal_write_int(proc->pid);
+                terminal_writestring(" | Name: ");
+                terminal_writestring(proc->name);
+                terminal_writestring(" | State: ");
+                switch (proc->state) {
+                    case PROCESS_RUNNING:    terminal_writestring("RUNNING"); break;
+                    case PROCESS_READY:      terminal_writestring("READY"); break;
+                    case PROCESS_BLOCKED:    terminal_writestring("BLOCKED"); break;
+                    case PROCESS_TERMINATED: terminal_writestring("TERMINATED"); break;
+                }
+                terminal_writestring(" | ESP: 0x");
+                terminal_write_hex(proc->esp);
+                terminal_writestring("\n");
+                proc = proc->next;
+            }
+            terminal_writestring("Total Active Tasks: ");
+            terminal_write_int(count);
+            terminal_writestring("\n");
+        } else if (strncmp(input_buf, "spawn ", 6) == 0) {
+            const char* name = input_buf + 6;
+            process_t* new_p = process_create(name, background_worker_stub);
+            if (new_p != NULL) {
+                terminal_setcolor(VGA_COLOR_GREEN);
+                terminal_writestring("Spawned background task '");
+                terminal_writestring(name);
+                terminal_writestring("' with PID ");
+                terminal_write_int(new_p->pid);
+                terminal_writestring("\n");
+            } else {
+                terminal_setcolor(VGA_COLOR_LIGHT_RED);
+                terminal_writestring("Failed to spawn process!\n");
+            }
+        } else if (strncmp(input_buf, "kill ", 5) == 0) {
+            int pid = 0;
+            const char* s = input_buf + 5;
+            while (*s >= '0' && *s <= '9') {
+                pid = pid * 10 + (*s - '0');
+                s++;
+            }
+            if (pid > 1) {
+                process_kill((uint32_t)pid);
+                terminal_setcolor(VGA_COLOR_GREEN);
+                terminal_writestring("Killed process PID ");
+                terminal_write_int(pid);
+                terminal_writestring("\n");
+            } else {
+                terminal_setcolor(VGA_COLOR_LIGHT_RED);
+                terminal_writestring("Cannot kill Kernel Init Process PID 1!\n");
+            }
         } else if (strcmp(input_buf, "test") == 0 || strcmp(input_buf, "ktest") == 0) {
             test_results_t results;
             run_kernel_test_suite(&results);
@@ -487,8 +556,9 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("System Architecture Information:\n");
             terminal_setcolor(body_col);
-            terminal_writestring("  Kernel:     Nothing OS v0.4.0 (QA Verified Enterprise Edition)\n");
+            terminal_writestring("  Kernel:     Nothing OS v0.5.0 (Multitasking Release)\n");
             terminal_writestring("  CPU Mode:   32-bit x86 Protected Mode (i386)\n");
+            terminal_writestring("  Scheduler:  Preemptive Round-Robin Multi-Process Scheduler Active\n");
             terminal_writestring("  Syscalls:   POSIX Software Interrupt Vector INT 0x80 Active\n");
             terminal_writestring("  IDT Table:  256 Gate Descriptors Configured\n");
             terminal_writestring("  PIC:        8259 Remapped (Master 0x20, Slave 0x28)\n");
@@ -506,6 +576,7 @@ void run_kernel_shell(void) {
             terminal_writestring("  🧪 Automated Testing & QA:    Self-Testing Suite & Validation\n");
             terminal_writestring("  🧠 Core Assembly Architect:   GDT, IDT, PIC & CPU Interrupts\n");
             terminal_writestring("  ⚙️ Syscall & POSIX Engine:   INT 0x80 System Call Dispatcher\n");
+            terminal_writestring("  🔄 Process Scheduler Lead:    Multi-Tasking PCB & Round Robin\n");
             terminal_writestring("  💾 Memory Systems Specialist: Physical Memory & Kernel Heap\n");
             terminal_writestring("  ⌨️ Hardware Driver Lead:      PS/2 Controller & Serial UART\n");
             terminal_writestring("  ⏰ Clock & Peripherals Lead:  RTC CMOS Real-Time Clock & PIT\n");
@@ -586,6 +657,13 @@ void _kernel_main(void) {
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
     terminal_writestring("In-Memory Virtual File System (MemFS RAMDisk) initialized\n");
+
+    /* Initialize Process Scheduler */
+    scheduler_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("Preemptive Multi-Tasking Process Scheduler initialized\n");
 
     /* Initialize PS/2 Keyboard Driver */
     keyboard_init();
