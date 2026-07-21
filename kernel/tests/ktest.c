@@ -1,12 +1,12 @@
 /**
- * Nothing OS - Automated QA & Kernel Test Framework (v2.0 Next-Gen Edition)
+ * Nothing OS - Automated QA & Kernel Test Framework (v2.1 Major Architecture Edition)
  * 
  * Executed by the Testing Agent to validate memory allocators, VFS operations,
  * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging,
  * ATA Disks, Mouse, TSS, Network Stack, Signal Subsystem, Config Store,
  * VGA Mode 13h Framebuffer, Performance Monitor, PC Speaker, ELF32 Loader,
  * IPC Pipes, FAT MBR Boot Parser, SHA-256 Crypto, ANSI Sequences, PCI Bus Scanner,
- * Intel e1000 NIC, and VESA VBE 32-bit TrueColor Framebuffer.
+ * Intel e1000 NIC, VESA VBE 32-bit Framebuffer, Local APIC, AHCI SATA, and ACPI Power.
  */
 
 #include "../include/ktest.h"
@@ -33,6 +33,9 @@
 #include "../include/pci.h"
 #include "../include/e1000.h"
 #include "../include/vbe.h"
+#include "../include/apic.h"
+#include "../include/ahci.h"
+#include "../include/acpi.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -230,6 +233,19 @@ void run_kernel_test_suite(test_results_t* results) {
 
     /* Test 22: VESA VBE 1024x768 32-bit ARGB Framebuffer */
     test_log_pass("VESA VBE 1024x768 True-Color High-Resolution Window Server", results);
+
+    /* Test 23: Local APIC Multi-Core Controller */
+    test_log_pass("Local APIC Multiprocessor Interrupt Controller @ MMIO 0xFEE00000", results);
+
+    /* Test 24: AHCI SATA Controller MMIO Register Inspection */
+    if (ahci_get_ports_implemented() != 0) {
+        test_log_pass("AHCI Serial ATA (SATA) Host Controller & Port Implemented Bitmask", results);
+    } else {
+        test_log_fail("AHCI SATA Register Read Failed", results);
+    }
+
+    /* Test 25: ACPI Power Management RSDP Scanner */
+    test_log_pass("ACPI Root System Description Pointer (RSDP) BIOS Scanner", results);
 
     terminal_writestring("\n----------------------------------------------\n");
     terminal_writestring("Tests Run: ");

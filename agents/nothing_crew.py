@@ -27,6 +27,27 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "APIC_MULTICORE_LEAD": Agent(
+        name="Local APIC & Multi-Core SMP Lead",
+        role="Symmetric Multiprocessing & APIC Controller Specialist",
+        avatar="⚡",
+        goal="Drive Local APIC MMIO 0xFEE00000 registers, CPU core ID enumeration, and spurious vectors.",
+        skills=["Local APIC MMIO", "CPUID Core Discovery", "Spurious Vectors", "Symmetric Multiprocessing"]
+    ),
+    "AHCI_SATA_LEAD": Agent(
+        name="AHCI SATA Host Controller Lead",
+        role="Serial ATA Storage Subsystem Specialist",
+        avatar="💽",
+        goal="Drive AHCI SATA controllers, Generic Host Control MMIO BAR5, and Port bitmasks.",
+        skills=["AHCI BAR5 MMIO", "SATA Port Enumeration", "Host Capabilities", "Mass Storage Specs"]
+    ),
+    "ACPI_POWER_LEAD": Agent(
+        name="ACPI Power Management Lead",
+        role="BIOS RSDP Table Discovery & Power Off Specialist",
+        avatar="🔌",
+        goal="Scan BIOS RSDP tables 'RSD PTR ', parse ACPI tables, and control soft system power off.",
+        skills=["ACPI RSDP Table Scan", "FADT Parsing", "System Soft Poweroff", "BIOS Memory Regions"]
+    ),
     "PCI_BUS_LEAD": Agent(
         name="PCI Bus Enumerator & Hardware Scanner Lead",
         role="Motherboard PCI Bus Topology & Device Discovery Lead",
@@ -102,7 +123,7 @@ CREW_CORPORATION = {
         role="Self-Testing Framework & Validation Specialist",
         avatar="🧪",
         goal="Execute automated kernel test suites, verify memory safety, file operations, and system call stability.",
-        skills=["22-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
+        skills=["25-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
     ),
     "GUI_PIXEL_ENGINE_LEAD": Agent(
         name="Mode 13h Pixel GUI & Desktop Lead",
@@ -220,7 +241,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (pci, e1000, vesa, hash, ansi, pipe, sem, fat).",
+        goal="Develop interactive kernel shell commands (apic, ahci, acpi, shutdown, pci, e1000, vesa).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
@@ -238,15 +259,15 @@ class NothingOSCorporation:
         self.corp = CREW_CORPORATION
 
     def display_board(self):
-        print("=" * 88)
+        print("=" * 90)
         print("    🏢 NOTHING OS DEVELOPMENT CORPORATION - EXECUTIVE CREW BOARD 🏢")
-        print("=" * 88)
+        print("=" * 90)
         for key, agent in self.corp.items():
             print(f"{agent.avatar} [{agent.role}]")
             print(f"   Agent:  {agent.name}")
             print(f"   Goal:   {agent.goal}")
             print(f"   Skills: {', '.join(agent.skills)}")
-            print("-" * 88)
+            print("-" * 90)
 
     def run_build_check(self) -> bool:
         try:

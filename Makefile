@@ -1,5 +1,5 @@
 # =============================================================================
-# Nothing OS - Enterprise Makefile (v2.0 Major Edition)
+# Nothing OS - Enterprise Makefile (v2.1 Major Suite Edition)
 # =============================================================================
 # Build system for Nothing OS (x86 Bare Metal Operating System)
 # =============================================================================
@@ -31,6 +31,8 @@ ANSI_SRC     = $(KERNEL_DIR)/drivers/ansi.c
 PCI_SRC      = $(KERNEL_DIR)/drivers/pci.c
 E1000_SRC    = $(KERNEL_DIR)/drivers/e1000.c
 VBE_SRC      = $(KERNEL_DIR)/drivers/vbe.c
+AHCI_SRC     = $(KERNEL_DIR)/drivers/ahci.c
+ACPI_SRC     = $(KERNEL_DIR)/drivers/acpi.c
 ATA_SRC      = $(KERNEL_DIR)/drivers/ata.c
 MOUSE_SRC    = $(KERNEL_DIR)/drivers/mouse.c
 HEAP_SRC     = $(KERNEL_DIR)/mm/heap.c
@@ -38,6 +40,7 @@ PAGING_SRC   = $(KERNEL_DIR)/mm/paging.c
 VFS_SRC      = $(KERNEL_DIR)/fs/vfs.c
 FAT_SRC      = $(KERNEL_DIR)/fs/fat.c
 IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
+APIC_SRC     = $(KERNEL_DIR)/arch/x86/apic.c
 SYSCALL_SRC  = $(KERNEL_DIR)/arch/x86/syscall.c
 TSS_SRC      = $(KERNEL_DIR)/arch/x86/tss.c
 NET_SRC      = $(KERNEL_DIR)/net/net.c
@@ -67,7 +70,8 @@ OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/fat.o \
        $(BUILD_DIR)/vga_graphics.o $(BUILD_DIR)/vga_mode13.o \
        $(BUILD_DIR)/sound.o $(BUILD_DIR)/ansi.o $(BUILD_DIR)/pci.o \
-       $(BUILD_DIR)/e1000.o $(BUILD_DIR)/vbe.o $(BUILD_DIR)/syscall.o \
+       $(BUILD_DIR)/e1000.o $(BUILD_DIR)/vbe.o $(BUILD_DIR)/ahci.o \
+       $(BUILD_DIR)/acpi.o $(BUILD_DIR)/apic.o $(BUILD_DIR)/syscall.o \
        $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o $(BUILD_DIR)/signal.o \
        $(BUILD_DIR)/env.o $(BUILD_DIR)/monitor.o $(BUILD_DIR)/ipc.o \
        $(BUILD_DIR)/sha256.o $(BUILD_DIR)/scheduler.o \
@@ -88,7 +92,7 @@ dirs:
 
 # Link kernel binary
 $(KERNEL): $(OBJS)
-	@echo "Linking Nothing OS v2.0 kernel binary..."
+	@echo "Linking Nothing OS Enterprise v2.1 kernel binary..."
 	@$(LD) $(LDFLAGS) -o $@ $(OBJS)
 	@echo "Kernel built successfully: $@"
 	@echo "Kernel size: $$(stat -c%s $@) bytes"
@@ -103,9 +107,24 @@ $(BUILD_DIR)/idt.o: $(IDT_SRC)
 	@echo "Compiling IDT & PIC Interrupt Engine..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
+# Compile Local APIC Multi-Core Controller
+$(BUILD_DIR)/apic.o: $(APIC_SRC)
+	@echo "Compiling Local APIC Multiprocessor Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
 # Compile PCI Bus Driver
 $(BUILD_DIR)/pci.o: $(PCI_SRC)
 	@echo "Compiling PCI Bus Enumerator & Hardware Scanner Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile AHCI SATA Storage Driver
+$(BUILD_DIR)/ahci.o: $(AHCI_SRC)
+	@echo "Compiling AHCI Serial ATA (SATA) Host Controller Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile ACPI Power Management Engine
+$(BUILD_DIR)/acpi.o: $(ACPI_SRC)
+	@echo "Compiling ACPI Power Management & RSDP Scanner Driver..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile Intel e1000 Gigabit NIC Driver
