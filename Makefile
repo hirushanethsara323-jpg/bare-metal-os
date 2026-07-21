@@ -34,6 +34,8 @@ IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
 SYSCALL_SRC  = $(KERNEL_DIR)/arch/x86/syscall.c
 TSS_SRC      = $(KERNEL_DIR)/arch/x86/tss.c
 NET_SRC      = $(KERNEL_DIR)/net/net.c
+SIGNAL_SRC   = $(KERNEL_DIR)/sys/signal.c
+ENV_SRC      = $(KERNEL_DIR)/sys/env.c
 SCHED_SRC    = $(KERNEL_DIR)/proc/scheduler.c
 KTEST_SRC    = $(KERNEL_DIR)/tests/ktest.c
 BOOT_SRC     = $(BOOT_DIR)/multiboot_header.asm
@@ -53,8 +55,9 @@ OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/heap.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/serial.o \
        $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/vga_graphics.o \
        $(BUILD_DIR)/syscall.o $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o \
-       $(BUILD_DIR)/scheduler.o $(BUILD_DIR)/paging.o \
-       $(BUILD_DIR)/ata.o $(BUILD_DIR)/mouse.o $(BUILD_DIR)/ktest.o
+       $(BUILD_DIR)/signal.o $(BUILD_DIR)/env.o $(BUILD_DIR)/scheduler.o \
+       $(BUILD_DIR)/paging.o $(BUILD_DIR)/ata.o $(BUILD_DIR)/mouse.o \
+       $(BUILD_DIR)/ktest.o
 
 # =============================================================================
 # Targets
@@ -98,6 +101,16 @@ $(BUILD_DIR)/tss.o: $(TSS_SRC)
 # Compile Network Stack Engine
 $(BUILD_DIR)/net.o: $(NET_SRC)
 	@echo "Compiling Ethernet / ARP / IPv4 Network Stack Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Process Signals Engine
+$(BUILD_DIR)/signal.o: $(SIGNAL_SRC)
+	@echo "Compiling Process Signal & Kernel Panic Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile System Environment Config Store
+$(BUILD_DIR)/env.o: $(ENV_SRC)
+	@echo "Compiling Global Environment Config Store..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile Process Scheduler Engine

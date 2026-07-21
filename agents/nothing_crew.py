@@ -41,6 +41,20 @@ CREW_CORPORATION = {
         goal="Execute automated kernel test suites, verify memory safety, file operations, and system call stability.",
         skills=["Self-Testing Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
     ),
+    "CRASH_SIGNAL_LEAD": Agent(
+        name="Signal & Emergency Crash Telemetry Lead",
+        role="POSIX Signals & Kernel Panic Specialist",
+        avatar="🚨",
+        goal="Maintain POSIX signals (SIGKILL, SIGINT, SIGSEGV), process signal delivery, and Panic crash dumps.",
+        skills=["POSIX Process Signals", "Kernel Panic Red Screen", "CPU Register Dumps", "Fault Isolation"]
+    ),
+    "ENV_CONFIG_LEAD": Agent(
+        name="Environment & Global Config Lead",
+        role="System Environment Key-Value Engine Lead",
+        avatar="⚙️",
+        goal="Maintain dynamic key-value global environment variable store (PATH, HOME, USER, SHELL, TERM).",
+        skills=["Global Config Store", "ksetenv / kgetenv", "Dynamic Var Allocation", "Shell Export Interface"]
+    ),
     "NETWORK_STACK_LEAD": Agent(
         name="Network Protocol Stack Lead",
         role="Ethernet, ARP, IPv4 & ICMP Architect",
@@ -129,7 +143,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (net, ring3, paging, ata, mouse, ps, spawn, test).",
+        goal="Develop interactive kernel shell commands (env, export, signal, panic, net, ring3, paging).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(

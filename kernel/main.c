@@ -4,7 +4,8 @@
  * Main kernel execution context initializing GDT/IDT interrupts, 8259 PIC,
  * PIT system timer, Serial UART COM1, Real-Time Clock, Kernel Heap, VFS,
  * VGA Graphics, System Calls, Process Scheduler, Virtual Paging, ATA Disk,
- * PS/2 Mouse, Task State Segment (TSS), Network Stack, and Automated QA.
+ * PS/2 Mouse, Task State Segment (TSS), Network Stack, Signals, Env Store,
+ * and Automated QA Tests.
  */
 
 #include <stdint.h>
@@ -24,11 +25,13 @@
 #include "include/mouse.h"
 #include "include/tss.h"
 #include "include/net.h"
+#include "include/signal.h"
+#include "include/env.h"
 #include "include/ktest.h"
 
 /* Kernel Metadata */
 #define KERNEL_NAME     "Nothing OS"
-#define KERNEL_VERSION  "0.7.0"
+#define KERNEL_VERSION  "0.8.0"
 #define KERNEL_AUTHOR   "Nothing OS Development Corporation & AI Crew"
 
 /* Physical Memory Markers */
@@ -225,7 +228,7 @@ void print_banner(void) {
     terminal_writestring("  ║  ╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝    ║\n");
     terminal_setcolor(title_col);
     terminal_writestring("  ║                                                               ║\n");
-    terminal_writestring("  ║      Networking & User Mode Enterprise - System v");
+    terminal_writestring("  ║      Complete Operating System Suite - System v");
     terminal_setcolor(body_col);
     terminal_writestring(KERNEL_VERSION);
     terminal_setcolor(title_col);
@@ -248,8 +251,8 @@ void run_kernel_shell(void) {
     uint8_t body_col  = vga_get_theme_color(current_theme, false);
     
     terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
-    terminal_writestring("[OK] Interactive Nothing OS Enterprise Shell v0.7.0 Active.\n");
-    terminal_writestring("TSS Task Descriptor & Network Stack active. Type 'help' for commands.\n\n");
+    terminal_writestring("[OK] Interactive Nothing OS Complete Suite Shell v0.8.0 Active.\n");
+    terminal_writestring("Signals & Environment Store active. Type 'help' for commands.\n\n");
     
     while (1) {
         terminal_setcolor(title_col);
@@ -266,6 +269,10 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("Available System Commands:\n");
             terminal_setcolor(body_col);
+            terminal_writestring("  env                    - Display Global System Environment Variables\n");
+            terminal_writestring("  export <KEY>=<VAL>     - Dynamically set/update global environment variable\n");
+            terminal_writestring("  signal <pid> <sig>     - Send POSIX signal (e.g. 9=SIGKILL) to process\n");
+            terminal_writestring("  panic                  - Test Emergency Kernel Panic CPU register dump\n");
             terminal_writestring("  net / ping             - Display Network Stack & Transmit ICMP Echo Ping\n");
             terminal_writestring("  ring3 / usermode       - View Task State Segment (TSS) Ring 3 Privilege State\n");
             terminal_writestring("  paging / vmm           - View x86 Virtual Memory Paging & CR3 status\n");
@@ -298,9 +305,67 @@ void run_kernel_shell(void) {
             terminal_writestring(KERNEL_NAME);
             terminal_writestring(" v");
             terminal_writestring(KERNEL_VERSION);
-            terminal_writestring(" (Networking & User Mode Enterprise Release)\nMaintainer: ");
+            terminal_writestring(" (Complete Operating System Suite)\nMaintainer: ");
             terminal_writestring(KERNEL_AUTHOR);
             terminal_writestring("\n");
+        } else if (strcmp(input_buf, "env") == 0) {
+            terminal_setcolor(title_col);
+            terminal_writestring("Global OS System Environment Variables:\n");
+            terminal_setcolor(body_col);
+            env_var_t* list = env_get_list();
+            while (list != NULL) {
+                terminal_writestring("  ");
+                terminal_writestring(list->key);
+                terminal_writestring("=");
+                terminal_writestring(list->value);
+                terminal_writestring("\n");
+                list = list->next;
+            }
+        } else if (strncmp(input_buf, "export ", 7) == 0) {
+            const char* ptr = input_buf + 7;
+            char key[32];
+            size_t i = 0;
+            while (*ptr && *ptr != '=' && i < 31) {
+                key[i++] = *ptr++;
+            }
+            key[i] = '\0';
+            if (*ptr == '=') ptr++;
+            if (ksetenv(key, ptr)) {
+                terminal_setcolor(VGA_COLOR_GREEN);
+                terminal_writestring("Exported Environment Variable: ");
+                terminal_writestring(key);
+                terminal_writestring("=");
+                terminal_writestring(ptr);
+                terminal_writestring("\n");
+            } else {
+                terminal_setcolor(VGA_COLOR_LIGHT_RED);
+                terminal_writestring("Failed to export environment variable!\n");
+            }
+        } else if (strncmp(input_buf, "signal ", 7) == 0) {
+            int pid = 0, sig = 0;
+            const char* ptr = input_buf + 7;
+            while (*ptr >= '0' && *ptr <= '9') {
+                pid = pid * 10 + (*ptr - '0');
+                ptr++;
+            }
+            if (*ptr == ' ') ptr++;
+            while (*ptr >= '0' && *ptr <= '9') {
+                sig = sig * 10 + (*ptr - '0');
+                ptr++;
+            }
+            if (signal_send((uint32_t)pid, sig)) {
+                terminal_setcolor(VGA_COLOR_GREEN);
+                terminal_writestring("Dispatched Signal ");
+                terminal_write_int(sig);
+                terminal_writestring(" to Process PID ");
+                terminal_write_int(pid);
+                terminal_writestring("\n");
+            } else {
+                terminal_setcolor(VGA_COLOR_LIGHT_RED);
+                terminal_writestring("Failed to dispatch signal!\n");
+            }
+        } else if (strcmp(input_buf, "panic") == 0) {
+            kernel_panic("Manual Test Routine Triggered Kernel Stop Code");
         } else if (strcmp(input_buf, "net") == 0 || strcmp(input_buf, "ping") == 0) {
             uint8_t mac[6];
             uint32_t ip;
@@ -627,8 +692,10 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("System Architecture Information:\n");
             terminal_setcolor(body_col);
-            terminal_writestring("  Kernel:     Nothing OS v0.7.0 (Networking & User Mode Release)\n");
+            terminal_writestring("  Kernel:     Nothing OS v0.8.0 (Complete Operating System Suite)\n");
             terminal_writestring("  CPU Mode:   32-bit x86 Protected Mode (i386)\n");
+            terminal_writestring("  Signals:    POSIX Signals (SIGKILL, SIGINT, SIGSEGV) Engine\n");
+            terminal_writestring("  Environment:Global Environment Variables Store Active\n");
             terminal_writestring("  User Mode:  Task State Segment (TSS) Ring 3 Stack Loaded\n");
             terminal_writestring("  Network:    Ethernet II / ARP / IPv4 / ICMP Loopback Interface\n");
             terminal_writestring("  Paging:     x86 4KB Virtual Memory Paging Enabled\n");
@@ -650,6 +717,8 @@ void run_kernel_shell(void) {
             terminal_writestring("  👑 CEO & Lead OS Architect:   Overall Vision, PRs & Architecture\n");
             terminal_writestring("  🔍 OS Research & Intel Lead:  OSDev Standards & Spec Gathering\n");
             terminal_writestring("  🧪 Automated Testing & QA:    Self-Testing Suite & Validation\n");
+            terminal_writestring("  🚨 Signal & Crash Telemetry: POSIX Process Signals & Crash Handler\n");
+            terminal_writestring("  ⚙️ Environment Config Store: Global Environment Variable Engine\n");
             terminal_writestring("  🌐 Network Stack Protocol Lead:Ethernet, ARP, IPv4 & ICMP Ping Engine\n");
             terminal_writestring("  👤 User Mode Ring 3 Lead:    TSS Task State Segment & IRET Switch\n");
             terminal_writestring("  🧠 Core Assembly Architect:   GDT, IDT, PIC & CPU Interrupts\n");
@@ -710,6 +779,20 @@ void _kernel_main(void) {
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
     terminal_writestring("Interrupt Descriptor Table (256 Gates) & 8259 PIC Remapped\n");
+
+    /* Initialize System Signals Subsystem */
+    signal_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("POSIX Signal Handling Subsystem initialized\n");
+
+    /* Initialize System Environment Config Store */
+    env_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("Global OS System Environment Configuration Store initialized\n");
 
     /* Initialize System Call Engine Vector (INT 0x80) */
     syscall_init();

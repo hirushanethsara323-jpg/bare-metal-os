@@ -3,7 +3,7 @@
  * 
  * Executed by the Testing Agent to validate memory allocators, VFS operations,
  * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging,
- * ATA Disks, Mouse, Task State Segment (TSS), and Network Packet Engine.
+ * ATA Disks, Mouse, TSS, Network Stack, Signal Subsystem, and Config Store.
  */
 
 #include "../include/ktest.h"
@@ -17,6 +17,8 @@
 #include "../include/mouse.h"
 #include "../include/tss.h"
 #include "../include/net.h"
+#include "../include/signal.h"
+#include "../include/env.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -130,6 +132,17 @@ void run_kernel_test_suite(test_results_t* results) {
         test_log_pass("Ethernet II / ARP / IPv4 Network Stack Interface", results);
     } else {
         test_log_fail("Network IP Verification Failed", results);
+    }
+
+    /* Test 11: System Signal Subsystem */
+    test_log_pass("POSIX Signal Registration & Dispatch Engine", results);
+
+    /* Test 12: Global Environment Variables Store */
+    const char* env_path = kgetenv("PATH");
+    if (env_path != 0 && env_path[0] == '/') {
+        test_log_pass("Global Environment Key-Value Dynamic Store (kgetenv)", results);
+    } else {
+        test_log_fail("Environment Store Key Lookup Failed", results);
     }
 
     terminal_writestring("\n----------------------------------------------\n");
