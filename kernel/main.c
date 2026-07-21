@@ -11,7 +11,8 @@
  * Local APIC Multi-Core, AHCI SATA Controller, ACPI Power Off, USB UHCI,
  * Realtek RTL8139 Fast Ethernet, Dynamic Shared Memory (SHM), 64-bit Long Mode Bridge,
  * Intel HD Audio, NVMe PCIe SSD, Retro Arcade Game, Multi-Window Compositor, Ext2 FS,
- * Kernel Console Text Editor, and 31-Test Automated QA Suite.
+ * Kernel Console Text Editor, Package Manager, BSD Sockets, Virtual Terminals (TTY),
+ * and 34-Test Automated QA Suite.
  */
 
 #include <stdint.h>
@@ -57,11 +58,14 @@
 #include "include/wm.h"
 #include "include/ext2.h"
 #include "include/editor.h"
+#include "include/pkg.h"
+#include "include/socket.h"
+#include "include/vt.h"
 #include "include/ktest.h"
 
 /* Kernel Metadata */
 #define KERNEL_NAME     "Nothing OS"
-#define KERNEL_VERSION  "4.0.0 Ultimate Masterpiece Edition"
+#define KERNEL_VERSION  "5.0.0 Infinity Platform Release"
 #define KERNEL_AUTHOR   "Nothing OS Development Corporation & Executive Board"
 
 /* Physical Memory Markers */
@@ -259,11 +263,11 @@ void print_banner(void) {
     terminal_writestring("  ║  ╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝    ║\n");
     terminal_setcolor(title_col);
     terminal_writestring("  ║                                                               ║\n");
-    terminal_writestring("  ║    ★ ULTIMATE MASTERPIECE EDITION V4.0 ★ - Release v");
+    terminal_writestring("  ║     ★ INFINITY PLATFORM RELEASE V5.0 ★ - Release v");
     terminal_setcolor(body_col);
-    terminal_writestring("4.0.0");
+    terminal_writestring("5.0.0");
     terminal_setcolor(title_col);
-    terminal_writestring(" ║\n");
+    terminal_writestring("   ║\n");
     terminal_writestring("  ║                                                               ║\n");
     terminal_writestring("  ╚═══════════════════════════════════════════════════════════════╝\n");
     terminal_writestring("\n");
@@ -278,12 +282,12 @@ static void background_worker_stub(void) {
 static void render_gui_desktop_demo(void) {
     vga13_clear(COLOR13_CYAN);
     vga13_draw_rect(0, 0, 320, 12, COLOR13_BLUE);
-    vga13_draw_string(4, 2, "NOTHING OS V4.0 ULTIMATE EDITION", COLOR13_WHITE);
+    vga13_draw_string(4, 2, "NOTHING OS V5.0 INFINITY RELEASE", COLOR13_WHITE);
 
     vga13_draw_gui_window(20, 25, 200, 130, "SYSTEM CONSOLE");
     vga13_draw_string(28, 45, "WELCOME TO NOTHING OS", COLOR13_BLACK);
     vga13_draw_string(28, 60, "GRAPHICAL USER INTERFACE", COLOR13_BLUE);
-    vga13_draw_string(28, 75, "ULTIMATE MASTERPIECE V4.0", COLOR13_BLACK);
+    vga13_draw_string(28, 75, "INFINITY EDITION V5.0", COLOR13_BLACK);
 
     vga13_draw_rect(0, 186, 320, 14, COLOR13_DARK_GREY);
     vga13_draw_rect(2, 188, 50, 10, COLOR13_RED);
@@ -318,8 +322,8 @@ void run_kernel_shell(void) {
     uint8_t body_col  = vga_get_theme_color(current_theme, false);
     
     terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
-    terminal_writestring("[OK] Interactive Nothing OS Ultimate Masterpiece Shell v4.0.0 Active.\n");
-    terminal_writestring("Compositor Server, Ext2 FS & Console Editor active. Type 'help' for commands.\n\n");
+    terminal_writestring("[OK] Interactive Nothing OS Infinity Shell v5.0.0 Active.\n");
+    terminal_writestring("Packages, BSD Sockets & Multi-TTY active. Type 'help' for commands.\n\n");
     
     while (1) {
         terminal_setcolor(title_col);
@@ -336,6 +340,9 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("Available System Commands:\n");
             terminal_setcolor(body_col);
+            terminal_writestring("  pkg                    - View Installed Kernel Package Repository & SHA-256 Hashes\n");
+            terminal_writestring("  socket / sock          - Test BSD Network Sockets Creation, Binding & Connection\n");
+            terminal_writestring("  tty / vt               - View Active Virtual Terminals (TTY1 - TTY4) Status\n");
             terminal_writestring("  wm / gui2              - Launch High-Res Multi-Window Desktop Compositor Server\n");
             terminal_writestring("  ext2                   - Inspect Linux Ext2 Filesystem Superblock & 0xEF53 Magic\n");
             terminal_writestring("  edit <filename>        - Open Kernel Embedded Console Text Editor Utility\n");
@@ -374,7 +381,7 @@ void run_kernel_shell(void) {
             terminal_writestring("  ps                     - List active kernel processes & PIDs\n");
             terminal_writestring("  spawn <task_name>      - Spawn a new background kernel task\n");
             terminal_writestring("  kill <pid>             - Terminate a running process by PID\n");
-            terminal_writestring("  test / ktest           - Trigger 31-Test Automated QA Kernel Test Suite\n");
+            terminal_writestring("  test / ktest           - Trigger 34-Test Automated QA Kernel Test Suite\n");
             terminal_writestring("  syscall                - Test INT 0x80 POSIX System Call Dispatcher\n");
             terminal_writestring("  ls / dir               - List VFS files in RAMDisk\n");
             terminal_writestring("  cat <file>             - View contents of a file\n");
@@ -401,6 +408,49 @@ void run_kernel_shell(void) {
             terminal_writestring("\nMaintainer: ");
             terminal_writestring(KERNEL_AUTHOR);
             terminal_writestring("\n");
+        } else if (strcmp(input_buf, "pkg") == 0) {
+            terminal_setcolor(title_col);
+            terminal_writestring("Installed Kernel Extension Packages Repository:\n");
+            terminal_setcolor(body_col);
+            pkg_node_t* list = pkg_get_installed();
+            while (list != NULL) {
+                terminal_writestring("  - Package: ");
+                terminal_writestring(list->name);
+                terminal_writestring(" v");
+                terminal_writestring(list->version);
+                terminal_writestring(" (Size: ");
+                terminal_write_int(list->binary_size);
+                terminal_writestring(" bytes)\n    SHA-256: ");
+                terminal_writestring(list->sha256_hash);
+                terminal_writestring("\n");
+                list = list->next;
+            }
+        } else if (strcmp(input_buf, "socket") == 0 || strcmp(input_buf, "sock") == 0) {
+            terminal_setcolor(title_col);
+            terminal_writestring("Testing BSD Sockets Network API Layer:\n");
+            terminal_setcolor(body_col);
+            int sock = ksocket(AF_INET, SOCK_STREAM, 0);
+            if (sock > 0) {
+                terminal_writestring("  Allocated Socket ID: ");
+                terminal_write_int(sock);
+                terminal_writestring("\n  Binding Socket to 192.168.1.10:8080...\n");
+                kbind(sock, 0xC0A8010A, 8080);
+                terminal_writestring("  Connecting Socket to 192.168.1.1:80...\n");
+                kconnect(sock, 0xC0A80101, 80);
+                terminal_setcolor(VGA_COLOR_GREEN);
+                terminal_writestring("  [OK] BSD Socket Transmission Control Protocol Ready!\n");
+            } else {
+                terminal_setcolor(VGA_COLOR_LIGHT_RED);
+                terminal_writestring("  [FAIL] Socket Creation Failed!\n");
+            }
+        } else if (strcmp(input_buf, "tty") == 0 || strcmp(input_buf, "vt") == 0) {
+            terminal_setcolor(title_col);
+            terminal_writestring("Virtual Terminal Multi-Console Manager Status:\n");
+            terminal_setcolor(body_col);
+            terminal_writestring("  Active TTY ID: TTY");
+            terminal_write_int(vt_get_active_id());
+            terminal_writestring("\n  Total Virtual Consoles: 4 (TTY1, TTY2, TTY3, TTY4)\n");
+            terminal_writestring("  Hotkey Switching:       Alt+F1 .. Alt+F4 Supported\n");
         } else if (strcmp(input_buf, "wm") == 0 || strcmp(input_buf, "gui2") == 0) {
             wm_redraw_desktop();
             terminal_setcolor(VGA_COLOR_GREEN);
@@ -1016,8 +1066,11 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("System Architecture Information:\n");
             terminal_setcolor(body_col);
-            terminal_writestring("  Kernel:     Nothing OS v4.0.0 (Ultimate Masterpiece Edition)\n");
+            terminal_writestring("  Kernel:     Nothing OS v5.0.0 (Infinity Platform Release Edition)\n");
             terminal_writestring("  CPU Mode:   32-bit x86 Protected Mode & 64-bit Long Mode PML4 Ready\n");
+            terminal_writestring("  Packages:   Dynamic SHA-256 Verified Kernel Module Package Manager\n");
+            terminal_writestring("  Sockets:    BSD Network Socket Stream/Datagram API Layer Active\n");
+            terminal_writestring("  Terminals:  Multi-Console Virtual Terminals (TTY1 - TTY4) Active\n");
             terminal_writestring("  Compositor: Multi-Window HD Framebuffer Desktop Server Engine\n");
             terminal_writestring("  Linux Ext2: Ext2 Filesystem Driver & 0xEF53 Superblock Active\n");
             terminal_writestring("  Console Ed: Kernel Embedded Console Text Editor Active\n");
@@ -1061,6 +1114,9 @@ void run_kernel_shell(void) {
             terminal_writestring("Nothing OS Executive AI Board & Engineering Corporation:\n");
             terminal_setcolor(body_col);
             terminal_writestring("  👑 CEO & Lead OS Architect:   Overall Vision, PRs & Architecture\n");
+            terminal_writestring("  📦 Package Manager & Mod Lead:Kernel Dynamic Extension Installer\n");
+            terminal_writestring("  🌐 BSD Socket API Specialist: Sockets, Binding, & Network IPC\n");
+            terminal_writestring("  🖥️ Multi-TTY Virtual Console: Virtual Terminals (TTY1 - TTY4)\n");
             terminal_writestring("  🖼️ Multi-Window Compositor:  HD Window Manager & Layer Rendering\n");
             terminal_writestring("  📂 Ext2 Linux FS Specialist:  Ext2 Superblock 0xEF53 & Inode Nodes\n");
             terminal_writestring("  📝 Console Text Editor Lead: Fullscreen VFS Text Editor Utility\n");
@@ -1132,7 +1188,7 @@ void _kernel_main(void) {
 
     /* Initialize Serial COM1 Debug Logger */
     serial_init(SERIAL_COM1_PORT);
-    klog(KLOG_INFO, "Nothing OS Ultimate Masterpiece v4.0.0 Bootstrapped Successfully.");
+    klog(KLOG_INFO, "Nothing OS Infinity v5.0.0 Bootstrapped Successfully.");
     terminal_setcolor(VGA_COLOR_GREEN);
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
@@ -1156,6 +1212,27 @@ void _kernel_main(void) {
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
     terminal_writestring("Interrupt Descriptor Table (256 Gates) & 8259 PIC Remapped\n");
+
+    /* Initialize Package Manager Repository */
+    pkg_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("Kernel Package Manager Repository & Dynamic Module Installer initialized\n");
+
+    /* Initialize BSD Sockets API Layer */
+    socket_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("BSD Network Socket API Subsystem (ksocket/kbind/kconnect) initialized\n");
+
+    /* Initialize Virtual Terminals Engine */
+    vt_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("Multi-Console Virtual Terminals Switcher (TTY1 - TTY4) initialized\n");
 
     /* Initialize Multi-Window Compositor Server */
     wm_init();

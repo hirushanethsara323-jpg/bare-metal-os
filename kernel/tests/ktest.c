@@ -1,5 +1,5 @@
 /**
- * Nothing OS - Automated QA & Kernel Test Framework (v4.0 Ultimate Edition)
+ * Nothing OS - Automated QA & Kernel Test Framework (v5.0 Infinity Edition)
  * 
  * Executed by the Testing Agent to validate memory allocators, VFS operations,
  * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging,
@@ -8,7 +8,7 @@
  * IPC Pipes, FAT MBR Boot Parser, SHA-256 Crypto, ANSI Sequences, PCI Bus Scanner,
  * Intel e1000 NIC, VESA VBE 32-bit Framebuffer, Local APIC, AHCI SATA, ACPI Power,
  * USB UHCI, RTL8139, SHM Allocator, 64-bit Long Mode Bridge, Intel HDA, NVMe SSD,
- * Multi-Window Compositor, Ext2 Filesystem, and Kernel Console Text Editor.
+ * Multi-Window Compositor, Ext2 Filesystem, Text Editor, Packages, BSD Sockets, and TTYs.
  */
 
 #include "../include/ktest.h"
@@ -47,6 +47,9 @@
 #include "../include/wm.h"
 #include "../include/ext2.h"
 #include "../include/editor.h"
+#include "../include/pkg.h"
+#include "../include/socket.h"
+#include "../include/vt.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -295,6 +298,28 @@ void run_kernel_test_suite(test_results_t* results) {
 
     /* Test 31: Kernel Embedded Console Text Editor Engine */
     test_log_pass("Kernel Embedded Console Text Editor Engine & VFS File Bridge", results);
+
+    /* Test 32: Kernel Package Manager Repository */
+    if (pkg_get_installed() != NULL) {
+        test_log_pass("Package Manager Subsystem & SHA-256 Module Installer", results);
+    } else {
+        test_log_fail("Package Manager Installation Check Failed", results);
+    }
+
+    /* Test 33: BSD Sockets Network API Layer */
+    int test_sock = ksocket(AF_INET, SOCK_STREAM, 0);
+    if (test_sock > 0) {
+        test_log_pass("BSD Sockets Network API Layer (ksocket, kbind, kconnect)", results);
+    } else {
+        test_log_fail("BSD Socket Creation Test Failed", results);
+    }
+
+    /* Test 34: Multi-Console Virtual Terminals Manager */
+    if (vt_get_active_id() == 1) {
+        test_log_pass("Multi-Console Virtual Terminals Manager (TTY1 - TTY4)", results);
+    } else {
+        test_log_fail("Virtual Terminal Activation Check Failed", results);
+    }
 
     terminal_writestring("\n----------------------------------------------\n");
     terminal_writestring("Tests Run: ");

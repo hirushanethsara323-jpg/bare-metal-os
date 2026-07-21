@@ -27,6 +27,27 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "PACKAGE_MANAGER_LEAD": Agent(
+        name="Kernel Extension Package Manager Lead",
+        role="Extension Repository & Signature Specialist",
+        avatar="📦",
+        goal="Maintain kernel extension package repository, SHA-256 binary validation, & module installation.",
+        skills=["Package Repository", "SHA-256 Signatures", "Dynamic Installation", "Module Management"]
+    ),
+    "BSD_SOCKET_LEAD": Agent(
+        name="BSD Network Socket API Specialist",
+        role="Network Sockets & Transmission Protocol Lead",
+        avatar="🌐",
+        goal="Maintain BSD Sockets interface (ksocket, kbind, kconnect, ksend, krecv) for network IPC.",
+        skills=["BSD Socket Spec", "AF_INET / SOCK_STREAM", "Port Binding", "Network Sockets"]
+    ),
+    "VIRTUAL_TERMINAL_LEAD": Agent(
+        name="Multi-Console Virtual Terminal Lead",
+        role="TTY Console Switcher Specialist",
+        avatar="🖥️",
+        goal="Drive 4 independent hardware Virtual Terminals (TTY1 - TTY4) and per-console video buffers.",
+        skills=["Virtual Terminals (TTY1-4)", "Console Frame Buffers", "Hotkey Switcher", "Multi-Console"]
+    ),
     "MULTI_WINDOW_COMPOSITOR_LEAD": Agent(
         name="High-Res Multi-Window Compositor Lead",
         role="Window Server & Desktop Manager Lead Specialist",
@@ -193,7 +214,7 @@ CREW_CORPORATION = {
         role="Self-Testing Framework & Validation Specialist",
         avatar="🧪",
         goal="Execute automated kernel test suites, verify memory safety, file operations, and system call stability.",
-        skills=["31-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
+        skills=["34-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
     ),
     "GUI_PIXEL_ENGINE_LEAD": Agent(
         name="Mode 13h Pixel GUI & Desktop Lead",
@@ -311,7 +332,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (wm, ext2, edit, longmode, hda, nvme, pong).",
+        goal="Develop interactive kernel shell commands (pkg, socket, tty, wm, ext2, edit, longmode).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
@@ -329,15 +350,15 @@ class NothingOSCorporation:
         self.corp = CREW_CORPORATION
 
     def display_board(self):
-        print("=" * 100)
+        print("=" * 104)
         print("    🏢 NOTHING OS DEVELOPMENT CORPORATION - EXECUTIVE CREW BOARD 🏢")
-        print("=" * 100)
+        print("=" * 104)
         for key, agent in self.corp.items():
             print(f"{agent.avatar} [{agent.role}]")
             print(f"   Agent:  {agent.name}")
             print(f"   Goal:   {agent.goal}")
             print(f"   Skills: {', '.join(agent.skills)}")
-            print("-" * 100)
+            print("-" * 104)
 
     def run_build_check(self) -> bool:
         try:

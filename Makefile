@@ -1,5 +1,5 @@
 # =============================================================================
-# Nothing OS - Enterprise Makefile (v4.0 Ultimate Edition)
+# Nothing OS - Enterprise Makefile (v5.0 Infinity Platform Edition)
 # =============================================================================
 # Build system for Nothing OS (x86 Bare Metal Operating System)
 # =============================================================================
@@ -37,6 +37,7 @@ USB_SRC      = $(KERNEL_DIR)/drivers/usb.c
 RTL_SRC      = $(KERNEL_DIR)/drivers/rtl8139.c
 HDA_SRC      = $(KERNEL_DIR)/drivers/hda.c
 NVME_SRC     = $(KERNEL_DIR)/drivers/nvme.c
+VT_SRC       = $(KERNEL_DIR)/drivers/vt.c
 ATA_SRC      = $(KERNEL_DIR)/drivers/ata.c
 MOUSE_SRC    = $(KERNEL_DIR)/drivers/mouse.c
 HEAP_SRC     = $(KERNEL_DIR)/mm/heap.c
@@ -46,12 +47,14 @@ FAT_SRC      = $(KERNEL_DIR)/fs/fat.c
 EXT2_SRC     = $(KERNEL_DIR)/fs/ext2.c
 WM_SRC       = $(KERNEL_DIR)/gui/wm.c
 EDITOR_SRC   = $(KERNEL_DIR)/user/editor.c
+PKG_SRC      = $(KERNEL_DIR)/sys/pkg.c
 IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
 APIC_SRC     = $(KERNEL_DIR)/arch/x86/apic.c
 LONGMODE_SRC = $(KERNEL_DIR)/arch/x86/longmode.c
 SYSCALL_SRC  = $(KERNEL_DIR)/arch/x86/syscall.c
 TSS_SRC      = $(KERNEL_DIR)/arch/x86/tss.c
 NET_SRC      = $(KERNEL_DIR)/net/net.c
+SOCKET_SRC   = $(KERNEL_DIR)/net/socket.c
 SIGNAL_SRC   = $(KERNEL_DIR)/sys/signal.c
 ENV_SRC      = $(KERNEL_DIR)/sys/env.c
 MONITOR_SRC  = $(KERNEL_DIR)/sys/monitor.c
@@ -79,11 +82,12 @@ OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/heap.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/serial.o \
        $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/fat.o \
        $(BUILD_DIR)/ext2.o $(BUILD_DIR)/vga_graphics.o $(BUILD_DIR)/vga_mode13.o \
-       $(BUILD_DIR)/wm.o $(BUILD_DIR)/editor.o $(BUILD_DIR)/sound.o \
-       $(BUILD_DIR)/ansi.o $(BUILD_DIR)/pci.o $(BUILD_DIR)/e1000.o \
-       $(BUILD_DIR)/vbe.o $(BUILD_DIR)/ahci.o $(BUILD_DIR)/acpi.o \
-       $(BUILD_DIR)/apic.o $(BUILD_DIR)/usb.o $(BUILD_DIR)/rtl8139.o \
-       $(BUILD_DIR)/shm.o $(BUILD_DIR)/hda.o $(BUILD_DIR)/nvme.o \
+       $(BUILD_DIR)/wm.o $(BUILD_DIR)/editor.o $(BUILD_DIR)/pkg.o \
+       $(BUILD_DIR)/sound.o $(BUILD_DIR)/ansi.o $(BUILD_DIR)/pci.o \
+       $(BUILD_DIR)/e1000.o $(BUILD_DIR)/vbe.o $(BUILD_DIR)/ahci.o \
+       $(BUILD_DIR)/acpi.o $(BUILD_DIR)/apic.o $(BUILD_DIR)/usb.o \
+       $(BUILD_DIR)/rtl8139.o $(BUILD_DIR)/shm.o $(BUILD_DIR)/hda.o \
+       $(BUILD_DIR)/nvme.o $(BUILD_DIR)/vt.o $(BUILD_DIR)/socket.o \
        $(BUILD_DIR)/longmode.o $(BUILD_DIR)/pong.o $(BUILD_DIR)/syscall.o \
        $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o $(BUILD_DIR)/signal.o \
        $(BUILD_DIR)/env.o $(BUILD_DIR)/monitor.o $(BUILD_DIR)/ipc.o \
@@ -105,7 +109,7 @@ dirs:
 
 # Link kernel binary
 $(KERNEL): $(OBJS)
-	@echo "Linking Nothing OS v4.0 Ultimate Masterpiece kernel binary..."
+	@echo "Linking Nothing OS v5.0 Infinity kernel binary..."
 	@$(LD) $(LDFLAGS) -o $@ $(OBJS)
 	@echo "Kernel built successfully: $@"
 	@echo "Kernel size: $$(stat -c%s $@) bytes"
@@ -118,6 +122,21 @@ $(BUILD_DIR)/boot.o: $(KERNEL_DIR)/arch/x86/boot.c
 # Compile IDT and Interrupt Manager
 $(BUILD_DIR)/idt.o: $(IDT_SRC)
 	@echo "Compiling IDT & PIC Interrupt Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Package Manager
+$(BUILD_DIR)/pkg.o: $(PKG_SRC)
+	@echo "Compiling Kernel Extension Package Manager Repository..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile BSD Socket Network Layer
+$(BUILD_DIR)/socket.o: $(SOCKET_SRC)
+	@echo "Compiling BSD Socket Network API Layer..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Virtual Terminals Switcher
+$(BUILD_DIR)/vt.o: $(VT_SRC)
+	@echo "Compiling Multi-Console Virtual Terminals Switcher (TTY1 - TTY4)..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile Multi-Window Compositor Server
