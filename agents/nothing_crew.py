@@ -48,6 +48,27 @@ CREW_CORPORATION = {
         goal="Implement 32-bit Protected Mode initializations, GDT, IDT, 8259 PIC remapping, and ISRs.",
         skills=["x86 Assembly", "IDT (256 Gates)", "PIC Remapping", "Interrupt Handling"]
     ),
+    "VIRTUAL_MEMORY_LEAD": Agent(
+        name="Virtual Memory Paging Lead",
+        role="Paging Engine & Memory Protection Specialist",
+        avatar="⚡",
+        goal="Maintain x86 4KB Virtual Memory Paging, CR3 Page Directory, Page Tables, and CR2 Fault Vector.",
+        skills=["Page Directory (PDE)", "Page Tables (PTE)", "CR3 Register", "CR2 Page Faults"]
+    ),
+    "STORAGE_DISK_LEAD": Agent(
+        name="Storage & IDE Disk Lead",
+        role="Hard Disk Controller Specialist",
+        avatar="💽",
+        goal="Maintain Primary ATA IDE Hard Disk driver (28-bit LBA sector read/write & disk identify).",
+        skills=["ATA Bus 0x1F0", "LBA Sector R/W", "PIO Protocol", "Hard Disk Drive Identify"]
+    ),
+    "POINTING_DEVICE_LEAD": Agent(
+        name="Pointing Device & Cursor Lead",
+        role="Auxiliary Hardware Controller Specialist",
+        avatar="🖱️",
+        goal="Maintain PS/2 Mouse packet stream decoder, delta tracking, and screen cursor bounds.",
+        skills=["PS/2 Mouse Stream", "Delta Packet Decoder", "Grid Boundaries", "Click Flags"]
+    ),
     "SYSCALL_POSIX_LEAD": Agent(
         name="POSIX Syscall & Process Engine Lead",
         role="Software Interrupts & Syscall Specialist",
@@ -94,7 +115,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (ls, cat, touch, write, theme, window, test, syscall).",
+        goal="Develop interactive kernel shell commands (paging, ata, mouse, ps, spawn, test, syscall, ls).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(

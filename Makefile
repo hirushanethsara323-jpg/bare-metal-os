@@ -25,7 +25,10 @@ KEYBOARD_SRC = $(KERNEL_DIR)/drivers/keyboard.c
 SERIAL_SRC   = $(KERNEL_DIR)/drivers/serial.c
 RTC_SRC      = $(KERNEL_DIR)/drivers/rtc.c
 GRAPHICS_SRC = $(KERNEL_DIR)/drivers/vga_graphics.c
+ATA_SRC      = $(KERNEL_DIR)/drivers/ata.c
+MOUSE_SRC    = $(KERNEL_DIR)/drivers/mouse.c
 HEAP_SRC     = $(KERNEL_DIR)/mm/heap.c
+PAGING_SRC   = $(KERNEL_DIR)/mm/paging.c
 VFS_SRC      = $(KERNEL_DIR)/fs/vfs.c
 IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
 SYSCALL_SRC  = $(KERNEL_DIR)/arch/x86/syscall.c
@@ -47,7 +50,8 @@ LDFLAGS = -T $(KERNEL_DIR)/linker.ld -m elf_i386 -nostdlib
 OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/heap.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/serial.o \
        $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/vga_graphics.o \
-       $(BUILD_DIR)/syscall.o $(BUILD_DIR)/scheduler.o $(BUILD_DIR)/ktest.o
+       $(BUILD_DIR)/syscall.o $(BUILD_DIR)/scheduler.o $(BUILD_DIR)/paging.o \
+       $(BUILD_DIR)/ata.o $(BUILD_DIR)/mouse.o $(BUILD_DIR)/ktest.o
 
 # =============================================================================
 # Targets
@@ -86,6 +90,21 @@ $(BUILD_DIR)/syscall.o: $(SYSCALL_SRC)
 # Compile Process Scheduler Engine
 $(BUILD_DIR)/scheduler.o: $(SCHED_SRC)
 	@echo "Compiling Process Scheduler Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Virtual Memory Paging Engine
+$(BUILD_DIR)/paging.o: $(PAGING_SRC)
+	@echo "Compiling x86 Virtual Memory Paging Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Primary ATA IDE Disk Driver
+$(BUILD_DIR)/ata.o: $(ATA_SRC)
+	@echo "Compiling Primary ATA IDE Sector Controller Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile PS/2 Mouse Driver
+$(BUILD_DIR)/mouse.o: $(MOUSE_SRC)
+	@echo "Compiling PS/2 Auxiliary Mouse Controller Driver..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile Automated QA & Test Suite

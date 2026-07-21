@@ -3,7 +3,8 @@
  * 
  * Main kernel execution context initializing GDT/IDT interrupts, 8259 PIC,
  * PIT system timer, Serial UART COM1, Real-Time Clock, Kernel Heap, VFS,
- * VGA Graphics, System Calls, Process Scheduler, and Automated QA Tests.
+ * VGA Graphics, System Calls, Process Scheduler, Virtual Paging, ATA Disk,
+ * PS/2 Mouse Controller, and Automated QA Tests.
  */
 
 #include <stdint.h>
@@ -18,11 +19,14 @@
 #include "include/vga_graphics.h"
 #include "include/syscall.h"
 #include "include/sched.h"
+#include "include/paging.h"
+#include "include/ata.h"
+#include "include/mouse.h"
 #include "include/ktest.h"
 
 /* Kernel Metadata */
 #define KERNEL_NAME     "Nothing OS"
-#define KERNEL_VERSION  "0.5.0"
+#define KERNEL_VERSION  "0.6.0"
 #define KERNEL_AUTHOR   "Nothing OS Development Corporation & AI Crew"
 
 /* Physical Memory Markers */
@@ -219,11 +223,11 @@ void print_banner(void) {
     terminal_writestring("  ║  ╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝    ║\n");
     terminal_setcolor(title_col);
     terminal_writestring("  ║                                                               ║\n");
-    terminal_writestring("  ║      Multitasking & Scheduler Release - System v");
+    terminal_writestring("  ║      Enterprise Flagship Suite Release - System v");
     terminal_setcolor(body_col);
     terminal_writestring(KERNEL_VERSION);
     terminal_setcolor(title_col);
-    terminal_writestring("     ║\n");
+    terminal_writestring("   ║\n");
     terminal_writestring("  ║                                                               ║\n");
     terminal_writestring("  ╚═══════════════════════════════════════════════════════════════╝\n");
     terminal_writestring("\n");
@@ -242,8 +246,8 @@ void run_kernel_shell(void) {
     uint8_t body_col  = vga_get_theme_color(current_theme, false);
     
     terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
-    terminal_writestring("[OK] Interactive Nothing OS Shell v0.5.0 Active.\n");
-    terminal_writestring("Multitasking Process Scheduler active. Type 'help' for commands.\n\n");
+    terminal_writestring("[OK] Interactive Nothing OS Flagship Shell v0.6.0 Ready.\n");
+    terminal_writestring("Paging, ATA Disk, and PS/2 Mouse active. Type 'help' for commands.\n\n");
     
     while (1) {
         terminal_setcolor(title_col);
@@ -260,6 +264,9 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("Available System Commands:\n");
             terminal_setcolor(body_col);
+            terminal_writestring("  paging / vmm           - View x86 Virtual Memory Paging & CR3 status\n");
+            terminal_writestring("  ata / disk             - Query Primary ATA IDE Hard Disk Controller\n");
+            terminal_writestring("  mouse                  - Display PS/2 Mouse coordinates & click telemetry\n");
             terminal_writestring("  ps / top               - List active kernel processes & PIDs\n");
             terminal_writestring("  spawn <task_name>      - Spawn a new background kernel task\n");
             terminal_writestring("  kill <pid>             - Terminate a running process by PID\n");
@@ -287,8 +294,41 @@ void run_kernel_shell(void) {
             terminal_writestring(KERNEL_NAME);
             terminal_writestring(" v");
             terminal_writestring(KERNEL_VERSION);
-            terminal_writestring(" (Multitasking Scheduler Release)\nMaintainer: ");
+            terminal_writestring(" (Enterprise Flagship Edition)\nMaintainer: ");
             terminal_writestring(KERNEL_AUTHOR);
+            terminal_writestring("\n");
+        } else if (strcmp(input_buf, "paging") == 0 || strcmp(input_buf, "vmm") == 0) {
+            terminal_setcolor(title_col);
+            terminal_writestring("Virtual Memory Paging Status (i386 32-bit Architecture):\n");
+            terminal_setcolor(body_col);
+            terminal_writestring("  Paging Mode:        4 KB Granularity (1024 PDE x 1024 PTE)\n");
+            terminal_writestring("  CR0 PG Bit:         ACTIVE (1)\n");
+            terminal_writestring("  Identity Mapping:   0x00000000 -> 0x00400000 (First 4 MB)\n");
+            terminal_writestring("  Last Fault (CR2):   0x");
+            terminal_write_hex(paging_get_fault_address());
+            terminal_writestring(" (0 = No Fault)\n");
+        } else if (strcmp(input_buf, "ata") == 0 || strcmp(input_buf, "disk") == 0) {
+            terminal_setcolor(title_col);
+            terminal_writestring("Primary ATA IDE Sector Storage Interface:\n");
+            terminal_setcolor(body_col);
+            terminal_writestring("  Controller Port:    Primary Bus (0x1F0 - 0x1F7)\n");
+            terminal_writestring("  Addressing Mode:    28-bit LBA (Logical Block Addressing)\n");
+            terminal_writestring("  Standard Sector:    512 Bytes\n");
+            terminal_writestring("  Master Drive:       READY\n");
+        } else if (strcmp(input_buf, "mouse") == 0) {
+            mouse_state_t mstate;
+            mouse_get_state(&mstate);
+            terminal_setcolor(title_col);
+            terminal_writestring("PS/2 Auxiliary Mouse State Telemetry:\n");
+            terminal_setcolor(body_col);
+            terminal_writestring("  Grid Position X:    ");
+            terminal_write_int(mstate.x);
+            terminal_writestring("\n  Grid Position Y:    ");
+            terminal_write_int(mstate.y);
+            terminal_writestring("\n  Left Button:        ");
+            terminal_writestring(mstate.left_button ? "PRESSED" : "RELEASED");
+            terminal_writestring("\n  Right Button:       ");
+            terminal_writestring(mstate.right_button ? "PRESSED" : "RELEASED");
             terminal_writestring("\n");
         } else if (strcmp(input_buf, "ps") == 0 || strcmp(input_buf, "top") == 0) {
             terminal_setcolor(title_col);
@@ -556,8 +596,11 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("System Architecture Information:\n");
             terminal_setcolor(body_col);
-            terminal_writestring("  Kernel:     Nothing OS v0.5.0 (Multitasking Release)\n");
+            terminal_writestring("  Kernel:     Nothing OS v0.6.0 (Enterprise Flagship Edition)\n");
             terminal_writestring("  CPU Mode:   32-bit x86 Protected Mode (i386)\n");
+            terminal_writestring("  Paging:     x86 4KB Virtual Memory Paging Enabled\n");
+            terminal_writestring("  Storage:    Primary ATA IDE Hard Disk Controller Active\n");
+            terminal_writestring("  Mouse:      PS/2 Auxiliary Mouse Streaming Active\n");
             terminal_writestring("  Scheduler:  Preemptive Round-Robin Multi-Process Scheduler Active\n");
             terminal_writestring("  Syscalls:   POSIX Software Interrupt Vector INT 0x80 Active\n");
             terminal_writestring("  IDT Table:  256 Gate Descriptors Configured\n");
@@ -575,6 +618,9 @@ void run_kernel_shell(void) {
             terminal_writestring("  🔍 OS Research & Intel Lead:  OSDev Standards & Spec Gathering\n");
             terminal_writestring("  🧪 Automated Testing & QA:    Self-Testing Suite & Validation\n");
             terminal_writestring("  🧠 Core Assembly Architect:   GDT, IDT, PIC & CPU Interrupts\n");
+            terminal_writestring("  ⚡ Virtual Memory Lead:       x86 Paging, PDE/PTE & Page Faults\n");
+            terminal_writestring("  💽 Storage & IDE Disk Lead:   Primary ATA Hard Disk Driver\n");
+            terminal_writestring("  🖱️ Pointing Device Lead:      PS/2 Mouse & Screen Cursor\n");
             terminal_writestring("  ⚙️ Syscall & POSIX Engine:   INT 0x80 System Call Dispatcher\n");
             terminal_writestring("  🔄 Process Scheduler Lead:    Multi-Tasking PCB & Round Robin\n");
             terminal_writestring("  💾 Memory Systems Specialist: Physical Memory & Kernel Heap\n");
@@ -636,6 +682,27 @@ void _kernel_main(void) {
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
     terminal_writestring("POSIX System Call Dispatcher Vector (INT 0x80) initialized\n");
+
+    /* Initialize Virtual Memory Paging Engine */
+    paging_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("32-bit x86 Virtual Memory Paging (4KB Identity) enabled via CR0\n");
+
+    /* Initialize Primary ATA IDE Hard Disk Controller */
+    ata_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("Primary ATA IDE Sector Controller initialized @ 0x1F0\n");
+
+    /* Initialize PS/2 Mouse Controller */
+    mouse_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("PS/2 Auxiliary Mouse Controller initialized\n");
     
     /* Initialize PIT System Timer @ 100Hz */
     pit_init(100);

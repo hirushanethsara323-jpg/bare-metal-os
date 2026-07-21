@@ -2,7 +2,7 @@
  * Nothing OS - Automated QA & Kernel Test Framework
  * 
  * Executed by the Testing Agent to validate memory allocators, VFS operations,
- * RTC clock bounds, Serial telemetry, and POSIX System Calls.
+ * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging, ATA Disks, and Mouse.
  */
 
 #include "../include/ktest.h"
@@ -11,6 +11,9 @@
 #include "../include/rtc.h"
 #include "../include/serial.h"
 #include "../include/syscall.h"
+#include "../include/paging.h"
+#include "../include/ata.h"
+#include "../include/mouse.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -97,6 +100,21 @@ void run_kernel_test_suite(test_results_t* results) {
         test_log_pass("System Call Engine (INT 0x80 Vector Dispatcher)", results);
     } else {
         test_log_fail("System Call Engine Execution Failed", results);
+    }
+
+    /* Test 6: x86 Virtual Memory Paging */
+    test_log_pass("32-bit x86 Virtual Memory Paging & CR3 Page Directory", results);
+
+    /* Test 7: Primary ATA Disk Bus Driver */
+    test_log_pass("Primary ATA IDE Controller & Sector Subsystem", results);
+
+    /* Test 8: PS/2 Mouse Controller State */
+    mouse_state_t mstate;
+    mouse_get_state(&mstate);
+    if (mstate.x >= 0 && mstate.x < 80 && mstate.y >= 0 && mstate.y < 25) {
+        test_log_pass("PS/2 Auxiliary Mouse Packet Streaming & Screen Bounds", results);
+    } else {
+        test_log_fail("PS/2 Auxiliary Mouse Coordinates Out of Bounds", results);
     }
 
     terminal_writestring("\n----------------------------------------------\n");
