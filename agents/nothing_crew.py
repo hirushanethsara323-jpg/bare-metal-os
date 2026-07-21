@@ -27,6 +27,27 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "USB_UHCI_LEAD": Agent(
+        name="USB Host Controller & Port Subsystem Lead",
+        role="Universal Host Controller Interface (UHCI) Specialist",
+        avatar="🔌",
+        goal="Drive USB UHCI Host Controllers, Root Hub Port Status, and USB Device Attachment Status.",
+        skills=["USB UHCI Specification", "Root Hub Ports", "USBCMD & USBSTS Registers", "I/O Ports"]
+    ),
+    "RTL8139_LEAD": Agent(
+        name="Realtek Fast Ethernet PCI Card Driver Lead",
+        role="RTL8139 Hardware Controller & Ring Buffer Specialist",
+        avatar="🌐",
+        goal="Drive Realtek RTL8139 Fast Ethernet PCI Card, 8KB Ring Buffer, & Hardware Power Wakeup.",
+        skills=["RTL8139 Controller", "8KB Ring Buffer", "IO Base Commands", "Hardware MAC Read"]
+    ),
+    "SHM_ALLOCATOR_LEAD": Agent(
+        name="Dynamic Shared Memory Inter-Process IPC Lead",
+        role="Inter-Thread Shared Memory Segment Specialist",
+        avatar="🧠",
+        goal="Maintain Inter-Process Shared Memory (SHM) Key Allocation, Mapping, & Multi-Process Attach/Detach.",
+        skills=["shm_get / shm_at / shm_dt", "Shared Memory Segments", "Multi-Thread Zero Copy", "IPC Keys"]
+    ),
     "APIC_MULTICORE_LEAD": Agent(
         name="Local APIC & Multi-Core SMP Lead",
         role="Symmetric Multiprocessing & APIC Controller Specialist",
@@ -123,7 +144,7 @@ CREW_CORPORATION = {
         role="Self-Testing Framework & Validation Specialist",
         avatar="🧪",
         goal="Execute automated kernel test suites, verify memory safety, file operations, and system call stability.",
-        skills=["25-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
+        skills=["28-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
     ),
     "GUI_PIXEL_ENGINE_LEAD": Agent(
         name="Mode 13h Pixel GUI & Desktop Lead",
@@ -241,7 +262,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (apic, ahci, acpi, shutdown, pci, e1000, vesa).",
+        goal="Develop interactive kernel shell commands (usb, rtl8139, shm, apic, ahci, acpi, shutdown, pci).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
@@ -259,15 +280,15 @@ class NothingOSCorporation:
         self.corp = CREW_CORPORATION
 
     def display_board(self):
-        print("=" * 90)
+        print("=" * 92)
         print("    🏢 NOTHING OS DEVELOPMENT CORPORATION - EXECUTIVE CREW BOARD 🏢")
-        print("=" * 90)
+        print("=" * 92)
         for key, agent in self.corp.items():
             print(f"{agent.avatar} [{agent.role}]")
             print(f"   Agent:  {agent.name}")
             print(f"   Goal:   {agent.goal}")
             print(f"   Skills: {', '.join(agent.skills)}")
-            print("-" * 90)
+            print("-" * 92)
 
     def run_build_check(self) -> bool:
         try:

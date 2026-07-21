@@ -1,12 +1,13 @@
 /**
- * Nothing OS - Automated QA & Kernel Test Framework (v2.1 Major Architecture Edition)
+ * Nothing OS - Automated QA & Kernel Test Framework (v2.2 Ultimate Edition)
  * 
  * Executed by the Testing Agent to validate memory allocators, VFS operations,
  * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging,
  * ATA Disks, Mouse, TSS, Network Stack, Signal Subsystem, Config Store,
  * VGA Mode 13h Framebuffer, Performance Monitor, PC Speaker, ELF32 Loader,
  * IPC Pipes, FAT MBR Boot Parser, SHA-256 Crypto, ANSI Sequences, PCI Bus Scanner,
- * Intel e1000 NIC, VESA VBE 32-bit Framebuffer, Local APIC, AHCI SATA, and ACPI Power.
+ * Intel e1000 NIC, VESA VBE 32-bit Framebuffer, Local APIC, AHCI SATA, ACPI Power,
+ * USB UHCI Host Controller, Realtek RTL8139 NIC, and Dynamic Shared Memory.
  */
 
 #include "../include/ktest.h"
@@ -36,6 +37,9 @@
 #include "../include/apic.h"
 #include "../include/ahci.h"
 #include "../include/acpi.h"
+#include "../include/usb.h"
+#include "../include/rtl8139.h"
+#include "../include/shm.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -246,6 +250,29 @@ void run_kernel_test_suite(test_results_t* results) {
 
     /* Test 25: ACPI Power Management RSDP Scanner */
     test_log_pass("ACPI Root System Description Pointer (RSDP) BIOS Scanner", results);
+
+    /* Test 26: USB UHCI Universal Host Controller Interface */
+    if (usb_has_device_connected()) {
+        test_log_pass("USB Universal Host Controller Interface (UHCI) Port Status Engine", results);
+    } else {
+        test_log_fail("USB UHCI Read Failed", results);
+    }
+
+    /* Test 27: Realtek RTL8139 Fast Ethernet PCI Adapter */
+    if (rtl8139_is_active()) {
+        test_log_pass("Realtek RTL8139 PCI Network Interface Card & 8KB Ring Buffer", results);
+    } else {
+        test_log_fail("Realtek RTL8139 Initialization Failed", results);
+    }
+
+    /* Test 28: Dynamic Shared Memory (SHM) IPC Allocator */
+    void* shm_ptr = shm_get(0x1234, 1024);
+    if (shm_ptr != 0) {
+        shm_dt(0x1234);
+        test_log_pass("Dynamic Shared Memory (SHM) Inter-Thread Allocator & Detach", results);
+    } else {
+        test_log_fail("Shared Memory Allocation Failed", results);
+    }
 
     terminal_writestring("\n----------------------------------------------\n");
     terminal_writestring("Tests Run: ");

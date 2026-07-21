@@ -1,5 +1,5 @@
 # =============================================================================
-# Nothing OS - Enterprise Makefile (v2.1 Major Suite Edition)
+# Nothing OS - Enterprise Makefile (v2.2 Ultimate Edition)
 # =============================================================================
 # Build system for Nothing OS (x86 Bare Metal Operating System)
 # =============================================================================
@@ -33,6 +33,8 @@ E1000_SRC    = $(KERNEL_DIR)/drivers/e1000.c
 VBE_SRC      = $(KERNEL_DIR)/drivers/vbe.c
 AHCI_SRC     = $(KERNEL_DIR)/drivers/ahci.c
 ACPI_SRC     = $(KERNEL_DIR)/drivers/acpi.c
+USB_SRC      = $(KERNEL_DIR)/drivers/usb.c
+RTL_SRC      = $(KERNEL_DIR)/drivers/rtl8139.c
 ATA_SRC      = $(KERNEL_DIR)/drivers/ata.c
 MOUSE_SRC    = $(KERNEL_DIR)/drivers/mouse.c
 HEAP_SRC     = $(KERNEL_DIR)/mm/heap.c
@@ -48,6 +50,7 @@ SIGNAL_SRC   = $(KERNEL_DIR)/sys/signal.c
 ENV_SRC      = $(KERNEL_DIR)/sys/env.c
 MONITOR_SRC  = $(KERNEL_DIR)/sys/monitor.c
 IPC_SRC      = $(KERNEL_DIR)/sys/ipc.c
+SHM_SRC      = $(KERNEL_DIR)/sys/shm.c
 CRYPTO_SRC   = $(KERNEL_DIR)/crypto/sha256.c
 SCHED_SRC    = $(KERNEL_DIR)/proc/scheduler.c
 ELF_SRC      = $(KERNEL_DIR)/proc/elf.c
@@ -71,7 +74,8 @@ OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/vga_graphics.o $(BUILD_DIR)/vga_mode13.o \
        $(BUILD_DIR)/sound.o $(BUILD_DIR)/ansi.o $(BUILD_DIR)/pci.o \
        $(BUILD_DIR)/e1000.o $(BUILD_DIR)/vbe.o $(BUILD_DIR)/ahci.o \
-       $(BUILD_DIR)/acpi.o $(BUILD_DIR)/apic.o $(BUILD_DIR)/syscall.o \
+       $(BUILD_DIR)/acpi.o $(BUILD_DIR)/apic.o $(BUILD_DIR)/usb.o \
+       $(BUILD_DIR)/rtl8139.o $(BUILD_DIR)/shm.o $(BUILD_DIR)/syscall.o \
        $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o $(BUILD_DIR)/signal.o \
        $(BUILD_DIR)/env.o $(BUILD_DIR)/monitor.o $(BUILD_DIR)/ipc.o \
        $(BUILD_DIR)/sha256.o $(BUILD_DIR)/scheduler.o \
@@ -92,7 +96,7 @@ dirs:
 
 # Link kernel binary
 $(KERNEL): $(OBJS)
-	@echo "Linking Nothing OS Enterprise v2.1 kernel binary..."
+	@echo "Linking Nothing OS Enterprise v2.2 kernel binary..."
 	@$(LD) $(LDFLAGS) -o $@ $(OBJS)
 	@echo "Kernel built successfully: $@"
 	@echo "Kernel size: $$(stat -c%s $@) bytes"
@@ -115,6 +119,21 @@ $(BUILD_DIR)/apic.o: $(APIC_SRC)
 # Compile PCI Bus Driver
 $(BUILD_DIR)/pci.o: $(PCI_SRC)
 	@echo "Compiling PCI Bus Enumerator & Hardware Scanner Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile USB Host Controller Driver
+$(BUILD_DIR)/usb.o: $(USB_SRC)
+	@echo "Compiling USB Universal Host Controller Interface (UHCI) Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Realtek RTL8139 Driver
+$(BUILD_DIR)/rtl8139.o: $(RTL_SRC)
+	@echo "Compiling Realtek RTL8139 Fast Ethernet PCI Adapter Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Shared Memory IPC Allocator
+$(BUILD_DIR)/shm.o: $(SHM_SRC)
+	@echo "Compiling Inter-Process Dynamic Shared Memory (SHM) Allocator..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile AHCI SATA Storage Driver
