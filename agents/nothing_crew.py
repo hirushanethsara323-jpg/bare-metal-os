@@ -27,6 +27,27 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "EXT4_JOURNALING_LEAD": Agent(
+        name="Linux Ext4 Journaling & Extents B-Tree Lead",
+        role="64-bit Disk Block Allocation & Extent Mapping Specialist",
+        avatar="📂",
+        goal="Maintain Ext4 64-bit block addressing, JBD2 journaling, & Extent B-Tree header 0xF30A parsing.",
+        skills=["Ext4 Journaling (JBD2)", "Extent Tree 0xF30A", "64-bit Block Allocation", "Linux Storage"]
+    ),
+    "SB16_AUDIO_LEAD": Agent(
+        name="Sound Blaster 16 (SB16) DSP Audio Lead",
+        role="ISA / PCI Sound Blaster DSP Controller Specialist",
+        avatar="🔊",
+        goal="Drive SB16 DSP IO Port 0x220, 0xAA ready handshake, & DMA 8-bit/16-bit PCM wave sound.",
+        skills=["SB16 DSP Reset 0x226", "0xAA Handshake", "DMA Channel 1 & 5", "PCM Wave Audio"]
+    ),
+    "AES_SECURITY_LEAD": Agent(
+        name="AES-256 Symmetric Block Cipher Lead",
+        role="FIPS PUB 197 Standard 256-bit Encryption Specialist",
+        avatar="🔐",
+        goal="Maintain 256-bit Key Expansion, 14-round SubBytes, ShiftRows, MixColumns, & AES decryption.",
+        skills=["FIPS PUB 197 Standard", "AES 256-bit Keys", "14 Round Transformations", "Block Ciphers"]
+    ),
     "HTTP_WEB_PROTOCOL_LEAD": Agent(
         name="In-Kernel HTTP Web Client Protocol Lead",
         role="HTTP/1.1 Web Request/Response & Parser Specialist",
@@ -242,7 +263,7 @@ CREW_CORPORATION = {
         role="Self-Testing Framework & Validation Specialist",
         avatar="🧪",
         goal="Execute automated kernel test suites, verify memory safety, file operations, and system call stability.",
-        skills=["38-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
+        skills=["31-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
     ),
     "GUI_PIXEL_ENGINE_LEAD": Agent(
         name="Mode 13h Pixel GUI & Desktop Lead",
@@ -360,7 +381,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (http, rsa, iso, fpu, pkg, socket, tty, wm).",
+        goal="Develop interactive kernel shell commands (ext4, sb16, aes, http, rsa, iso, fpu).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
@@ -378,15 +399,15 @@ class NothingOSCorporation:
         self.corp = CREW_CORPORATION
 
     def display_board(self):
-        print("=" * 108)
+        print("=" * 112)
         print("    🏢 NOTHING OS DEVELOPMENT CORPORATION - EXECUTIVE CREW BOARD 🏢")
-        print("=" * 108)
+        print("=" * 112)
         for key, agent in self.corp.items():
             print(f"{agent.avatar} [{agent.role}]")
             print(f"   Agent:  {agent.name}")
             print(f"   Goal:   {agent.goal}")
             print(f"   Skills: {', '.join(agent.skills)}")
-            print("-" * 108)
+            print("-" * 112)
 
     def run_build_check(self) -> bool:
         try:
