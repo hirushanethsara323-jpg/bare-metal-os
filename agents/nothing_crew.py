@@ -8,9 +8,8 @@ Enterprise multi-agent orchestrator for Nothing OS development team.
 import os
 import sys
 import subprocess
-import json
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List
 
 @dataclass
 class Agent:
@@ -56,12 +55,26 @@ CREW_CORPORATION = {
         goal="Maintain Programmable Interval Timer (PIT 8253 @ 100Hz) and CMOS RTC Real-Time Clock.",
         skills=["PIT 100Hz Channel 0", "CMOS RTC Date/Time", "Uptime Calculation"]
     ),
+    "UIUX_GRAPHICS_LEAD": Agent(
+        name="UI/UX & Graphics Engine Lead",
+        role="Display Theme & Palette Specialist",
+        avatar="🎨",
+        goal="Develop VGA UI box windows, progress bars, status bars, and Cyberpunk/Matrix theme engines.",
+        skills=["VGA Theme Palette", "Window Rendering", "Progress Bars", "Console Aesthetics"]
+    ),
+    "VFS_STORAGE_LEAD": Agent(
+        name="VFS & Storage Specialist",
+        role="Filesystem & RAMDisk Engineer",
+        avatar="📁",
+        goal="Implement In-Memory Virtual File System (MemFS RAMDisk), inode nodes, and file I/O operations.",
+        skills=["MemFS RAMDisk", "File Node Management", "File Allocation", "vfs_read / vfs_write"]
+    ),
     "SHELL_USERSPACE_LEAD": Agent(
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (uptime, time, heap, alloc, echo, klog).",
-        skills=["Console UX", "Command Parsing", "ANSI/VGA Formatting"]
+        goal="Develop interactive kernel shell commands (ls, cat, touch, write, theme, window, progress, uptime).",
+        skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
         name="DevOps & QA Lead",
@@ -78,15 +91,15 @@ class NothingOSCorporation:
         self.corp = CREW_CORPORATION
 
     def display_board(self):
-        print("=" * 72)
+        print("=" * 75)
         print("    🏢 NOTHING OS DEVELOPMENT CORPORATION - EXECUTIVE CREW BOARD 🏢")
-        print("=" * 72)
+        print("=" * 75)
         for key, agent in self.corp.items():
             print(f"{agent.avatar} [{agent.role}]")
             print(f"   Agent:  {agent.name}")
             print(f"   Goal:   {agent.goal}")
             print(f"   Skills: {', '.join(agent.skills)}")
-            print("-" * 72)
+            print("-" * 75)
 
     def run_build_check(self) -> bool:
         try:

@@ -24,7 +24,9 @@ KERNEL_SRC   = $(KERNEL_DIR)/main.c
 KEYBOARD_SRC = $(KERNEL_DIR)/drivers/keyboard.c
 SERIAL_SRC   = $(KERNEL_DIR)/drivers/serial.c
 RTC_SRC      = $(KERNEL_DIR)/drivers/rtc.c
+GRAPHICS_SRC = $(KERNEL_DIR)/drivers/vga_graphics.c
 HEAP_SRC     = $(KERNEL_DIR)/mm/heap.c
+VFS_SRC      = $(KERNEL_DIR)/fs/vfs.c
 IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
 BOOT_SRC     = $(BOOT_DIR)/multiboot_header.asm
 
@@ -40,7 +42,8 @@ LDFLAGS = -T $(KERNEL_DIR)/linker.ld -m elf_i386 -nostdlib
 
 # Objects
 OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
-       $(BUILD_DIR)/heap.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/serial.o $(BUILD_DIR)/rtc.o
+       $(BUILD_DIR)/heap.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/serial.o \
+       $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/vga_graphics.o
 
 # =============================================================================
 # Targets
@@ -86,9 +89,19 @@ $(BUILD_DIR)/rtc.o: $(RTC_SRC)
 	@echo "Compiling CMOS RTC Real-Time Clock Driver..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
+# Compile VGA UI/UX Graphics Engine
+$(BUILD_DIR)/vga_graphics.o: $(GRAPHICS_SRC)
+	@echo "Compiling VGA Graphics & Theme Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
 # Compile Dynamic Heap Manager
 $(BUILD_DIR)/heap.o: $(HEAP_SRC)
 	@echo "Compiling Dynamic Kernel Heap Manager..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Virtual File System
+$(BUILD_DIR)/vfs.o: $(VFS_SRC)
+	@echo "Compiling Virtual File System (MemFS)..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile kernel main
