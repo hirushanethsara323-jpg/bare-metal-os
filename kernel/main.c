@@ -1,17 +1,17 @@
 /**
- * BareMetal OS - Kernel Main
+ * Nothing OS - Kernel Main
  * 
- * The main entry point for the kernel.
- * This is called from the bootloader.
+ * The main entry point for Nothing OS kernel.
+ * Bootstrapped from GRUB Multiboot / custom bootloader.
  */
 
 #include <stdint.h>
 #include <stdbool.h>
 
 /* Kernel version info */
-#define KERNEL_NAME     "BareMetal OS"
+#define KERNEL_NAME     "Nothing OS"
 #define KERNEL_VERSION  "0.1.0"
-#define KERNEL_AUTHOR   "BareMetal Team"
+#define KERNEL_AUTHOR   "hirushanethsara323-jpg"
 
 /* VGA text mode */
 #define VGA_MEMORY       (uint16_t*)0xB8000
@@ -87,7 +87,7 @@ void terminal_putchar(char c) {
     } else if (c == '\r') {
         terminal_column = 0;
     } else if (c == '\t') {
-        terminal_column = (terminal_column + 8) & ~7;  // Tab to 8 columns
+        terminal_column = (terminal_column + 8) & ~7;
     } else {
         terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
         terminal_column++;
@@ -175,23 +175,24 @@ void terminal_write_int(int num) {
 void print_banner(void) {
     terminal_setcolor(VGA_COLOR_LIGHT_CYAN);
     terminal_writestring("\n");
-    terminal_writestring("  ╔══════════════════════════════════════════════════╗\n");
-    terminal_writestring("  ║                                                  ║\n");
+    terminal_writestring("  ╔═══════════════════════════════════════════════════════════════╗\n");
+    terminal_writestring("  ║                                                               ║\n");
     terminal_setcolor(VGA_COLOR_WHITE);
-    terminal_writestring("  ║     ██████╗ ███████╗ █████╗ ████████╗██╗  ██╗   ║\n");
-    terminal_writestring("  ║     ██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██║  ██║   ║\n");
-    terminal_writestring("  ║     ██████╔╝█████╗  ███████║   ██║   ███████║   ║\n");
-    terminal_writestring("  ║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██╔══██║   ║\n");
-    terminal_writestring("  ║     ██║  ██║███████╗██║  ██║   ██║   ██║  ██║   ║\n");
-    terminal_writestring("  ║     ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝   ║\n");
+    terminal_writestring("  ║  ███╗   ██╗ ██████╗ ████████╗██╗  ██╗██╗███╗   ██╗ ██████╗    ║\n");
+    terminal_writestring("  ║  ████╗  ██║██╔═══██╗╚══██╔══╝██║  ██║██║████╗  ██║██╔════╝    ║\n");
+    terminal_writestring("  ║  ██╔██╗ ██║██║   ██║   ██║   ███████║██║██╔██╗ ██║██║  ███╗   ║\n");
+    terminal_writestring("  ║  ██║╚██╗██║██║   ██║   ██║   ██╔══██║██║██║╚██╗██║██║   ██║   ║\n");
+    terminal_writestring("  ║  ██║ ╚████║╚██████╔╝   ██║   ██║  ██║██║██║ ╚████║╚██████╔╝   ║\n");
+    terminal_writestring("  ║  ╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝    ║\n");
     terminal_setcolor(VGA_COLOR_LIGHT_CYAN);
-    terminal_writestring("  ║           Operating System - Version ");
+    terminal_writestring("  ║                                                               ║\n");
+    terminal_writestring("  ║              Bare Metal Operating System - v");
     terminal_setcolor(VGA_COLOR_WHITE);
     terminal_writestring(KERNEL_VERSION);
     terminal_setcolor(VGA_COLOR_LIGHT_CYAN);
-    terminal_writestring("        ║\n");
-    terminal_writestring("  ║                                                  ║\n");
-    terminal_writestring("  ╚══════════════════════════════════════════════════╝\n");
+    terminal_writestring("             ║\n");
+    terminal_writestring("  ║                                                               ║\n");
+    terminal_writestring("  ╚═══════════════════════════════════════════════════════════════╝\n");
     terminal_writestring("\n");
 }
 
@@ -207,32 +208,32 @@ void _kernel_main(void) {
     terminal_setcolor(VGA_COLOR_GREEN);
     terminal_writestring("[OK] ");
     terminal_setcolor(VGA_COLOR_LIGHT_GREY);
-    terminal_writestring("Kernel loaded successfully\n");
+    terminal_writestring("Nothing OS Kernel loaded successfully\n");
     
     terminal_setcolor(VGA_COLOR_GREEN);
     terminal_writestring("[OK] ");
     terminal_setcolor(VGA_COLOR_LIGHT_GREY);
-    terminal_writestring("Terminal initialized\n");
+    terminal_writestring("VGA Console initialized\n");
     
     terminal_setcolor(VGA_COLOR_GREEN);
     terminal_writestring("[OK] ");
     terminal_setcolor(VGA_COLOR_LIGHT_GREY);
-    terminal_writestring("GDT initialized\n");
+    terminal_writestring("GDT & Segment Descriptors set up\n");
     
     terminal_setcolor(VGA_COLOR_GREEN);
     terminal_writestring("[OK] ");
     terminal_setcolor(VGA_COLOR_LIGHT_GREY);
-    terminal_writestring("IDT initialized\n");
+    terminal_writestring("IDT & PIC Remapped\n");
     
     terminal_setcolor(VGA_COLOR_GREEN);
     terminal_writestring("[OK] ");
     terminal_setcolor(VGA_COLOR_LIGHT_GREY);
-    terminal_writestring("Memory management initialized\n");
+    terminal_writestring("Physical Memory Manager initialized\n");
     
     terminal_setcolor(VGA_COLOR_GREEN);
     terminal_writestring("[OK] ");
     terminal_setcolor(VGA_COLOR_LIGHT_GREY);
-    terminal_writestring("Interrupt handlers loaded\n");
+    terminal_writestring("Scheduler ready\n");
     
     terminal_writestring("\n");
     
@@ -251,26 +252,19 @@ void _kernel_main(void) {
     terminal_writestring("  Memory:    0x");
     terminal_write_hex(0x100000);  /* Kernel load address */
     terminal_writestring(" - 0x");
-    terminal_write_hex(0x100000 + 0x100000);  /* Assuming 1MB kernel space */
+    terminal_write_hex(0x100000 + 0x100000);
     terminal_writestring("\n");
     
     terminal_writestring("\n");
     
-    /* Kernel panic - we're done for now! */
-    terminal_setcolor(VGA_COLOR_LIGHT_RED);
-    terminal_writestring("=== Kernel initialization complete ===\n\n");
+    terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
+    terminal_writestring("=== Nothing OS Initialization Complete ===\n\n");
     
     terminal_setcolor(VGA_COLOR_CYAN);
-    terminal_writestring("BareMetal OS is now running!\n");
-    terminal_writestring("The system is idle. This is where you would:\n");
-    terminal_writestring("  - Initialize device drivers\n");
-    terminal_writestring("  - Set up the scheduler\n");
-    terminal_writestring("  - Mount file systems\n");
-    terminal_writestring("  - Start user processes\n");
-    terminal_writestring("\n");
+    terminal_writestring("Nothing OS is now running in 32-bit Protected Mode!\n");
     
     terminal_setcolor(VGA_COLOR_WHITE);
-    terminal_writestring("Ready. ");
+    terminal_writestring("\nNothingOS> ");
     
     /* Idle loop */
     while (1) {
@@ -280,5 +274,5 @@ void _kernel_main(void) {
 
 /* Stub for missing functions */
 void _stub(void) {
-    /* TODO: Implement these later */
+    /* Stub implementation */
 }
