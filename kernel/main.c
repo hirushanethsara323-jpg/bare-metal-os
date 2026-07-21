@@ -77,6 +77,7 @@
 #include "include/calc.h"
 #include "include/paint.h"
 #include "include/prof.h"
+#include "include/distro.h"
 #include "include/ktest.h"
 
 /* Kernel Metadata */
@@ -357,6 +358,7 @@ void run_kernel_shell(void) {
             terminal_writestring("Available System Commands:\n");
             terminal_setcolor(body_col);
             terminal_writestring("  kvm / vmx              - View Hardware Virtualization Hypervisor VMX/SVM Extension status\n");
+            terminal_writestring("  ubuntu / distro        - Inspect Nothing OS Ubuntu Edition Custom Linux Distribution Specs\n");
             terminal_writestring("  prof / lecture [1-4]   - Attend OS Theory & Pedagogy Academic Lecture from Prof. OS Chair\n");
             terminal_writestring("  dns <hostname>         - Perform UDP Port 53 Domain Name System (DNS) IP Resolution\n");
             terminal_writestring("  bench                  - Execute Comprehensive Hardware RAM Speed & CPU MIPS Benchmark\n");
@@ -445,6 +447,9 @@ void run_kernel_shell(void) {
             terminal_writestring("  CPUID Extension:    ");
             terminal_writestring((htype == HYPERVISOR_VMX_INTEL) ? "Intel VMX Active" : "Software Emulation");
             terminal_writestring("\n  VMCS Control Area:  READY @ 0x001F0000\n");
+        } else if (strcmp(input_buf, "ubuntu") == 0 || strcmp(input_buf, "distro") == 0) {
+            distro_print_info();
+            distro_verify_package();
         } else if (strncmp(input_buf, "prof", 4) == 0 || strncmp(input_buf, "lecture", 7) == 0) {
             const char* num_str = "";
             if (strncmp(input_buf, "prof ", 5) == 0) num_str = input_buf + 5;
@@ -1262,6 +1267,8 @@ void run_kernel_shell(void) {
             terminal_writestring("Nothing OS Executive AI Board & Engineering Corporation:\n");
             terminal_setcolor(body_col);
             terminal_writestring("  👑 CEO & Lead OS Architect:   Overall Vision, PRs & Architecture\n");
+            terminal_writestring("  🐧 Ubuntu Distro Architect:   Ubuntu 24.04 LTS Remix, Custom ISOs & Plymouth\n");
+            terminal_writestring("  📦 Debian Package Maintainer: .deb Package Creation & APT Repository Manager\n");
             terminal_writestring("  🎓 Prof. OS Systems Research Chair: OS Architectural Theory & Formal POSIX Standards\n");
             terminal_writestring("  ⚡ Hardware Virtualization:  Intel VMX & AMD-V Hypervisor Control\n");
             terminal_writestring("  🌐 DNS Resolver Lead:         UDP Port 53 Hostname IP Translation\n");
@@ -1368,6 +1375,13 @@ void _kernel_main(void) {
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
     terminal_writestring("OS Academic Theory & POSIX Pedagogy Engine initialized by Prof. OS Chair\n");
+
+    /* Initialize Ubuntu Custom Distribution Subsystem */
+    distro_init();
+    terminal_setcolor(VGA_COLOR_GREEN);
+    terminal_writestring("[OK] ");
+    terminal_setcolor(vga_get_theme_color(current_theme, false));
+    terminal_writestring("Nothing OS Ubuntu Edition Custom Linux Distribution Bridge initialized\n");
 
     /* Initialize DNS Resolver */
     dns_init();

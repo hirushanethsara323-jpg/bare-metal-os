@@ -99,6 +99,7 @@ OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/vga_graphics.o $(BUILD_DIR)/vga_mode13.o \
        $(BUILD_DIR)/wm.o $(BUILD_DIR)/calc.o $(BUILD_DIR)/paint.o \
        $(BUILD_DIR)/editor.o $(BUILD_DIR)/pkg.o $(BUILD_DIR)/benchmark.o $(BUILD_DIR)/prof.o \
+       $(BUILD_DIR)/distro.o \
        $(BUILD_DIR)/sound.o $(BUILD_DIR)/sb16.o $(BUILD_DIR)/ansi.o \
        $(BUILD_DIR)/pci.o $(BUILD_DIR)/e1000.o $(BUILD_DIR)/vbe.o \
        $(BUILD_DIR)/ahci.o $(BUILD_DIR)/acpi.o $(BUILD_DIR)/apic.o \
@@ -155,6 +156,11 @@ $(BUILD_DIR)/dns.o: $(DNS_SRC)
 # Compile System Benchmark Engine
 $(BUILD_DIR)/benchmark.o: $(BENCH_SRC)
 	@echo "Compiling System Hardware Benchmark Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Ubuntu Custom Distribution Engine
+$(BUILD_DIR)/distro.o: $(DISTRO_SRC)
+	@echo "Compiling Ubuntu Custom Distribution Engine..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile OS Theory & Pedagogy Engine

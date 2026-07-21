@@ -27,6 +27,20 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "UBUNTU_DISTRO_ARCHITECT": Agent(
+        name="Ubuntu Distribution Architect & Remix Lead",
+        role="Custom Linux Distro & ISO Image Specialist",
+        avatar="🐧",
+        goal="Drive Ubuntu 24.04 LTS custom Remix ISO builds, Plymouth splash screens, and GRUB2 cyberpunk boot themes.",
+        skills=["Ubuntu 24.04 LTS Customization", "Live ISO Image Engineering", "Plymouth Splash Themes", "GRUB2 Styling"]
+    ),
+    "DEBIAN_PKG_MAINTAINER": Agent(
+        name="Debian / APT Package Manager Lead",
+        role=".deb Packaging & Software Repository Lead",
+        avatar="📦",
+        goal="Maintain nothing-os-core.deb packages, control metadata specifications, and APT repository synchronization.",
+        skills=[".deb Package Building", "APT Repository Specs", "dpkg Utilities", "Package Distribution"]
+    ),
     "OS_PROFESSOR": Agent(
         name="Prof. Operating Systems & Academic Research Chair",
         role="Chief Academic Officer & OS Systems Theory Lead",

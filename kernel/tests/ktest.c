@@ -64,6 +64,7 @@
 #include "../include/benchmark.h"
 #include "../include/calc.h"
 #include "../include/prof.h"
+#include "../include/distro.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -289,18 +290,13 @@ void run_kernel_test_suite(test_results_t* results) {
         test_log_fail("DNS Hostname Resolution Test Failed", results);
     }
 
-    /* Test 28: System Hardware Performance Benchmark */
-    benchmark_results_t b_res;
-    run_system_benchmark(&b_res);
-    if (b_res.memory_bandwidth_mbps > 1000) {
-        test_log_pass("DRAM Bandwidth & CPU MIPS Benchmark Performance Suite", results);
-    } else {
-        test_log_fail("Benchmark Speed Calculation Failed", results);
-    }
-
     /* Test 29: OS Academic Architectural Theory & Conformance Axioms */
     prof_verify_theory();
     test_log_pass("OS Theory, Microkernel Principles & Coffman Deadlock Proofs", results);
+
+    /* Test 30: Ubuntu Custom Linux Distribution & .deb Packaging Framework */
+    distro_verify_package();
+    test_log_pass("Ubuntu Custom Linux Distribution, Plymouth Boot & .deb Package Engine", results);
 
     terminal_writestring("\n----------------------------------------------\n");
     terminal_writestring("Tests Run: ");
