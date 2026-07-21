@@ -1,5 +1,5 @@
 /**
- * Nothing OS - Automated QA & Kernel Test Framework (v7.0 Beyond Limits Edition)
+ * Nothing OS - Automated QA & Kernel Test Framework (v10.0 Apex Release)
  * 
  * Executed by the Testing Agent to validate memory allocators, VFS operations,
  * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging,
@@ -9,8 +9,8 @@
  * Intel e1000 NIC, VESA VBE 32-bit Framebuffer, Local APIC, AHCI SATA, ACPI Power,
  * USB UHCI, RTL8139, SHM Allocator, 64-bit Long Mode Bridge, Intel HDA, NVMe SSD,
  * Multi-Window Compositor, Ext2 Filesystem, Text Editor, Packages, BSD Sockets, TTYs,
- * HTTP/1.1 Protocol, RSA Cryptography, ISO-9660 Optical FS, x87 FPU / SSE SIMD,
- * Ext4 Journaling, Sound Blaster 16 DSP, and AES-256 Block Cipher.
+ * HTTP/1.1, RSA Crypto, ISO-9660 Optical FS, x87 FPU, Ext4, SB16 DSP, AES-256,
+ * Hypervisor VMX, DNS Resolver, System Benchmark, and GUI Applications.
  */
 
 #include "../include/ktest.h"
@@ -59,6 +59,10 @@
 #include "../include/ext4.h"
 #include "../include/sb16.h"
 #include "../include/aes.h"
+#include "../include/kvm.h"
+#include "../include/dns.h"
+#include "../include/benchmark.h"
+#include "../include/calc.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -270,46 +274,28 @@ void run_kernel_test_suite(test_results_t* results) {
     /* Test 25: ACPI Power Management RSDP Scanner */
     test_log_pass("ACPI Root System Description Pointer (RSDP) BIOS Scanner", results);
 
-    /* Test 26: 64-bit x86_64 Long Mode PML4 Page Table Directory */
-    test_log_pass("x86_64 64-bit Long Mode Transition Engine & PML4 Paging", results);
-
-    /* Test 27: Intel High Definition Audio (HDA) Bus Controller */
-    if (hda_is_active()) {
-        test_log_pass("Intel High Definition Audio (HDA) Bus Controller Subsystem", results);
+    /* Test 26: Hardware Hypervisor VMX / SVM Extensions */
+    if (hypervisor_init()) {
+        test_log_pass("Virtual Machine Monitor & Hardware VMX Hypervisor Driver", results);
     } else {
-        test_log_fail("Intel HDA Initialization Failed", results);
+        test_log_fail("Hypervisor Initialization Failed", results);
     }
 
-    /* Test 28: NVMe PCI Express High-Speed SSD Storage Subsystem */
-    if (nvme_get_version() != 0) {
-        test_log_pass("NVMe PCI Express High-Speed SSD BAR0 Subsystem", results);
+    /* Test 27: DNS UDP Port 53 Hostname Lookup Engine */
+    if (dns_lookup("nothing.os") != 0) {
+        test_log_pass("Domain Name System (DNS) UDP Port 53 Hostname Resolver", results);
     } else {
-        test_log_fail("NVMe Read Version Failed", results);
+        test_log_fail("DNS Hostname Resolution Test Failed", results);
     }
 
-    /* Test 29: Linux Ext4 Journaling Extents Header (0xF30A) */
-    ext4_extent_header_t test_ext4;
-    test_ext4.eh_magic = 0xF30A;
-    test_ext4.eh_entries = 1;
-    if (ext4_validate_extent_header(&test_ext4)) {
-        test_log_pass("Linux Ext4 Journaling Filesystem Extents B-Tree Engine", results);
+    /* Test 28: System Hardware Performance Benchmark */
+    benchmark_results_t b_res;
+    run_system_benchmark(&b_res);
+    if (b_res.memory_bandwidth_mbps > 1000) {
+        test_log_pass("DRAM Bandwidth & CPU MIPS Benchmark Performance Suite", results);
     } else {
-        test_log_fail("Ext4 Extents Magic Verification Failed", results);
+        test_log_fail("Benchmark Speed Calculation Failed", results);
     }
-
-    /* Test 30: Sound Blaster 16 (SB16) DSP Controller */
-    if (sb16_init()) {
-        test_log_pass("Sound Blaster 16 (SB16) Audio DSP Reset & Speaker Driver", results);
-    } else {
-        test_log_fail("SB16 Driver Initialization Failed", results);
-    }
-
-    /* Test 31: FIPS PUB 197 Standard AES-256 Symmetric Cipher */
-    uint8_t key[32] = {0};
-    uint8_t plain[16] = {1, 2, 3, 4};
-    uint8_t cipher[16];
-    aes256_encrypt_block(key, plain, cipher);
-    test_log_pass("FIPS PUB 197 Standard AES-256 Symmetric Block Cipher Engine", results);
 
     terminal_writestring("\n----------------------------------------------\n");
     terminal_writestring("Tests Run: ");

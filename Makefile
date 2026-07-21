@@ -1,5 +1,5 @@
 # =============================================================================
-# Nothing OS - Enterprise Makefile (v7.0 Beyond Limits Edition)
+# Nothing OS - Enterprise Makefile (v10.0 Apex Major Platform Edition)
 # =============================================================================
 # Build system for Nothing OS (x86 Bare Metal Operating System)
 # =============================================================================
@@ -49,8 +49,11 @@ EXT2_SRC     = $(KERNEL_DIR)/fs/ext2.c
 EXT4_SRC     = $(KERNEL_DIR)/fs/ext4.c
 ISO_SRC      = $(KERNEL_DIR)/fs/iso9660.c
 WM_SRC       = $(KERNEL_DIR)/gui/wm.c
+CALC_SRC     = $(KERNEL_DIR)/gui/calc.c
+PAINT_SRC    = $(KERNEL_DIR)/gui/paint.c
 EDITOR_SRC   = $(KERNEL_DIR)/user/editor.c
 PKG_SRC      = $(KERNEL_DIR)/sys/pkg.c
+BENCH_SRC    = $(KERNEL_DIR)/sys/benchmark.c
 IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
 APIC_SRC     = $(KERNEL_DIR)/arch/x86/apic.c
 FPU_SRC      = $(KERNEL_DIR)/arch/x86/fpu.c
@@ -60,6 +63,8 @@ TSS_SRC      = $(KERNEL_DIR)/arch/x86/tss.c
 NET_SRC      = $(KERNEL_DIR)/net/net.c
 SOCKET_SRC   = $(KERNEL_DIR)/net/socket.c
 HTTP_SRC     = $(KERNEL_DIR)/net/http.c
+DNS_SRC      = $(KERNEL_DIR)/net/dns.c
+KVM_SRC      = $(KERNEL_DIR)/hyper/kvm.c
 SIGNAL_SRC   = $(KERNEL_DIR)/sys/signal.c
 ENV_SRC      = $(KERNEL_DIR)/sys/env.c
 MONITOR_SRC  = $(KERNEL_DIR)/sys/monitor.c
@@ -90,19 +95,21 @@ OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/fat.o \
        $(BUILD_DIR)/ext2.o $(BUILD_DIR)/ext4.o $(BUILD_DIR)/iso9660.o \
        $(BUILD_DIR)/vga_graphics.o $(BUILD_DIR)/vga_mode13.o \
-       $(BUILD_DIR)/wm.o $(BUILD_DIR)/editor.o $(BUILD_DIR)/pkg.o \
+       $(BUILD_DIR)/wm.o $(BUILD_DIR)/calc.o $(BUILD_DIR)/paint.o \
+       $(BUILD_DIR)/editor.o $(BUILD_DIR)/pkg.o $(BUILD_DIR)/benchmark.o \
        $(BUILD_DIR)/sound.o $(BUILD_DIR)/sb16.o $(BUILD_DIR)/ansi.o \
        $(BUILD_DIR)/pci.o $(BUILD_DIR)/e1000.o $(BUILD_DIR)/vbe.o \
        $(BUILD_DIR)/ahci.o $(BUILD_DIR)/acpi.o $(BUILD_DIR)/apic.o \
        $(BUILD_DIR)/usb.o $(BUILD_DIR)/rtl8139.o $(BUILD_DIR)/shm.o \
        $(BUILD_DIR)/hda.o $(BUILD_DIR)/nvme.o $(BUILD_DIR)/vt.o \
-       $(BUILD_DIR)/socket.o $(BUILD_DIR)/http.o $(BUILD_DIR)/rsa.o \
-       $(BUILD_DIR)/aes.o $(BUILD_DIR)/fpu.o $(BUILD_DIR)/longmode.o \
-       $(BUILD_DIR)/pong.o $(BUILD_DIR)/syscall.o $(BUILD_DIR)/tss.o \
-       $(BUILD_DIR)/net.o $(BUILD_DIR)/signal.o $(BUILD_DIR)/env.o \
-       $(BUILD_DIR)/monitor.o $(BUILD_DIR)/ipc.o $(BUILD_DIR)/sha256.o \
-       $(BUILD_DIR)/scheduler.o $(BUILD_DIR)/elf.o $(BUILD_DIR)/paging.o \
-       $(BUILD_DIR)/ata.o $(BUILD_DIR)/mouse.o $(BUILD_DIR)/ktest.o
+       $(BUILD_DIR)/socket.o $(BUILD_DIR)/http.o $(BUILD_DIR)/dns.o \
+       $(BUILD_DIR)/kvm.o $(BUILD_DIR)/rsa.o $(BUILD_DIR)/aes.o \
+       $(BUILD_DIR)/fpu.o $(BUILD_DIR)/longmode.o $(BUILD_DIR)/pong.o \
+       $(BUILD_DIR)/syscall.o $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o \
+       $(BUILD_DIR)/signal.o $(BUILD_DIR)/env.o $(BUILD_DIR)/monitor.o \
+       $(BUILD_DIR)/ipc.o $(BUILD_DIR)/sha256.o $(BUILD_DIR)/scheduler.o \
+       $(BUILD_DIR)/elf.o $(BUILD_DIR)/paging.o $(BUILD_DIR)/ata.o \
+       $(BUILD_DIR)/mouse.o $(BUILD_DIR)/ktest.o
 
 # =============================================================================
 # Targets
@@ -118,7 +125,7 @@ dirs:
 
 # Link kernel binary
 $(KERNEL): $(OBJS)
-	@echo "Linking Nothing OS Enterprise v7.0 kernel binary..."
+	@echo "Linking Nothing OS v10.0 Apex Platform kernel binary..."
 	@$(LD) $(LDFLAGS) -o $@ $(OBJS)
 	@echo "Kernel built successfully: $@"
 	@echo "Kernel size: $$(stat -c%s $@) bytes"
@@ -131,6 +138,31 @@ $(BUILD_DIR)/boot.o: $(KERNEL_DIR)/arch/x86/boot.c
 # Compile IDT and Interrupt Manager
 $(BUILD_DIR)/idt.o: $(IDT_SRC)
 	@echo "Compiling IDT & PIC Interrupt Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile KVM Hypervisor Engine
+$(BUILD_DIR)/kvm.o: $(KVM_SRC)
+	@echo "Compiling Hardware Hypervisor VMX Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile DNS Resolver Engine
+$(BUILD_DIR)/dns.o: $(DNS_SRC)
+	@echo "Compiling DNS UDP Hostname Resolver Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile System Benchmark Engine
+$(BUILD_DIR)/benchmark.o: $(BENCH_SRC)
+	@echo "Compiling System Hardware Benchmark Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Desktop Calculator Applet
+$(BUILD_DIR)/calc.o: $(CALC_SRC)
+	@echo "Compiling Desktop Graphical Calculator Applet..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Desktop Paint Applet
+$(BUILD_DIR)/paint.o: $(PAINT_SRC)
+	@echo "Compiling Desktop Graphical Canvas Paint Applet..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile Sound Blaster 16 Driver
