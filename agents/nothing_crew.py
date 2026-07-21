@@ -27,6 +27,34 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "LONGMODE_X64_LEAD": Agent(
+        name="64-bit x86_64 Long Mode Architecture Lead",
+        role="x64 CPU Transition & PML4 Paging Engineer",
+        avatar="💻",
+        goal="Maintain CPUID long mode feature checks, IA32_EFER MSR 0xC0000080, and 4-level PML4 page tables.",
+        skills=["x86_64 Long Mode", "PML4 Page Directory", "MSR Registers", "64-bit Assembly Bridge"]
+    ),
+    "INTEL_HDA_LEAD": Agent(
+        name="Intel High Definition Audio (HDA) Bus Lead",
+        role="PCI HD Audio & Codec Subsystem Specialist",
+        avatar="🔊",
+        goal="Drive PCI Intel HD Audio controllers (Class 0x04 Subclass 0x03), MMIO BAR0 streams, & codecs.",
+        skills=["Intel HDA Spec", "Codec Streams", "MMIO Audio BAR0", "Audio Stream Descriptors"]
+    ),
+    "NVME_SSD_LEAD": Agent(
+        name="NVMe PCIe High-Speed SSD Controller Lead",
+        role="PCI Express NVM Storage Subsystem Specialist",
+        avatar="💽",
+        goal="Maintain NVMe PCIe SSD BAR0 registers, Admin Submission Queues, & high-speed block I/O.",
+        skills=["NVMe v1.4 Spec", "PCIe MMIO BAR0", "Admin Command Rings", "High-Speed SSD Storage"]
+    ),
+    "ARCADE_GAME_ENGINE_LEAD": Agent(
+        name="Kernel Embedded Arcade Game Engine Lead",
+        role="In-Kernel Game Loop & Graphics Sound Specialist",
+        avatar="🎮",
+        goal="Maintain interactive kernel embedded Ping-Pong arcade game, Mode 13h pixel arena, & sound effects.",
+        skills=["Kernel Game Loop", "Mode 13h Framebuffer", "Audio Beep Dynamics", "Paddle Collision Physics"]
+    ),
     "USB_UHCI_LEAD": Agent(
         name="USB Host Controller & Port Subsystem Lead",
         role="Universal Host Controller Interface (UHCI) Specialist",
@@ -262,7 +290,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (usb, rtl8139, shm, apic, ahci, acpi, shutdown, pci).",
+        goal="Develop interactive kernel shell commands (longmode, hda, nvme, pong, usb, rtl8139, shm).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
@@ -280,15 +308,15 @@ class NothingOSCorporation:
         self.corp = CREW_CORPORATION
 
     def display_board(self):
-        print("=" * 92)
+        print("=" * 96)
         print("    🏢 NOTHING OS DEVELOPMENT CORPORATION - EXECUTIVE CREW BOARD 🏢")
-        print("=" * 92)
+        print("=" * 96)
         for key, agent in self.corp.items():
             print(f"{agent.avatar} [{agent.role}]")
             print(f"   Agent:  {agent.name}")
             print(f"   Goal:   {agent.goal}")
             print(f"   Skills: {', '.join(agent.skills)}")
-            print("-" * 92)
+            print("-" * 96)
 
     def run_build_check(self) -> bool:
         try:

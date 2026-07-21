@@ -1,5 +1,5 @@
 # =============================================================================
-# Nothing OS - Enterprise Makefile (v2.2 Ultimate Edition)
+# Nothing OS - Enterprise Makefile (v3.0 Ultra-Kernel Edition)
 # =============================================================================
 # Build system for Nothing OS (x86 Bare Metal Operating System)
 # =============================================================================
@@ -35,6 +35,8 @@ AHCI_SRC     = $(KERNEL_DIR)/drivers/ahci.c
 ACPI_SRC     = $(KERNEL_DIR)/drivers/acpi.c
 USB_SRC      = $(KERNEL_DIR)/drivers/usb.c
 RTL_SRC      = $(KERNEL_DIR)/drivers/rtl8139.c
+HDA_SRC      = $(KERNEL_DIR)/drivers/hda.c
+NVME_SRC     = $(KERNEL_DIR)/drivers/nvme.c
 ATA_SRC      = $(KERNEL_DIR)/drivers/ata.c
 MOUSE_SRC    = $(KERNEL_DIR)/drivers/mouse.c
 HEAP_SRC     = $(KERNEL_DIR)/mm/heap.c
@@ -43,6 +45,7 @@ VFS_SRC      = $(KERNEL_DIR)/fs/vfs.c
 FAT_SRC      = $(KERNEL_DIR)/fs/fat.c
 IDT_SRC      = $(KERNEL_DIR)/arch/x86/idt.c
 APIC_SRC     = $(KERNEL_DIR)/arch/x86/apic.c
+LONGMODE_SRC = $(KERNEL_DIR)/arch/x86/longmode.c
 SYSCALL_SRC  = $(KERNEL_DIR)/arch/x86/syscall.c
 TSS_SRC      = $(KERNEL_DIR)/arch/x86/tss.c
 NET_SRC      = $(KERNEL_DIR)/net/net.c
@@ -54,6 +57,7 @@ SHM_SRC      = $(KERNEL_DIR)/sys/shm.c
 CRYPTO_SRC   = $(KERNEL_DIR)/crypto/sha256.c
 SCHED_SRC    = $(KERNEL_DIR)/proc/scheduler.c
 ELF_SRC      = $(KERNEL_DIR)/proc/elf.c
+PONG_SRC     = $(KERNEL_DIR)/games/pong.c
 KTEST_SRC    = $(KERNEL_DIR)/tests/ktest.c
 BOOT_SRC     = $(BOOT_DIR)/multiboot_header.asm
 
@@ -75,10 +79,11 @@ OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/sound.o $(BUILD_DIR)/ansi.o $(BUILD_DIR)/pci.o \
        $(BUILD_DIR)/e1000.o $(BUILD_DIR)/vbe.o $(BUILD_DIR)/ahci.o \
        $(BUILD_DIR)/acpi.o $(BUILD_DIR)/apic.o $(BUILD_DIR)/usb.o \
-       $(BUILD_DIR)/rtl8139.o $(BUILD_DIR)/shm.o $(BUILD_DIR)/syscall.o \
-       $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o $(BUILD_DIR)/signal.o \
-       $(BUILD_DIR)/env.o $(BUILD_DIR)/monitor.o $(BUILD_DIR)/ipc.o \
-       $(BUILD_DIR)/sha256.o $(BUILD_DIR)/scheduler.o \
+       $(BUILD_DIR)/rtl8139.o $(BUILD_DIR)/shm.o $(BUILD_DIR)/hda.o \
+       $(BUILD_DIR)/nvme.o $(BUILD_DIR)/longmode.o $(BUILD_DIR)/pong.o \
+       $(BUILD_DIR)/syscall.o $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o \
+       $(BUILD_DIR)/signal.o $(BUILD_DIR)/env.o $(BUILD_DIR)/monitor.o \
+       $(BUILD_DIR)/ipc.o $(BUILD_DIR)/sha256.o $(BUILD_DIR)/scheduler.o \
        $(BUILD_DIR)/elf.o $(BUILD_DIR)/paging.o $(BUILD_DIR)/ata.o \
        $(BUILD_DIR)/mouse.o $(BUILD_DIR)/ktest.o
 
@@ -96,7 +101,7 @@ dirs:
 
 # Link kernel binary
 $(KERNEL): $(OBJS)
-	@echo "Linking Nothing OS Enterprise v2.2 kernel binary..."
+	@echo "Linking Nothing OS v3.0 Ultra-Kernel binary..."
 	@$(LD) $(LDFLAGS) -o $@ $(OBJS)
 	@echo "Kernel built successfully: $@"
 	@echo "Kernel size: $$(stat -c%s $@) bytes"
@@ -116,9 +121,29 @@ $(BUILD_DIR)/apic.o: $(APIC_SRC)
 	@echo "Compiling Local APIC Multiprocessor Driver..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
+# Compile 64-bit Long Mode Bridge Engine
+$(BUILD_DIR)/longmode.o: $(LONGMODE_SRC)
+	@echo "Compiling 64-bit x86_64 Long Mode PML4 Page Table Bridge..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
 # Compile PCI Bus Driver
 $(BUILD_DIR)/pci.o: $(PCI_SRC)
 	@echo "Compiling PCI Bus Enumerator & Hardware Scanner Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Intel HD Audio Driver
+$(BUILD_DIR)/hda.o: $(HDA_SRC)
+	@echo "Compiling Intel High Definition Audio (HDA) Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile NVMe PCIe SSD Driver
+$(BUILD_DIR)/nvme.o: $(NVME_SRC)
+	@echo "Compiling NVMe PCIe High-Speed SSD Storage Driver..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile Kernel Arcade Game Engine
+$(BUILD_DIR)/pong.o: $(PONG_SRC)
+	@echo "Compiling Kernel Embedded Retro Arcade Ping-Pong Game Engine..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile USB Host Controller Driver
