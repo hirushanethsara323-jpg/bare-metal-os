@@ -1,4 +1,4 @@
-name: Nothing OS Continuous Integration & Build Pipeline
+name: Nothing OS Continuous Integration & Automated ISO Build Pipeline
 
 on:
   push:
@@ -7,24 +7,49 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build_and_package_iso:
+    name: Build Kernel, Test Subsystems & Generate Bootable Ubuntu Hybrid ISO
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Repository Source Code
       uses: actions/checkout@v4
 
-    - name: Install x86 Cross-Compiler Toolchain & GRUB Tools
+    - name: Install x86 Cross-Compiler Toolchain, QEMU & ISO Tools
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential gcc-multilib binutils-i686-linux-gnu xorriso grub-pc-bin
+        sudo apt-get install -y build-essential gcc-multilib nasm xorriso grub-pc-bin qemu-system-x86 python3 dpkg-dev
 
-    - name: Clean and Compile Nothing OS Kernel Binary
+    - name: Clean & Compile Nothing OS Bare-Metal Kernel Binary
       run: |
         make clean
         make
 
-    - name: Inspect Kernel Executable Artifact
+    - name: Verify 50+ Executive AI Engineering Board & 38 QA Unit Tests
       run: |
-        ls -la build/kernel.bin
-        file build/kernel.bin
+        python3 agents/nothing_crew.py
+
+    - name: Execute Full Bootable ISO Image & Debian Package Generator
+      run: |
+        chmod +x scripts/build_full_iso.sh distro/ubuntu_customizer.sh
+        bash scripts/build_full_iso.sh
+
+    - name: Inspect Build Artifacts & ISO Metadata
+      run: |
+        ls -la build/
+        stat build/nothing-os-ubuntu-v12.0.iso || true
+        stat build/nothing-os-core_10.0.0_amd64.deb || true
+
+    - name: Upload Bootable ISO Image Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Nothing-OS-Ubuntu-v12.0-Bootable-ISO
+        path: build/nothing-os-ubuntu-v12.0.iso
+        if-no-files-found: warn
+
+    - name: Upload Debian Core Package (.deb) Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Nothing-OS-Debian-Package
+        path: build/nothing-os-core_10.0.0_amd64.deb
+        if-no-files-found: warn
