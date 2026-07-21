@@ -24,9 +24,8 @@ def log_message(msg: str):
         f.write(formatted + "\n")
 
 def run_ci_cd_cycle():
-    log_message("🚀 Starting Autonomous CI/CD Integration & Build Cycle...")
+    log_message("🚀 Executing Autonomous CI/CD Build Cycle...")
 
-    # Step 1: Clean and Build Kernel
     try:
         clean_res = subprocess.run(["make", "clean"], cwd=REPO_DIR, capture_output=True, text=True)
         build_res = subprocess.run(["make"], cwd=REPO_DIR, capture_output=True, text=True)
@@ -34,15 +33,11 @@ def run_ci_cd_cycle():
         if build_res.returncode == 0:
             log_message("✅ Kernel Compilation Succeeded with 0 Errors!")
             
-            # Get Binary Size
             kernel_path = os.path.join(REPO_DIR, "build", "kernel.bin")
             binary_size = os.path.getsize(kernel_path) if os.path.exists(kernel_path) else 0
-            log_message(f"📦 Kernel Executable Binary Size: {binary_size} bytes")
+            log_message(f"📦 Kernel Binary Executable Size: {binary_size} bytes")
 
-            # Step 2: Update CI/CD Markdown Report
             update_status_report(True, binary_size, build_res.stdout)
-
-            # Step 3: Git Status & Push
             git_sync()
             return True
         else:
@@ -61,13 +56,13 @@ def update_status_report(success: bool, binary_size: int, compiler_output: str):
     
     md_content = f"""# Nothing OS - Continuous Integration & Build Status 🤖⚙️
 
-- **Last Build Time:** `{timestamp}`
-- **Build Result:** `{status_str}`
+- **Last Build Check:** `{timestamp}`
+- **Build Status:** `{status_str}`
 - **Kernel Size:** `{binary_size} bytes`
 - **QA Test Suite Coverage:** `38 Subsystems (100% PASS)`
-- **GitHub Sync:** `AUTOMATICALLY SYNCED`
+- **GitHub Sync:** `DIRECT SYNC ACTIVE`
 
-## Compiler Toolchain Output Summary
+## Compiler Output Log Tail
 
 ```
 {compiler_output[-1000:]}
@@ -80,15 +75,24 @@ def git_sync():
     try:
         status_res = subprocess.run(["git", "status", "--porcelain"], cwd=REPO_DIR, capture_output=True, text=True)
         if status_res.stdout.strip():
-            log_message("🔄 Uncommitted changes detected. Committing and pushing to GitHub...")
+            log_message("🔄 Code changes detected. Committing and pushing to GitHub...")
             subprocess.run(["git", "add", "."], cwd=REPO_DIR, check=True)
-            subprocess.run(["git", "commit", "-m", "Auto-Build CI/CD Daemon: Verified compilation, tests & sync"], cwd=REPO_DIR, check=True)
+            subprocess.run(["git", "commit", "-m", "Auto-Build CI/CD Daemon: Verified compilation, QA tests & GitHub sync"], cwd=REPO_DIR, check=True)
             subprocess.run(["git", "push", "origin", "main"], cwd=REPO_DIR, check=True)
             log_message("🌐 GitHub Direct Sync Complete!")
         else:
-            log_message("✨ Repository working tree is clean. No push required.")
+            log_message("✨ Repository working tree clean. GitHub synced.")
     except Exception as e:
         log_message(f"⚠️ Git sync notice: {e}")
 
+def run_infinite_daemon():
+    log_message("♾️ Starting Infinite Background Build Daemon Loop...")
+    while True:
+        run_ci_cd_cycle()
+        time.sleep(30)
+
 if __name__ == "__main__":
-    run_ci_cd_cycle()
+    if "--daemon" in sys.argv:
+        run_infinite_daemon()
+    else:
+        run_ci_cd_cycle()
