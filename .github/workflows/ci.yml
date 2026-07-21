@@ -1,0 +1,30 @@
+name: Nothing OS Continuous Integration & Build Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository Source Code
+      uses: actions/checkout@v4
+
+    - name: Install x86 Cross-Compiler Toolchain & GRUB Tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential gcc-multilib binutils-i686-linux-gnu xorriso grub-pc-bin
+
+    - name: Clean and Compile Nothing OS Kernel Binary
+      run: |
+        make clean
+        make
+
+    - name: Inspect Kernel Executable Artifact
+      run: |
+        ls -la build/kernel.bin
+        file build/kernel.bin
