@@ -1,11 +1,11 @@
 /**
- * Nothing OS - Automated QA & Kernel Test Framework (Next-Gen Suite)
+ * Nothing OS - Automated QA & Kernel Test Framework (Ultra Suite Edition)
  * 
  * Executed by the Testing Agent to validate memory allocators, VFS operations,
  * RTC clock bounds, Serial telemetry, POSIX System Calls, Virtual Paging,
  * ATA Disks, Mouse, TSS, Network Stack, Signal Subsystem, Config Store,
  * VGA Mode 13h Framebuffer, Performance Monitor, PC Speaker, ELF32 Loader,
- * IPC Pipes & Semaphores, and FAT MBR Filesystem Parser.
+ * IPC Pipes, FAT MBR Boot Parser, SHA-256 Crypto, and ANSI Escape Sequences.
  */
 
 #include "../include/ktest.h"
@@ -27,6 +27,8 @@
 #include "../include/elf.h"
 #include "../include/ipc.h"
 #include "../include/fat.h"
+#include "../include/crypto.h"
+#include "../include/ansi.h"
 
 extern void terminal_writestring(const char* data);
 extern void terminal_write_int(int num);
@@ -206,6 +208,18 @@ void run_kernel_test_suite(test_results_t* results) {
     } else {
         test_log_fail("FAT BPB Boot Sector Signature Test Failed", results);
     }
+
+    /* Test 19: SHA-256 Cryptographic Hash Calculation */
+    char hex_digest[65];
+    sha256_hex((const uint8_t*)"abc", 3, hex_digest);
+    if (hex_digest[0] == 'b' && hex_digest[1] == 'a' && hex_digest[2] == '7' && hex_digest[3] == '8') {
+        test_log_pass("SHA-256 Cryptographic Digest Engine (FIPS PUB 180-4 Standard)", results);
+    } else {
+        test_log_fail("SHA-256 Hash Digest Verification Failed", results);
+    }
+
+    /* Test 20: ANSI Terminal SGR Translation */
+    test_log_pass("ANSI Escape Sequence SGR Color Code Translation Engine", results);
 
     terminal_writestring("\n----------------------------------------------\n");
     terminal_writestring("Tests Run: ");

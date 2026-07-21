@@ -1,5 +1,5 @@
 # =============================================================================
-# Nothing OS - Enterprise Makefile (Next-Gen Suite Edition)
+# Nothing OS - Enterprise Makefile (Ultra Suite Edition)
 # =============================================================================
 # Build system for Nothing OS (x86 Bare Metal Operating System)
 # =============================================================================
@@ -27,6 +27,7 @@ RTC_SRC      = $(KERNEL_DIR)/drivers/rtc.c
 GRAPHICS_SRC = $(KERNEL_DIR)/drivers/vga_graphics.c
 VGA13_SRC    = $(KERNEL_DIR)/drivers/vga_mode13.c
 SOUND_SRC    = $(KERNEL_DIR)/drivers/sound.c
+ANSI_SRC     = $(KERNEL_DIR)/drivers/ansi.c
 ATA_SRC      = $(KERNEL_DIR)/drivers/ata.c
 MOUSE_SRC    = $(KERNEL_DIR)/drivers/mouse.c
 HEAP_SRC     = $(KERNEL_DIR)/mm/heap.c
@@ -41,6 +42,7 @@ SIGNAL_SRC   = $(KERNEL_DIR)/sys/signal.c
 ENV_SRC      = $(KERNEL_DIR)/sys/env.c
 MONITOR_SRC  = $(KERNEL_DIR)/sys/monitor.c
 IPC_SRC      = $(KERNEL_DIR)/sys/ipc.c
+CRYPTO_SRC   = $(KERNEL_DIR)/crypto/sha256.c
 SCHED_SRC    = $(KERNEL_DIR)/proc/scheduler.c
 ELF_SRC      = $(KERNEL_DIR)/proc/elf.c
 KTEST_SRC    = $(KERNEL_DIR)/tests/ktest.c
@@ -61,9 +63,10 @@ OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/boot.o $(BUILD_DIR)/keyboard.o \
        $(BUILD_DIR)/heap.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/serial.o \
        $(BUILD_DIR)/rtc.o $(BUILD_DIR)/vfs.o $(BUILD_DIR)/fat.o \
        $(BUILD_DIR)/vga_graphics.o $(BUILD_DIR)/vga_mode13.o \
-       $(BUILD_DIR)/sound.o $(BUILD_DIR)/syscall.o $(BUILD_DIR)/tss.o \
-       $(BUILD_DIR)/net.o $(BUILD_DIR)/signal.o $(BUILD_DIR)/env.o \
-       $(BUILD_DIR)/monitor.o $(BUILD_DIR)/ipc.o $(BUILD_DIR)/scheduler.o \
+       $(BUILD_DIR)/sound.o $(BUILD_DIR)/ansi.o $(BUILD_DIR)/syscall.o \
+       $(BUILD_DIR)/tss.o $(BUILD_DIR)/net.o $(BUILD_DIR)/signal.o \
+       $(BUILD_DIR)/env.o $(BUILD_DIR)/monitor.o $(BUILD_DIR)/ipc.o \
+       $(BUILD_DIR)/sha256.o $(BUILD_DIR)/scheduler.o \
        $(BUILD_DIR)/elf.o $(BUILD_DIR)/paging.o $(BUILD_DIR)/ata.o \
        $(BUILD_DIR)/mouse.o $(BUILD_DIR)/ktest.o
 
@@ -81,7 +84,7 @@ dirs:
 
 # Link kernel binary
 $(KERNEL): $(OBJS)
-	@echo "Linking Nothing OS Next-Gen kernel binary..."
+	@echo "Linking Nothing OS Ultra kernel binary..."
 	@$(LD) $(LDFLAGS) -o $@ $(OBJS)
 	@echo "Kernel built successfully: $@"
 	@echo "Kernel size: $$(stat -c%s $@) bytes"
@@ -129,6 +132,16 @@ $(BUILD_DIR)/monitor.o: $(MONITOR_SRC)
 # Compile IPC & Semaphore Manager
 $(BUILD_DIR)/ipc.o: $(IPC_SRC)
 	@echo "Compiling IPC Ring Buffer Pipe & Semaphore Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile SHA-256 Cryptography Engine
+$(BUILD_DIR)/sha256.o: $(CRYPTO_SRC)
+	@echo "Compiling SHA-256 Cryptographic Hash Engine..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+# Compile ANSI Escape Sequence Parser
+$(BUILD_DIR)/ansi.o: $(ANSI_SRC)
+	@echo "Compiling ANSI Escape Sequence SGR Translator..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile PC Speaker Audio Driver

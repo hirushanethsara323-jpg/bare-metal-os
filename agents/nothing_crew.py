@@ -27,6 +27,20 @@ CREW_CORPORATION = {
         goal="Direct overall OS architecture, release milestones, quality control, and git releases.",
         skills=["OS System Architecture", "Sprint Planning", "Code Review", "Release Management"]
     ),
+    "CRYPTO_SECURITY_LEAD": Agent(
+        name="Kernel Cryptography & Security Lead",
+        role="FIPS SHA-256 Digest & Hash Engine Specialist",
+        avatar="🔒",
+        goal="Maintain SHA-256 cryptographic hashing for binary integrity, VFS file checksums, and safety.",
+        skills=["SHA-256 Digest", "Cryptographic Checksums", "File Integrity", "FIPS PUB 180-4"]
+    ),
+    "ANSI_FORMATTER_LEAD": Agent(
+        name="ANSI Escape Sequence & Console Specialist",
+        role="Terminal SGR Color Sequence Parser Lead",
+        avatar="🎨",
+        goal="Parse ANSI terminal escape codes and translate them dynamically to VGA hardware color attributes.",
+        skills=["ANSI Escape Codes", "SGR Palette Translation", "Console Formatting", "VGA Text Mode"]
+    ),
     "IPC_SEMAPHORE_LEAD": Agent(
         name="IPC Pipe & Thread Synchronization Lead",
         role="Inter-Process Communication & Locking Specialist",
@@ -67,7 +81,7 @@ CREW_CORPORATION = {
         role="Self-Testing Framework & Validation Specialist",
         avatar="🧪",
         goal="Execute automated kernel test suites, verify memory safety, file operations, and system call stability.",
-        skills=["18-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
+        skills=["20-Test Suite Runner", "Memory Verification", "VFS Integrity", "QA Validation"]
     ),
     "GUI_PIXEL_ENGINE_LEAD": Agent(
         name="Mode 13h Pixel GUI & Desktop Lead",
@@ -185,7 +199,7 @@ CREW_CORPORATION = {
         name="Shell & Console UX Lead",
         role="Interactive Shell & Command Lead",
         avatar="🐚",
-        goal="Develop interactive kernel shell commands (pipe, sem, fat, beep, elf, gui, mon, env, signal).",
+        goal="Develop interactive kernel shell commands (hash, ansi, pipe, sem, fat, beep, elf, gui, mon).",
         skills=["Console UX", "Command Parsing", "Shell File Utilities", "VGA Formatting"]
     ),
     "DEVOPS_QA": Agent(
@@ -203,15 +217,15 @@ class NothingOSCorporation:
         self.corp = CREW_CORPORATION
 
     def display_board(self):
-        print("=" * 84)
+        print("=" * 86)
         print("    🏢 NOTHING OS DEVELOPMENT CORPORATION - EXECUTIVE CREW BOARD 🏢")
-        print("=" * 84)
+        print("=" * 86)
         for key, agent in self.corp.items():
             print(f"{agent.avatar} [{agent.role}]")
             print(f"   Agent:  {agent.name}")
             print(f"   Goal:   {agent.goal}")
             print(f"   Skills: {', '.join(agent.skills)}")
-            print("-" * 84)
+            print("-" * 86)
 
     def run_build_check(self) -> bool:
         try:

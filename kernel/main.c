@@ -6,7 +6,8 @@
  * VGA Graphics, System Calls, Process Scheduler, Virtual Paging, ATA Disk,
  * PS/2 Mouse, Task State Segment (TSS), Network Stack, Signals, Env Store,
  * Performance Monitor, Mode 13h Desktop GUI, PC Speaker Audio, ELF32 Loader,
- * IPC Pipes & Semaphores, FAT MBR Boot Parser, and Automated QA Tests.
+ * IPC Pipes, FAT MBR Parser, SHA-256 Cryptography, ANSI Escape Parser,
+ * and 20-Test Automated QA Suite.
  */
 
 #include <stdint.h>
@@ -34,11 +35,13 @@
 #include "include/elf.h"
 #include "include/ipc.h"
 #include "include/fat.h"
+#include "include/crypto.h"
+#include "include/ansi.h"
 #include "include/ktest.h"
 
 /* Kernel Metadata */
 #define KERNEL_NAME     "Nothing OS"
-#define KERNEL_VERSION  "1.1.0 Next-Gen Suite"
+#define KERNEL_VERSION  "1.2.0 Ultra Suite"
 #define KERNEL_AUTHOR   "Nothing OS Development Corporation & Executive Board"
 
 /* Physical Memory Markers */
@@ -235,11 +238,11 @@ void print_banner(void) {
     terminal_writestring("  ║  ╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝    ║\n");
     terminal_setcolor(title_col);
     terminal_writestring("  ║                                                               ║\n");
-    terminal_writestring("  ║     NEXT-GEN ADVANCED KERNEL SUITE - Release v");
+    terminal_writestring("  ║       ULTIMATE ULTRA-KERNEL EDITION - Release v");
     terminal_setcolor(body_col);
-    terminal_writestring("1.1.0");
+    terminal_writestring("1.2.0");
     terminal_setcolor(title_col);
-    terminal_writestring("     ║\n");
+    terminal_writestring("       ║\n");
     terminal_writestring("  ║                                                               ║\n");
     terminal_writestring("  ╚═══════════════════════════════════════════════════════════════╝\n");
     terminal_writestring("\n");
@@ -254,12 +257,12 @@ static void background_worker_stub(void) {
 static void render_gui_desktop_demo(void) {
     vga13_clear(COLOR13_CYAN);
     vga13_draw_rect(0, 0, 320, 12, COLOR13_BLUE);
-    vga13_draw_string(4, 2, "NOTHING OS NEXT-GEN V1.1.0", COLOR13_WHITE);
+    vga13_draw_string(4, 2, "NOTHING OS ULTRA SUITE V1.2.0", COLOR13_WHITE);
 
     vga13_draw_gui_window(20, 25, 200, 130, "SYSTEM CONSOLE");
     vga13_draw_string(28, 45, "WELCOME TO NOTHING OS", COLOR13_BLACK);
     vga13_draw_string(28, 60, "GRAPHICAL USER INTERFACE", COLOR13_BLUE);
-    vga13_draw_string(28, 75, "NEXT-GEN SUITE V1.1.0", COLOR13_BLACK);
+    vga13_draw_string(28, 75, "ULTRA KERNEL EDITION V1.2.0", COLOR13_BLACK);
 
     vga13_draw_rect(0, 186, 320, 14, COLOR13_DARK_GREY);
     vga13_draw_rect(2, 188, 50, 10, COLOR13_RED);
@@ -277,8 +280,8 @@ void run_kernel_shell(void) {
     uint8_t body_col  = vga_get_theme_color(current_theme, false);
     
     terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
-    terminal_writestring("[OK] Interactive Nothing OS Next-Gen Shell v1.1.0 Active.\n");
-    terminal_writestring("IPC Pipes, Semaphores & FAT MBR active. Type 'help' for commands.\n\n");
+    terminal_writestring("[OK] Interactive Nothing OS Ultra Shell v1.2.0 Active.\n");
+    terminal_writestring("SHA-256 Crypto & ANSI Formatter active. Type 'help' for commands.\n\n");
     
     while (1) {
         terminal_setcolor(title_col);
@@ -295,6 +298,8 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("Available System Commands:\n");
             terminal_setcolor(body_col);
+            terminal_writestring("  hash <text>            - Compute 256-bit SHA-256 cryptographic message digest\n");
+            terminal_writestring("  ansi                   - Render ANSI SGR Escape Sequence color demonstration\n");
             terminal_writestring("  pipe / ipc             - Test IPC Ring Buffer Pipe message passing\n");
             terminal_writestring("  sem / lock             - Test Counting Semaphore thread synchronization lock\n");
             terminal_writestring("  fat / mbr              - Inspect FAT Filesystem Boot Sector 0xAA55 metadata\n");
@@ -314,7 +319,7 @@ void run_kernel_shell(void) {
             terminal_writestring("  ps                     - List active kernel processes & PIDs\n");
             terminal_writestring("  spawn <task_name>      - Spawn a new background kernel task\n");
             terminal_writestring("  kill <pid>             - Terminate a running process by PID\n");
-            terminal_writestring("  test / ktest           - Trigger 18-Test Automated QA Kernel Test Suite\n");
+            terminal_writestring("  test / ktest           - Trigger 20-Test Automated QA Kernel Test Suite\n");
             terminal_writestring("  syscall                - Test INT 0x80 POSIX System Call Dispatcher\n");
             terminal_writestring("  ls / dir               - List VFS files in RAMDisk\n");
             terminal_writestring("  cat <file>             - View contents of a file\n");
@@ -341,6 +346,23 @@ void run_kernel_shell(void) {
             terminal_writestring("\nMaintainer: ");
             terminal_writestring(KERNEL_AUTHOR);
             terminal_writestring("\n");
+        } else if (strncmp(input_buf, "hash ", 5) == 0) {
+            const char* input_str = input_buf + 5;
+            char hex_digest[65];
+            sha256_hex((const uint8_t*)input_str, strlen(input_str), hex_digest);
+            
+            terminal_setcolor(title_col);
+            terminal_writestring("SHA-256 Message Digest Calculation:\n");
+            terminal_setcolor(body_col);
+            terminal_writestring("  Input String:  '");
+            terminal_writestring(input_str);
+            terminal_writestring("'\n  SHA-256 Hash: ");
+            terminal_setcolor(VGA_COLOR_LIGHT_GREEN);
+            terminal_writestring(hex_digest);
+            terminal_writestring("\n");
+        } else if (strcmp(input_buf, "ansi") == 0) {
+            terminal_writestring("Rendering ANSI Escape Sequence SGR Color Attributes:\n");
+            ansi_print("  \033[31m[RED]\033[0m  \033[32m[GREEN]\033[0m  \033[33m[YELLOW]\033[0m  \033[34m[BLUE]\033[0m  \033[35m[MAGENTA]\033[0m  \033[36m[CYAN]\033[0m\n");
         } else if (strcmp(input_buf, "pipe") == 0 || strcmp(input_buf, "ipc") == 0) {
             pipe_t my_pipe;
             pipe_init(&my_pipe);
@@ -797,8 +819,10 @@ void run_kernel_shell(void) {
             terminal_setcolor(title_col);
             terminal_writestring("System Architecture Information:\n");
             terminal_setcolor(body_col);
-            terminal_writestring("  Kernel:     Nothing OS v1.1.0 (Next-Gen Suite Edition)\n");
+            terminal_writestring("  Kernel:     Nothing OS v1.2.0 (Ultimate Ultra-Kernel Edition)\n");
             terminal_writestring("  CPU Mode:   32-bit x86 Protected Mode (i386)\n");
+            terminal_writestring("  Crypto:     SHA-256 FIPS PUB 180-4 Message Digest Engine Active\n");
+            terminal_writestring("  Formatting: ANSI Escape Sequence Color SGR Parser Active\n");
             terminal_writestring("  IPC Engine: Ring-Buffer Pipes & Counting Semaphores Active\n");
             terminal_writestring("  Storage FS: FAT12/16/32 Boot Sector & MBR 0xAA55 Metadata Engine\n");
             terminal_writestring("  Audio:      8254 PIT Timer Channel 2 PC Speaker Driver @ Port 0x61\n");
@@ -826,6 +850,8 @@ void run_kernel_shell(void) {
             terminal_writestring("Nothing OS Executive AI Board & Engineering Corporation:\n");
             terminal_setcolor(body_col);
             terminal_writestring("  👑 CEO & Lead OS Architect:   Overall Vision, PRs & Architecture\n");
+            terminal_writestring("  🔒 Kernel Cryptography Lead:  FIPS SHA-256 Digest & Hash Engine\n");
+            terminal_writestring("  🎨 ANSI Formatter Lead:       ANSI Escape Sequence SGR Translator\n");
             terminal_writestring("  🔄 IPC & Semaphore Lead:      Inter-Process Pipes & Locks\n");
             terminal_writestring("  💾 FAT & Disk FS Specialist:  FAT MBR Boot Sector & BPB Parser\n");
             terminal_writestring("  🔊 PC Speaker & Audio Lead:   PIT Ch 2 Synthesizer & Boot Chime\n");
@@ -879,7 +905,7 @@ void _kernel_main(void) {
 
     /* Initialize Serial COM1 Debug Logger */
     serial_init(SERIAL_COM1_PORT);
-    klog(KLOG_INFO, "Nothing OS Next-Gen v1.1.0 Kernel Bootstrapped Successfully.");
+    klog(KLOG_INFO, "Nothing OS Ultra v1.2.0 Kernel Bootstrapped Successfully.");
     terminal_setcolor(VGA_COLOR_GREEN);
     terminal_writestring("[OK] ");
     terminal_setcolor(vga_get_theme_color(current_theme, false));
